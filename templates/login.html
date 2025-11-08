@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header text-center bg-dark text-white">
+          <h4>Ingreso al Sistema</h4>
+        </div>
+        <div class="card-body">
+          <form method="POST" action="/login">
+            <!-- Campo RUT -->
+            <div class="mb-3">
+              <label for="rut" class="form-label">RUT</label>
+              <input type="text" class="form-control" id="rut" name="rut" placeholder="12345678-9" required pattern="^[^;$&|{}
+
+\[\]
+
+<>\"'\\`]{1,12}$" maxlength="12">
+  </div>
+  <!-- Campo Contraseña -->
+  <div class="mb-3">
+    <label for="contrasena" class="form-label">Contraseña</label>
+    <input type="password" class="form-control" id="contrasena" name="contrasena"
+           placeholder="••••••••" required
+           pattern="^[^;$&|{}
+
+\[\]
+
+<>\"' \\`]{1,20}$" maxlength="20">
+            </div>
+            <!-- Botón de ingreso -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary bg-dark">Ingresar</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

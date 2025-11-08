@@ -1,0 +1,145 @@
+{% extends 'administrador/extras.html' %}
+
+{% block contenido %}
+
+{% if get %}
+<div class="container my-5">
+  <form method="POST" class="card p-4 shadow-sm">
+    <div class="mb-3">
+      <label for="taller" class="form-label">Selecciona un taller:</label>
+      <select id="taller" name="taller" class="form-select">
+        {% for taller in talleres %}
+          <option value="{{ taller._id }}">{{ taller.nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" name="accion" id="accion" value="buscar_taller" class="btn btn-dark">
+      Empezar a Aceptar Estudiantes
+    </button>
+  </form>
+</div>
+{% endif %}
+
+{% if buscar_taller %}
+<div class="container my-5">
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-dark text-white">
+      <h5 class="mb-0">Taller: {{ taller.nombre }}</h5>
+    </div>
+    <div class="card-body">
+      <h6 class="card-title">Profesor: {{ taller.profesor_nombre }}</h6>
+      <p class="card-text mb-2"><strong>RUT:</strong> {{ taller.profesor_rut }}</p>
+      <p class="card-text text-muted"><strong>Horarios:</strong> {{ taller.horarios }}</p>
+      <p class="card-text text-muted"><strong>Cupos:</strong> {{ taller.cupos }}</p>
+
+      {% if taller.deshabilitado %}
+      <form method="POST">
+        <input type="hidden" name="id_taller" value="{{ taller._id }}">
+        <button type="submit" name="accion" value="habilitar_taller" class="btn btn-success">Habilitar Taller</button>
+      </form>
+      {% else %}
+      <form method="POST">
+        <input type="hidden" name="id_taller" value="{{ taller._id }}">
+        <button type="submit" name="accion" value="deshabilitar_taller" class="btn btn-danger">Deshabilitar Taller</button>
+      </form>
+      {% endif %}
+      <hr class="my-4">
+
+      <h6 class="mb-3">Lista de espera:</h6>
+      {% if taller.lista_espera %}
+      <form method="POST">
+        <input type="hidden" name="id_taller" value="{{ taller._id }}">
+        <input type="hidden" name="cupos" value="{{ taller.cupos }}">
+        <ul class="list-group mb-4">
+          {% for alumno_espera in taller.lista_espera %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ alumno_espera.nombre }}</strong><br>
+              <small class="text-muted">{{ alumno_espera.rut }}</small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <span class="badge bg-warning text-dark">En espera</span>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       id="alumno_{{ loop.index }}"
+                       onclick="agregar_rut('{{ alumno_espera.rut }}')">
+                <label class="form-check-label" for="alumno_{{ loop.index }}">Agregar</label>
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        <button type="submit" name="accion" value="inscribir_alumnos" class="btn btn-success">
+          Inscribir seleccionados
+        </button>
+      </form>
+      {% else %}
+      <div class="alert alert-light border" role="alert">
+        No hay alumnos en lista de espera.
+      </div>
+      {% endif %}
+
+      <hr class="my-4">
+
+      <h6 class="mb-3">Alumnos inscritos:</h6>
+      {% if taller.inscritos %}
+      <form method="POST">
+        <input type="hidden" name="id_taller" value="{{ taller._id }}">
+        <input type="hidden" name="cupos" value="{{ taller.cupos }}">
+
+        <ul class="list-group mb-4">
+          {% for alumno in taller.inscritos %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ alumno.nombre }}</strong><br>
+              <small class="text-muted">{{ alumno.rut }}</small>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox"
+                     id="check_{{ loop.index }}"
+                     onclick="agregar_rut('{{ alumno.rut }}')">
+              <label class="form-check-label" for="check_{{ loop.index }}">
+                Eliminar
+              </label>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        <button type="submit" name="accion" value="quitar_del_taller" class="btn btn-danger">
+          Quitar seleccionados
+        </button>
+      </form>
+      {% else %}
+      <div class="alert alert-secondary mt-3" role="alert">
+        No hay alumnos inscritos aún.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<script>
+
+    let LISTA_ALUMNOS = []
+
+    function agregar_rut(rut) {
+
+        if (LISTA_ALUMNOS.includes(rut)) {
+            LISTA_ALUMNOS.pop(rut)
+            console.log(LISTA_ALUMNOS)
+
+            return
+        }
+
+        LISTA_ALUMNOS.push(rut)
+        console.log(LISTA_ALUMNOS)
+    }
+    
+    document.addEventListener("formdata", (e) => {
+        e.formData.set("alumnos_rut", LISTA_ALUMNOS)
+    })
+
+</script>
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Liceo San Juan Bautista De Hualqui</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Calendario -->
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
+
+
+  <link href="static/css/home.css" rel="stylesheet">
+</head>
+
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <div class="brand">
+        <img class="logo" src="static/img/liceo.png">
+        <div>
+          <div class="site-title">Liceo San Juan Bautista de Hualqui</div>
+          <div style="font-size:12px;color:var(--muted)">Construyendo futuro</div>
+        </div>
+      </div>
+      <nav class="menu" aria-label="Principal">
+        <a href="home">Inicio</a>
+        <a href="seccion_de_noticias">Noticias</a>
+        <a href="talleres">Talleres</a>
+        <a href="contactanos">Contáctanos</a>
+        <a class="cta" href="login">Mi Perfil</a>
+
+        <!-- Mis acciones (desplegable que muestra el contenido dinámico del bloque) -->
+        <div class="actions-dropdown" style="position:relative">
+          <button id="actionsBtn" class="menu-btn" aria-haspopup="true" aria-expanded="false"
+            style="padding:8px 10px;border-radius:8px;background:transparent;border:1px solid rgba(15,23,42,0.04);cursor:pointer">Mis
+            acciones ▾</button>
+
+          <div id="actionsMenu" class="actions-menu" role="menu"
+            style="position:absolute;right:0;top:42px;min-width:220px;background:var(--card);box-shadow:0 6px 20px rgba(12,16,43,0.06);border-radius:8px;padding:12px;display:none;z-index:60">
+            <!-- Bloque de menu desplegable para usuarios -->
+            {% block izquierda %}
+            <li><a class="nav-link color" href="login">Inicia Sesion</a></li>
+            {% endblock %}
+
+          </div>
+        </div>
+      </nav>
+    </div>
+
+  </header>
+
+  <main>
+
+    <!-- HERO / CARRUSEL -->
+    <section id="inicio" class="hero">
+      <div class="carousel" aria-roledescription="carrusel" aria-label="Noticias destacadas">
+        <div class="slides" id="slides">
+
+          <!-- Slide 2 -->
+          <article class="slide" aria-hidden="false">
+            <div class="slide-media"
+              style="background-image:linear-gradient(135deg,#e6f0ff,#fff);display:flex;align-items:center;justify-content:center">
+              <svg width="120" height="120" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M3 7h18M3 12h18M3 17h18" stroke="#0b6cff" stroke-width="1.6" stroke-linecap="round">
+                </path>
+              </svg>
+            </div>
+
+            <div class="slide-content">
+              <div class="kicker">Publicado el 22 octubre, 2025</div>
+              <h2>Bienvenid@ a tu intranet institucional</h2>
+
+              <p>Descubre la nueva intranet de nuestro liceo: un espacio diseñado para fortalecer la interactividad, la información y la comunicación con nuestros estudiantes. Sé parte del cambio, sé parte de LSJBH. ¡Conectémonos para construir juntos el futuro!</p>
+              <a class="btn" href="#noticias">Leer noticia</a>
+            </div>
+          </article>
+
+        </div>
+
+        <div class="controls">
+          <div class="indicators" id="dots"></div>
+          <div class="arrows">
+            <button class="arrow" id="prev" aria-label="Anterior">◀</button>
+            <button class="arrow" id="next" aria-label="Siguiente">▶</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mensajes de error -->
+
+    <div id="dinamic_mensaje"></div>
+
+    {% if error %}
+    <div style="max-width:480px; margin:16px auto">
+      <div class="alert alert-danger border border-danger rounded-3 shadow-sm p-3 mb-0" role="alert"
+        id="template-error">
+        <h6 class="alert-heading mb-2" style="font-weight:600">¡Error!</h6>
+        <div style="font-size:14px">
+          <div><strong>Código:</strong> {{ error.codigo }}</div>
+          <div><strong>Mensaje:</strong> {{ error.mensaje }}</div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if exito %}
+    <div style="max-width:480px; margin:16px auto">
+      <div class="alert alert-success border border-success rounded-3 shadow-sm p-3 mb-0" role="alert"
+        id="template-exito">
+        <h6 class="alert-heading mb-2" style="font-weight:600">¡Éxito!</h6>
+        <div style="font-size:14px">
+          <div><strong>Código:</strong> {{ exito.codigo }}</div>
+          <div><strong>Mensaje:</strong> {{ exito.mensaje }}</div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+
+
+
+    {% block contenido %}{% endblock %}
+  </main>
+
+  <footer>
+    <div
+      style="max-width:1100px;margin:0 auto;padding:10px 20px;display:flex;justify-content:space-between;align-items:center">
+      <div>© Liceo San Juan Bautista de Hualqui — Construyendo futuro</div>
+      <div style="font-size:13px;color:var(--muted)">Dirección y contactos oficiales en la web institucional</div>
+    </div>
+  </footer>
+
+  <script src="static/js/obtener_noticias.js"></script>
+  <script src="static/js/carrusel_home.js"></script>
+
+  <!-- Este script se utiliza para evitar resultados de peticion repetidas en backend por doble envio de formuularios
+       al recargar la pagina -->
+  <script>
+
+    const PARAMS_GET = new URLSearchParams(window.location.search)
+
+    // url+?error=esto es un mensaje de error xd
+    if (PARAMS_GET.has("codigo") && PARAMS_GET.has("mensaje")) {
+
+      let codigo = PARAMS_GET.get("codigo")
+      let mensaje = PARAMS_GET.get("mensaje")
+      let tipo_alerta = "success"
+      let titulo = "Éxito"
+
+      if (codigo != "200") {
+        tipo_alerta = "danger"
+        titulo = "Error"
+      }
+
+      document.getElementById("dinamic_mensaje").innerHTML = `
+    <div style="max-width:480px;margin:16px auto">
+      <div class="alert alert-${tipo_alerta} border border-${tipo_alerta} rounded-3 shadow-sm p-3 mb-0" role="alert">
+        <h6 class="alert-heading mb-2" style="font-weight:600">¡${titulo}!</h6>
+        <div style="font-size:14px">
+          <div><strong>Código:</strong> ${codigo}</div>
+          <div><strong>Mensaje:</strong> ${mensaje}</div>
+        </div>
+      </div>
+    </div>
+        `
+
+    }
+
+
+
+    (function () {
+      const btn = document.getElementById('actionsBtn');
+      const menu = document.getElementById('actionsMenu');
+      if (!btn || !menu) return;
+
+      // Estado inicial
+      menu.style.display = 'none';
+      btn.setAttribute('aria-expanded', 'false');
+
+      const open = () => {
+        menu.style.display = 'block';
+        btn.setAttribute('aria-expanded', 'true');
+        const first = menu.querySelector('a,button,[role="menuitem"]');
+        if (first) first.focus();
+      };
+      const close = () => {
+        menu.style.display = 'none';
+        btn.setAttribute('aria-expanded', 'false');
+      };
+
+      btn.addEventListener('click', (e) => {
+        const isOpen = btn.getAttribute('aria-expanded') === 'true';
+        if (isOpen) close(); else open();
+        e.stopPropagation();
+      });
+
+      // Cierra al hacer clic fuera
+      document.addEventListener('click', (e) => {
+        if (!menu.contains(e.target) && e.target !== btn) close();
+      });
+
+      // Teclas: Esc para cerrar, ArrowDown para abrir desde el botón
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          close();
+          btn.focus();
+        }
+        if ((e.key === 'ArrowDown' || e.key === 'Down') && document.activeElement === btn) {
+          e.preventDefault();
+          open();
+        }
+      });
+    })();
+
+  </script>
+
+</body>
+
+</html>

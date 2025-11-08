@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="container py-5">
+  <h1 class="text-center mb-4 fw-bold text-dark">Talleres Escolares 2025</h1>
+
+  <p class="lead text-center mb-4" style="max-width: 800px; margin: 0 auto;">
+    En nuestro establecimiento valoramos profundamente las <strong>actividades extracurriculares</strong> como parte esencial de la formación integral. Creemos que el aprendizaje trasciende las aulas, y que el arte, el deporte, la ciencia y la creatividad son pilares del desarrollo personal, emocional y social.
+  </p>
+
+  <p class="text-center mb-5" style="max-width: 800px; margin: 0 auto;">
+    Por eso, hemos preparado una variada oferta de <strong>talleres escolares</strong> que buscan potenciar talentos, despertar vocaciones y fomentar el trabajo en equipo. ¡Te invitamos a conocerlos y ser parte activa de esta experiencia!
+  </p>
+
+  <div class="row">
+    {% for taller in talleres %}
+    <div class="col-md-6 col-lg-4 mb-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title text-primary fw-semibold">{{ taller.nombre }}</h5>
+          <p class="card-text mb-2"><strong>Descripción:</strong> {{ taller.descripcion }}</p>
+          <p class="card-text mb-2"><strong>Horario:</strong> {{ taller.horarios }}</p>
+          <p class="card-text mb-2"><strong>Cupos disponibles:</strong> {{ taller.cupos }}</p>
+          <p class="card-text"><strong>Profesor/a:</strong> {{ taller.profesor_nombre }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="text-center mt-4">
+    <a href="login" class="btn btn-lg btn-dark px-4">¡Inscribirme ya!</a>
+  </div>
+
+  <div class="text-center mt-5">
+    <p class="fw-bold fs-5 text-muted">¡No te quedes fuera! Los cupos son limitados y la experiencia, inolvidable.</p>
+  </div>
+</div>
+{% endblock %}

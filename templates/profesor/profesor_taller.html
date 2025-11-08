@@ -1,0 +1,97 @@
+{% extends 'profesor/extras.html' %}
+
+{% block contenido %}
+
+
+{% if taller %}
+<div class="container my-5">
+  <div class="card border-0 shadow">
+    <div class="card-header bg-dark text-white">
+      <h5 class="mb-0">Taller: {{ taller.nombre }}</h5>
+    </div>
+    <div class="card-body">
+      <h6 class="card-title">Profesor: {{ taller.profesor_nombre }}</h6>
+      <p class="card-text mb-2"><strong>RUT:</strong> {{ taller.profesor_rut }}</p>
+      <p class="card-text text-muted"><strong>Horarios:</strong> {{ taller.horarios }}</p>
+
+      <hr>
+      
+      <h6 class="mb-3">Alumnos inscritos:</h6>
+      {% if taller.inscritos %}
+
+<form method="POST">
+  <ul class="list-group">
+    {% for alumno in taller.inscritos %}
+    <li class="list-group-item">
+      <div class="row align-items-center">
+        <div class="col-md-5">
+          <strong>{{ alumno.nombre }}</strong> | {{ alumno.rut }}
+        </div>
+        <div class="col-md-3">
+
+          {% if alumno.nota_taller %}
+          <p class="card-text text-muted"><strong>Nota:</strong> {{ alumno.nota_taller }}</p>
+
+          {% else %}
+            <input type="number"
+                  name="alumno_rut_nota_{{ alumno.rut }}"
+                  min="1" max="7" step="0.1"
+                  placeholder="Nota"
+                  class="form-control">
+          {% endif %}
+        </div>
+        <div class="col-md-4">
+          <div class="form-check">
+            <input class="form-check-input"
+                   type="checkbox"
+                   id="check_{{ loop.index }}"
+                   onclick="agregar_rut('{{ alumno.rut }}')">
+            <label class="form-check-label" for="check_{{ loop.index }}">
+              Presente
+            </label>
+          </div>
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+    <br>
+    <button type="submit" id="accion" name="accion" value="lista" class="btn btn-success">Pasar Lista</button>
+    <button type="submit" id="accion" name="accion" value="nota" class="btn btn-success">Calificar</button>
+
+      </form>
+      {% else %}
+      <div class="alert alert-secondary" role="alert">
+        No hay alumnos inscritos aún.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
+<script>
+
+    let LISTA_ALUMNOS = []
+
+    function agregar_rut(rut) {
+
+        if (LISTA_ALUMNOS.includes(rut)) {
+            LISTA_ALUMNOS.pop(rut)
+            console.log(LISTA_ALUMNOS)
+
+            return
+        }
+
+        LISTA_ALUMNOS.push(rut)
+        console.log(LISTA_ALUMNOS)
+    }
+    
+    document.addEventListener("formdata", (e) => {
+        e.formData.set("alumnos_rut", LISTA_ALUMNOS)
+    })
+
+
+
+</script>
+
+{% endblock %}

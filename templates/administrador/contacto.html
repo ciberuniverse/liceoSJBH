@@ -1,0 +1,63 @@
+{% extends 'administrador/extras.html' %}
+
+{% block contenido %}
+
+{% if contactos %}
+<div class="container my-4">
+    <h4 class="mb-3">Mensajes recibidos de mas antiguo a mas reciente</h4>
+
+    {% for contacto in contactos %}
+    <div class="card mb-4 shadow-sm">
+        
+        <div class="card-header bg-dark text-white">
+            Solicitud de Contacto
+        </div>
+
+        <div class="card-body">
+            <form method="POST">
+                <input type="hidden" name="id_de_contacto" value="{{ contacto._id }}">
+                <p class="mb-1"><strong>Asunto:</strong> {{ contacto.asunto }}</p>
+
+                <p class="mb-1"><strong>Motivo:</strong> {{ contacto.motivo }}</p>
+                <p class="mb-1"><strong>{{ contacto.medio_de_contacto|capitalize }}:</strong> {{ contacto.contacto }}
+                </p>
+                <p class="mb-3"><strong>Mensaje:</strong><br>{{ contacto.mensaje }}</p>
+
+                <button type="submit" name="accion" value="visto" class="btn btn-dark">Marcar como visto</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if contactos_vistos %}
+<div class="container my-4">
+    <h4 class="mb-3">Mensajes vistos de mas antiguo a mas reciente</h4>
+
+    {% for contacto in contactos_vistos %}
+    <div class="card mb-4 shadow-sm">
+        
+        <div class="card-header bg-dark text-white">
+            Solicitud de Contacto
+        </div>
+
+        <div class="card-body">
+            <form method="POST">
+                <input type="hidden" name="id_de_contacto" value="{{ contacto._id }}">
+                <p class="mb-1"><strong>Asunto:</strong> {{ contacto.asunto }}</p>
+
+                <p class="mb-1"><strong>Motivo:</strong> {{ contacto.motivo }}</p>
+                <p class="mb-1"><strong>{{ contacto.medio_de_contacto|capitalize }}:</strong> {{ contacto.contacto }}
+                </p>
+                <p class="mb-3"><strong>Mensaje:</strong><br>{{ contacto.mensaje }}</p>
+
+                <button type="submit" name="accion" value="eliminar" class="btn btn-danger">Eliminar</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

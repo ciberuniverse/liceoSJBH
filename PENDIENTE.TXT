@@ -1,0 +1,5 @@
+Crear la opción de seleccionar la carrera técnica y elevar solicitud hacia alguien para
+poder postular a la carrera técnica del polivalente.
+
+Crear la ocion de modificar desde el usuario administrador, tales cosas como la direccion,
+numero telefonico, enlaces a las RRSS.

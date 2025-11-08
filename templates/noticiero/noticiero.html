@@ -1,0 +1,84 @@
+{% extends 'noticiero/extras.html' %}
+
+{% block contenido %}
+
+<div class="container mt-4 mb-3 d-flex gap-3">
+  <form method="POST"><button class="btn btn-outline-danger" name="accion" value="listar_alertas">Modificar
+      Alertas</button></form>
+  <form method="POST"><button class="btn btn-outline-dark" name="accion" value="listar_noticias">Modificar
+      Noticias</button></form>
+
+</div>
+
+<div class="container mt-4">
+
+  <!-- Alerta urgente -->
+  <div class="card border-danger mb-4">
+    <div class="card-header bg-danger text-white">
+      Crear nueva alerta urgente
+    </div>
+    <div class="card-body">
+      <form method="POST">
+        <input type="hidden" name="tipo" value="alerta">
+
+        <div class="mb-3">
+          <label for="tituloAlerta" class="form-label">Título</label>
+          <input type="text" class="form-control" id="tituloAlerta" name="titulo" minlength="3" maxlength="100"
+            required>
+        </div>
+
+        <div class="mb-3">
+          <label for="descripcionAlerta" class="form-label">Alerta</label>
+          <input type="text" class="form-control" id="descripcionAlerta" name="descripcion" minlength="5"
+            maxlength="300" required>
+        </div>
+
+        <button type="submit" class="btn btn-danger" name="accion" value="crear_alerta">Crear alerta</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Noticia de actividades -->
+  <div class="card border-dark mb-4">
+    <div class="card-header bg-dark text-white">
+      Crear nueva noticia sobre actividades
+    </div>
+    <div class="card-body">
+      <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="tipo" value="noticia">
+
+        <div class="mb-3">
+          <label for="tituloNoticia" class="form-label">Título</label>
+          <input type="text" class="form-control" id="tituloNoticia" name="titulo" minlength="3" maxlength="100"
+            required pattern="^[^;$&|{}
+
+\[\]
+
+<>\"'\\`]{3,100}$">
+  </div>
+
+  <div class="mb-3">
+    <label for="descripcionNoticia" class="form-label">Descripción</label>
+    <textarea class="form-control" id="descripcionNoticia" name="descripcion"
+              rows="4" minlength="5" maxlength="10000" required
+              pattern="^[^;$&|{}
+
+\[\]
+
+<>\"' \\`]{5,10000}$"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="imagenNoticia" class="form-label">Imagen (opcional)</label>
+          <input type="file" class="form-control" id="imagenNoticia" name="imagen">
+        </div>
+
+        <button type="submit" class="btn btn-primary bg-dark" name="accion" value="crear_noticia">Crear noticia</button>
+      </form>
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'profesor/jefe/extras.html' %}
+
+{% block contenido %}
+
+<form method="POST" class="p-4 border rounded shadow-sm bg-light">
+  <h4 class="mb-3">Crear Nuevo Curso</h4>
+
+  <!-- Curso -->
+  <div class="mb-3">
+    <label for="curso" class="form-label">Curso</label>
+    <select name="curso" id="curso" class="form-select">
+      <optgroup label="Básica">
+        <option value="Primero Basico">1° Básico</option>
+        <option value="Segundo Basico">2° Básico</option>
+        <option value="Tercero Basico">3° Básico</option>
+        <option value="Cuarto Basico">4° Básico</option>
+        <option value="Quinto Basico">5° Básico</option>
+        <option value="Sexto Basico">6° Básico</option>
+        <option value="Septimo Basico">7° Básico</option>
+        <option value="Octavo Basico">8° Básico</option>
+      </optgroup>
+      <optgroup label="Media">
+        <option value="Primero Medio">1° Medio</option>
+        <option value="Segundo Medio">2° Medio</option>
+        <option value="Tercero Medio">3° Medio</option>
+        <option value="Cuarto Medio">4° Medio</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <!-- Letra del curso -->
+  <div class="mb-3">
+    <label for="curso_letra" class="form-label">Letra del Curso</label>
+    <input type="text" id="curso_letra" name="curso_letra" maxlength="1" minlength="1" class="form-control" required>
+  </div>
+
+  <!-- RUT de los alumnos -->
+  <div class="mb-3">
+    <label for="rut_alumno" class="form-label">RUT de los alumnos</label>
+    <div class="input-group">
+      <input type="text" id="rut_alumno" class="form-control" placeholder="Ej: 12345678-9">
+      <button type="button" class="btn btn-outline-primary" onclick="agregar_alumno()">Agregar</button>
+    </div>
+  </div>
+
+  <!-- Profesores del curso -->
+  <div class="mb-3">
+    <label for="asignar_profesor" class="form-label">Profesores del curso</label>
+    <div class="input-group">
+      <select id="asignar_profesor" class="form-select">
+        {% for profesor in profesores %}
+          <option value="{{ profesor.rut }}">{{ profesor.nombres }} {{ profesor.apellidos }}</option>
+        {% endfor %}
+      </select>
+      <button type="button" class="btn btn-outline-primary" onclick="agregar_profesor()">Agregar</button>
+    </div>
+  </div>
+
+  <!-- Botón de envío -->
+  <button id="accion" name="accion" value="crear_curso" type="submit" class="btn btn-success">Crear Curso</button>
+  <br><br>
+
+  <!-- Lista de RUTs -->
+<table class="table table-bordered table-striped mt-4">
+  <thead class="table-light">
+    <tr>
+      <th scope="col">Tipo</th>
+      <th scope="col">RUTs asignados</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Profesores</strong></td>
+      <td>
+        <ul id="profesores_tabla" class="list-group list-group-flush">
+          <!-- Aquí se agregarán los RUTs de profesores con JS -->
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Alumnos</strong></td>
+      <td>
+        <ul id="ruts_tabla" class="list-group list-group-flush">
+          <!-- Aquí se agregarán los RUTs de alumnos con JS -->
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+</form>
+
+
+
+<script>
+    let ALUMNOS = []
+    let PROFESORES = []
+
+    function agregar_alumno() {
+
+        let rut = document.getElementById("rut_alumno").value
+
+        if (!rut) {
+          return
+        }
+
+        ALUMNOS.push(rut)
+        document.getElementById("rut_alumno").value = ""
+
+        document.getElementById("ruts_tabla").innerHTML += `
+        <li class="list-group-item text-muted">${rut}</li>
+        `
+
+    }
+
+    function agregar_profesor() {
+      let select = document.getElementById("asignar_profesor").value
+
+      if (!select) {
+        return
+      }
+
+      PROFESORES.push(select)
+      document.getElementById("asignar_profesor").value = "null"
+
+      document.getElementById("profesores_tabla").innerHTML += `
+        <li class="list-group-item text-muted">${select}</li>
+      `
+    }
+
+    document.addEventListener("formdata", (e) => {
+        e.formData.append("alumnos_rut", Array(ALUMNOS))
+        e.formData.append("profesores_rut", Array(PROFESORES))
+    })
+
+</script>
+
+{% endblock %}

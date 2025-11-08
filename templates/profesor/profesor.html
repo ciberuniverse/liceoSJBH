@@ -1,0 +1,11 @@
+{% extends 'profesor/extras.html' %}
+
+{% block contenido %}
+
+{% for curso in cursos %}
+
+    {{ curso.cursos_asignados }}
+
+{% endfor %}
+
+{% endblock %}

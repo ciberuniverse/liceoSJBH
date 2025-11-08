@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="container py-5">
+  <h2 class="text-center fw-bold text-dark mb-3">Últimas noticias del LSJBH</h2>
+  <p class="text-center text-muted fs-5 mb-5 px-3">
+    Mantente al tanto de nuestras <strong>actividades, logros y novedades</strong>.
+    En el <strong>Liceo San Juan Bautista de Hualqui</strong>, cada día es una oportunidad para crecer, compartir y
+    construir comunidad.
+    Aquí encontrarás las noticias más recientes sobre proyectos escolares, eventos, talleres y todo lo que nos inspira a
+    seguir avanzando juntos.
+  </p>
+
+  <div id="noticias_div" hidden>
+    <div id="noticia-container" class="row justify-content-center">
+      <div class="col-md-10 col-lg-8 mb-5">
+        <div class="card border-0 shadow-sm rounded-3">
+          <div class="card-body">
+            <h4 id="titulo" class="card-title text-primary fw-semibold mb-3"></h4>
+            <p id="descripcion" class="card-text fs-6"></p>
+            <p id="fecha" class="text-muted small"></p>
+            <div id="imagen-container" class="text-center mt-3"></div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+          <button id="btn-anterior" class="btn btn-outline-secondary px-4 rounded-pill">← Anterior</button>
+          <button id="btn-siguiente" class="btn btn-dark px-4 rounded-pill">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const noticias = {% if noticias %} {{ noticias | tojson }} {% else %} "" {% endif %};
+  let indice = 0;
+
+  function renderNoticia(i) {
+    const noticia = noticias[i];
+    document.getElementById("titulo").textContent = noticia.titulo;
+    document.getElementById("descripcion").textContent = noticia.descripcion;
+    document.getElementById("fecha").textContent = "Publicado el " + noticia.fecha_publicacion;
+
+    const imagenContainer = document.getElementById("imagen-container");
+    imagenContainer.innerHTML = "";
+    if (noticia.imagen) {
+      const img = document.createElement("img");
+      img.src = noticia.imagen;
+      img.alt = "Imagen de la noticia";
+      img.className = "img-fluid rounded shadow-sm";
+      img.style.maxHeight = "350px";
+      img.style.objectFit = "cover";
+      imagenContainer.appendChild(img);
+    }
+
+    document.getElementById("btn-anterior").disabled = i === 0;
+    document.getElementById("btn-siguiente").disabled = i === noticias.length - 1;
+  }
+
+  document.getElementById("btn-anterior").addEventListener("click", () => {
+    if (indice > 0) {
+      indice--;
+      renderNoticia(indice);
+    }
+  });
+
+  document.getElementById("btn-siguiente").addEventListener("click", () => {
+    if (indice < noticias.length - 1) {
+      indice++;
+      renderNoticia(indice);
+    }
+  });
+
+  // Render inicial
+  if (noticias === "") {
+    console.log("ERROR: No existen noticias para listar.")
+  } else {
+    document.getElementById("noticias_div").removeAttribute("hidden")
+    renderNoticia(indice);
+  }
+</script>
+</div>
+{% endblock %}

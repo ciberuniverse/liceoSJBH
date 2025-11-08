@@ -1,0 +1,62 @@
+{% extends 'administrador/extras.html' %}
+
+{% block contenido %}
+<div class="container bg-white p-4 rounded shadow">
+<form method="POST">
+
+  <div class="mb-3">
+    <label for="nombre" class="form-label">Nombre del Taller</label>
+    <input type="text" class="form-control" name="nombre" id="nombre"
+           maxlength="100" required
+           pattern="^[^;$&|{}
+
+\[\]
+
+<>\"'\\`]{1,100}$">
+  </div>
+
+<div class="mb-3">
+  <label for="descripcion" class="form-label">Descripción</label>
+  <textarea class="form-control" name="descripcion" id="descripcion" rows="3"
+            maxlength="1000"
+            pattern="^[^;$&|{}
+
+\[\]
+
+<>\"'\\`]{1,1000}$"></textarea>
+</div>
+
+  <div class="mb-3">
+    <label for="cupos" class="form-label">Cupos</label>
+    <input type="number" class="form-control" name="cupos" id="cupos" min="1" max="9999" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="horarios" class="form-label">Horarios</label>
+    <input type="text" class="form-control" name="horarios" id="horarios"
+           maxlength="100" required
+           pattern="^[^;$&|{}
+
+\[\]
+
+<>\"'\\`]{1,100}$">
+  </div>
+
+  <div class="mb-3">
+    <label for="profesor_rut" class="form-label">Profesor o Tallerista encargado</label>
+    <div class="input-group">
+      <select id="profesor_rut" name="profesor_rut" class="form-select" required>
+        {% for profesor in profesores %}
+        <option value="{{ profesor.rut }}">{{ profesor.nombres }} {{ profesor.apellidos }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <button type="submit" name="accion" id="accion" value="crear_taller" class="btn bg-dark text-white">
+    Crear Taller
+  </button>
+</form>
+
+</div>
+{% endblock %}
