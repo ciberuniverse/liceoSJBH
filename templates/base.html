@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Liceo San Juan Bautista De Hualqui</title>
+  <title>{{ nombre_colegio }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -13,6 +13,8 @@
   <!-- Calendario -->
   <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
 
+  <!-- Iconos de Redes Sociales Footer -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <link href="static/css/home.css" rel="stylesheet">
 </head>
@@ -23,10 +25,16 @@
       <div class="brand">
         <img class="logo" src="static/img/liceo.png">
         <div>
-          <div class="site-title">Liceo San Juan Bautista de Hualqui</div>
-          <div style="font-size:12px;color:var(--muted)">Construyendo futuro</div>
+          <div class="site-title">{{ nombre_colegio }}</div>
+          <div style="font-size:12px;color:var(--muted)">{{ lema_colegio }}</div>
         </div>
       </div>
+
+      <!-- No borrar MOVIL ADAPTER -->
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label">☰</label>
+      <!-- No borrar MOVIL ADAPTER -->
+
       <nav class="menu" aria-label="Principal">
         <a href="home">Inicio</a>
         <a href="seccion_de_noticias">Noticias</a>
@@ -75,7 +83,9 @@
               <div class="kicker">Publicado el 22 octubre, 2025</div>
               <h2>Bienvenid@ a tu intranet institucional</h2>
 
-              <p>Descubre la nueva intranet de nuestro liceo: un espacio diseñado para fortalecer la interactividad, la información y la comunicación con nuestros estudiantes. Sé parte del cambio, sé parte de LSJBH. ¡Conectémonos para construir juntos el futuro!</p>
+              <p>Descubre la nueva intranet de nuestro liceo: un espacio diseñado para fortalecer la interactividad, la
+                información y la comunicación con nuestros estudiantes. Sé parte del cambio, sé parte de LSJBH.
+                ¡Conectémonos para construir juntos el futuro!</p>
               <a class="btn" href="#noticias">Leer noticia</a>
             </div>
           </article>
@@ -131,10 +141,26 @@
   <footer>
     <div
       style="max-width:1100px;margin:0 auto;padding:10px 20px;display:flex;justify-content:space-between;align-items:center">
-      <div>© Liceo San Juan Bautista de Hualqui — Construyendo futuro</div>
-      <div style="font-size:13px;color:var(--muted)">Dirección y contactos oficiales en la web institucional</div>
+      <div>
+        © {{ nombre_colegio }} — {{ lema_colegio }}
+      </div>
+      <div style="display:flex;align-items:center;gap:15px">
+        <span style="font-size:13px;color:var(--muted)">Dirección y contactos oficiales en la web institucional</span>
+
+        {% for red in redes_sociales %}
+
+        {% for key in red.keys() %}
+        <a href="{{ red[key] }}" target="_blank" style="color:inherit">
+          <i class="fab fa-{{ key }}"></i>
+        </a>
+        {% endfor %}
+
+        {% endfor %}
+
+      </div>
     </div>
   </footer>
+
 
   <script src="static/js/obtener_noticias.js"></script>
   <script src="static/js/carrusel_home.js"></script>
@@ -217,7 +243,6 @@
         }
       });
     })();
-
   </script>
 
 </body>

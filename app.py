@@ -5,8 +5,11 @@ from flask import Flask, render_template, session, request, redirect, url_for
 app = Flask(__name__)
 app.secret_key = "xd"
 
-# SECCION ENCARGADA DE INICIAR SESION POR CARGOS
+@app.context_processor
+def context():
+    return PERSONALIZACION_WEB
 
+# SECCION ENCARGADA DE INICIAR SESION POR CARGOS
 @app.before_request
 def limitar_acceso():
 
@@ -287,6 +290,20 @@ def administrar_taller_estudiantes():
         return render_template("administrador/aceptar_usuarios_taller.html", error = talleres_resultado)
 
     return render_template("administrador/aceptar_usuarios_taller.html", get = True, talleres = talleres_resultado["mensaje"])
+
+@app.route("/administrar_pagina", methods = ["POST", "GET"])
+def administrar_pagina():
+
+    if request.method == "POST":
+
+        formulario = request.form.to_dict()
+        respuesta_modificar = bdd.Settings.modificar_template_base(formulario)
+
+        return redirect(url_for("administrar_pagina", codigo = respuesta_modificar["codigo"], mensaje = respuesta_modificar["mensaje"]))
+
+    ################ ZONA GET
+    
+    return render_template("administrador/administrar_pagina.html")
 
 ############################### Rutas de panel del noticiero
 

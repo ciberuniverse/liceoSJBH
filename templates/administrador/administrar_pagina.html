@@ -1,0 +1,74 @@
+{% extends 'administrador/extras.html' %}
+
+{% block contenido %}
+<form method="POST" style="max-width:600px;margin:0 auto;padding:20px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9">
+
+  <h2 style="margin-bottom:20px;color:#333">Configuración del Colegio</h2>
+
+  <div style="margin-bottom:15px">
+    <label for="nombre_colegio" style="display:block;font-weight:bold;margin-bottom:5px">Nombre del Colegio:</label>
+    <input type="text" name="nombre_colegio" id="nombre_colegio"
+           value="{{ nombre_colegio }}"
+           maxlength="50"
+           pattern="^[^$&|{}<>;'\"]+$"
+           title="Evita caracteres especiales como $, &, |, {}, <>, ;, ', \""
+           required
+           style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px">
+  </div>
+
+  <div style="margin-bottom:25px">
+    <label for="lema_colegio" style="display:block;font-weight:bold;margin-bottom:5px">Lema del Colegio:</label>
+    <input type="text" name="lema_colegio" id="lema_colegio"
+           value="{{ lema_colegio }}"
+           maxlength="100"
+           pattern="^[^$&|{}<>;'\"]+$"
+           title="Evita caracteres especiales como $, &, |, {}, <>, ;, ', \""
+           required
+           style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px">
+  </div>
+
+  <h3 style="margin-bottom:15px;color:#444">Redes Sociales</h3>
+
+  {% for red in redes_sociales %}
+    {% for key in red.keys() %}
+      <div style="margin-bottom:15px">
+        <label for="{{ key }}" style="display:block;font-weight:bold;margin-bottom:5px">
+          {{ key | capitalize }}:
+        </label>
+        <input type="url" name="{{ key }}" id="{{ key }}"
+               value="{{ red[key] }}"
+               maxlength="100"
+               pattern="^(https?:\/\/)?[^$&|{}<>;'\"]+$"
+               title="Evita caracteres especiales como $, &, |, {}, <>, ;, ', \""
+               placeholder="https://{{ key }}.com/..."
+               style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px">
+      </div>
+    {% endfor %}
+  {% endfor %}
+
+  <div style="text-align:right;margin-top:30px">
+    <button type="submit" style="padding:10px 20px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer">
+      Guardar Cambios
+    </button>
+  </div>
+
+</form>
+
+
+<!-- Disclaimer -->
+<div id="disclaimer" style="display:none;position:fixed;bottom:20px;right:20px;background:#fff3cd;color:#856404;border:1px solid #ffeeba;padding:15px 20px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);z-index:1000;font-size:14px">
+  <strong>Advertencia: Sección sensible</strong><br>
+  Todo cambio realizado en esta página requiere un reinicio del servidor para efectuar los cambios.
+</div>
+
+<script>
+  window.addEventListener('load', function() {
+    const aviso = document.getElementById('disclaimer');
+    aviso.style.display = 'block';
+    setTimeout(() => {
+      aviso.style.opacity = '0';
+      setTimeout(() => aviso.remove(), 1000);
+    }, 10000); // visible por 10 segundos
+  });
+</script>
+{% endblock %}

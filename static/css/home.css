@@ -308,3 +308,54 @@ body::after {
     opacity: 0.4;
   }
 }
+/* Oculta el checkbox y el botón en escritorio */
+.nav-toggle,
+.nav-toggle-label {
+  display: none;
+}
+
+/* Estructura base */
+.nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.menu {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+/* Esta seccion cumple el unico rol de modificar el comportamiento en moviles */
+
+/* Estilos móviles */
+@media (max-width: 768px) {
+  .nav-toggle-label {
+    display: block;
+    font-size: 24px;
+    cursor: pointer;
+    margin-left: auto;
+    padding: 10px;
+  }
+
+  .menu {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+    gap: 10px;
+  }
+
+  .nav-toggle:checked + .nav-toggle-label + .menu {
+    display: flex;
+  }
+
+  .actions-menu {
+    position: static !important;
+    box-shadow: none;
+    padding: 8px;
+    margin-top: 5px;
+  }
+}

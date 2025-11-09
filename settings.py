@@ -1,4 +1,26 @@
-NOMBRE_LICEO = "LICEO SAN JUAN BAUTISTA DE HUALQUI"
+import json
+
+"""En caso de no leer el archivo correctamente se usara este archivo."""
+PERSONALIZACION_WEB = {
+    "nombre_colegio": "Liceo San Juan Bautista De Hualqui",
+    "lema_colegio": "Construyendo tu futuro",
+    
+    "redes_sociales": [
+        {"facebook": ""},
+        {"youtube": ""},
+        {"twitter": ""},
+        {"instagram": ""}
+    ]
+}
+
+try:
+    with open("settings/settings.json", "r") as settings_info:
+        PERSONALIZACION_WEB = json.loads(settings_info.read())
+
+except:
+    print("ERROR: No se logro leer el archivo settings.json")
+
+
 MIGRANDO = False
 
 # Acciones y/o paginas que pueden visitar los cargos de la bdd
@@ -16,6 +38,7 @@ RUTAS_DE_USUARIOS = {
         "administrador_mensajes_vistos",
         "administrador_crear_taller",
         "administrar_taller_estudiantes",
+        "administrar_pagina",
     ],
     
     "noticiero": [

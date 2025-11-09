@@ -95,6 +95,41 @@ def guardar_imagen(seccion: str, name_frontend: str, formulario_file) -> dict:
 
 ##########################################
 
+class Settings():
+    """
+    Esta clase se enfoca en la configuracion del sitio\n
+    a diferencia de las demas esta se efectua de manera local\n
+    modificando el archivo settings.json de la carpeta settings.
+    """
+    @staticmethod
+    def modificar_template_base(formulario: dict) -> dict:
+
+        
+        try:
+            json_new = {
+                "nombre_colegio": formulario["nombre_colegio"],
+                "lema_colegio": formulario["lema_colegio"],
+
+                "redes_sociales": [
+                    {"facebook": formulario["facebook"]},
+                    {"youtube": formulario["youtube"]},
+                    {"twitter": formulario["twitter"]},
+                    {"instagram": formulario["instagram"]}
+                ]
+            }
+        
+        except:
+            return json_de_mensaje(500, "ERROR: No se logro adaptar la consulta. Faltan parametros.")
+
+        try:
+            with open("settings/settings.json", "w") as save_new:
+                save_new.write(str(json_new).replace("'", '"'))
+
+        except:
+            return json_de_mensaje(500, "ERROR: No se logro guardar el nuevo contenido del archivo settings.json")
+
+        return json_de_mensaje(200, "Datos actualizados. Los cambios se veran reflejados una vez reinicado el servidor.")
+
 class General():
     """
     Esta clase contiene todas las funciones que son de utilidad\n
