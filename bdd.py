@@ -4,7 +4,11 @@ from datetime import datetime
 
 import os
 
-HOST = MongoClient("mongodb://localhost:27017/")
+if "herna" not in os.getcwd():
+    HOST = MongoClient(os.environ.get("HOST"))
+else:
+    HOST = MongoClient("mongodb://localhost:27017/")
+    
 BDD = HOST["colegio"]
 
 ROOT_DIR = os.getcwd() 
