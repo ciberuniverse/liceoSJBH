@@ -1,5 +1,6 @@
 import json
 
+
 """En caso de no leer el archivo correctamente se usara este archivo."""
 PERSONALIZACION_WEB = {
     "nombre_colegio": "Liceo San Juan Bautista De Hualqui",
@@ -14,12 +15,11 @@ PERSONALIZACION_WEB = {
 }
 
 try:
-    with open("settings/settings.json", "r") as settings_info:
+    with open("settings/settings.json", "r", encoding="UTF-8") as settings_info:
         PERSONALIZACION_WEB = json.loads(settings_info.read())
 
 except:
     print("ERROR: No se logro leer el archivo settings.json")
-
 
 MIGRANDO = False
 

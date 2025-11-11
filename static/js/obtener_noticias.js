@@ -32,7 +32,7 @@ async function obtener_noticia() {
               <h2>${json_info.titulo}</h2>
 
               <p>${json_info.descripcion}</p>
-              <a class="btn" href="#noticias">Leer noticia</a>
+              <a class="btn" href="seccion_de_noticias">Leer noticia</a>
             </div>
           </article>
         `
@@ -67,7 +67,7 @@ async function obtener_noticia() {
               <h2>${json_info.titulo}</h2>
 
               <p>${json_info.descripcion}</p>
-              <a class="btn" href="#noticias">Leer noticia</a>
+              <a class="btn" href="seccion_de_noticias">Leer noticia</a>
             </div>
           </article>
     `

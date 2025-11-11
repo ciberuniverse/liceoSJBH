@@ -46,9 +46,9 @@
     <aside>
         <div class="card">
             <h4 style="margin-top:0">Contacto</h4>
-            <p class="meta">O´higgins 635, Hualqui, Chile, 4180000</p>
-            <p class="meta">Teléfono: +56 44 304 9109</p>
-            <p class="meta">Email: secretariaccc@coemco.cl</p>
+            <p class="meta">{{ direccion_colegio }}</p>
+            <p class="meta">Teléfono: {{ telefono_colegio }}</p>
+            <p class="meta">Email: {{ correo_colegio }}</p>
             <a href="contactanos"><button class="btn btn-primary">Contactanos</button></a>
         </div>
 
@@ -70,7 +70,7 @@
     <p class="meta">Consulta los próximos eventos, talleres y actividades destacadas.</p>
     <div style="overflow-x:auto;text-align:center">
       <iframe
-        src="https://calendar.google.com/calendar/embed?height=300&wkst=2&ctz=America%2FSantiago&showPrint=0&showTz=0&src=M2U4MDRiNTZkNGMxNDUwYmFhOTk4MjQ0ZTg0YWMyYWMzNzRmMmJjYjVmYzgxNTUzZDdhOTE5NDMyMjYwZmM3ZUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23f4511e"
+        src="{{ calendario_colegio }}"
         style="border:1px solid #e6edf3;border-radius:8px"
         width="100%" height="400" frameborder="0" scrolling="no">
       </iframe>

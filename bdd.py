@@ -1,8 +1,9 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId # Importar ObjectId
 from datetime import datetime
+from hashlib import blake2b
 
-import os
+import os, json
 
 if "herna" not in os.getcwd():
     HOST = MongoClient(os.environ.get("HOST"))
@@ -21,7 +22,7 @@ contacto = BDD["contacto"]
 cursos = BDD["cursos"]
 notas = BDD["notas"]
 
-NOT_ALLOWED = ";$&|{}[]<>\"'\\`"
+NOT_ALLOWED = r";$&|{}[]<>\"'\\`"
 
 
 ##################### Funciones auxiliares
@@ -93,9 +94,43 @@ def guardar_imagen(seccion: str, name_frontend: str, formulario_file) -> dict:
 
     return json_de_mensaje(200, ruta_de_retorno)
 
-##########################################
+def cifrar_contrasena(str_contrasena: str) -> str:
+    return blake2b(str_contrasena.encode("utf-8")).hexdigest()
 
-class Settings():
+###############################################
+# FUTURA INTEGRACION DE ESTA CLASE DE SEGURIDAD
+class Security:
+
+    alph = "qwertyuiopasdfghjklñzxcvbnm"
+    num = "1234567890"
+    url = ":/?&=%+"
+
+    spc = "@_"
+
+    @staticmethod
+    def re_search(allowed: str, min_len: int, max_len: int, string_: str):
+        """
+        allowed: Parametros permitidos en el campo.\n
+        string _: Campo a analizar.\n
+        min_len: Minima longitud del campo.\n
+        max_len: Maxima longitud del campo.
+        """
+
+        str_len = len(string_)
+        string_ = string_.lower()
+
+        if str_len < min_len:
+            return False
+
+        if str_len > max_len:
+            return False
+
+        if any(x not in allowed for x in string_):
+            return False
+
+        return True
+
+class Settings:
     """
     Esta clase se enfoca en la configuracion del sitio\n
     a diferencia de las demas esta se efectua de manera local\n
@@ -115,22 +150,27 @@ class Settings():
                     {"youtube": formulario["youtube"]},
                     {"twitter": formulario["twitter"]},
                     {"instagram": formulario["instagram"]}
-                ]
+                ],
+
+                "correo_colegio": formulario["correo_colegio"],
+                "direccion_colegio": formulario["direccion_colegio"],
+                "telefono_colegio": formulario["telefono_colegio"],
+                "calendario_colegio": formulario["calendario_colegio"]
             }
         
         except:
             return json_de_mensaje(500, "ERROR: No se logro adaptar la consulta. Faltan parametros.")
 
         try:
-            with open("settings/settings.json", "w") as save_new:
-                save_new.write(str(json_new).replace("'", '"'))
+            with open("settings/settings.json", "w", encoding="UTF-8") as save_new:
+                json.dump(json_new, save_new, ensure_ascii=False, indent=2)
 
         except:
             return json_de_mensaje(500, "ERROR: No se logro guardar el nuevo contenido del archivo settings.json")
 
         return json_de_mensaje(200, "Datos actualizados. Los cambios se veran reflejados una vez reinicado el servidor.")
 
-class General():
+class General:
     """
     Esta clase contiene todas las funciones que son de utilidad\n
     para mas de una clase.
@@ -249,7 +289,7 @@ class General():
         print(resultado[0])
         return json_de_mensaje(200, resultado[0])
 
-class Administrador():
+class Administrador:
     """
     Clase contenedora de todas las funciones activas que\n
     utiliza y accede el Administrador.
@@ -275,6 +315,9 @@ class Administrador():
 
         if no_sql_st["codigo"] != 200:
             return no_sql_st
+
+        if "contrasena" in informacion_json:
+            informacion_json["contrasena"] = cifrar_contrasena(informacion_json["contrasena"])
 
         try:
             resultados = estudiantes.insert_one(informacion_json)
@@ -514,7 +557,7 @@ class Administrador():
         
         return json_de_mensaje(200, resultado)
 
-class Profesor():
+class Profesor:
     """
     Funciones que utiliza el perfil de Profesor y sus dependencias.
     """
@@ -626,7 +669,7 @@ class Profesor():
         
         return json_de_mensaje(200, f"Los {len(alumnos_rut)} estudiantes han quedado presentes en la fecha {fecha_lista}.")
 
-class Noticiero():
+class Noticiero:
     """Funciones que corresponden al uso del Noticiero."""
 
     def listar_alertas() -> dict:
@@ -743,7 +786,7 @@ class Noticiero():
 
         return json_de_mensaje(200, "La noticia se ha modificado correctamente.")
 
-class Estudiante():
+class Estudiante:
     """
     Funciones correspondientes al rol de\n
     Estudiante.
@@ -827,7 +870,7 @@ class Estudiante():
 
         return json_de_mensaje(202, resultado_taller_estudiante[0])
     
-class Public():
+class Public:
     """
     Acciones/funciones que se utilizan de manera publica.
     """
@@ -902,13 +945,33 @@ class Public():
     def iniciar_sesion(usuario, contrasena) -> dict:
         """Se busca una coincidencia entre contraseñas en la base de datos"""
 
+        # Esta linea es unicamente de DEBUG y developer. Una vez en la nuve se debera
+        # crear un usuario administrador el cual tendra un rut asociado.
+        if usuario != "root":
+
+            valid = [
+                Security.re_search(
+                    "1234567890-k",
+                    7, 12,
+                    usuario
+                ),
+                Security.re_search(
+                    Security.alph + Security.num + Security.spc,
+                    4, 20,
+                    contrasena
+                )
+            ]
+
+            if not all(valid):
+                return json_de_mensaje(500, "Estas enviando parametros o logitudes no permitidas.")
+
         no_sql_str = no_sql({"usuario": usuario, "contrasena": contrasena})
 
         if no_sql_str["codigo"] != 200:
             return no_sql_str
 
         try:
-            resultado = list(estudiantes.find({"rut": usuario, "contrasena": contrasena}, {"_id": 0, "contrasena": 0, "cursos_asignados": 0, "taller_asignado": 0, "taller": 0}))
+            resultado = list(estudiantes.find({"rut": usuario, "contrasena": cifrar_contrasena(contrasena)}, {"_id": 0, "contrasena": 0, "cursos_asignados": 0, "taller_asignado": 0, "taller": 0}))
         except:
             return json_de_mensaje(500, "Ocurrio un error al buscar en la base de datos un usuario o contraseña.")
         

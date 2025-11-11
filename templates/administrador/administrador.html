@@ -32,7 +32,7 @@
 
         <div class="mb-3">
           <label for="rut" class="form-label">RUT</label>
-          <input type="text" class="form-control" name="rut" id="rut" maxlength="12" required pattern="^[^;$&|{}
+          <input type="text" class="form-control" name="rut" id="rut" minlength="7" maxlength="12" required pattern="^[^;$&|{}
 
 \[\]
 
@@ -67,5 +67,20 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.getElementById("rut").addEventListener("input", () => {
+    
+    let input_rut = document.getElementById("rut").value.toLowerCase()
+    let allowed = "1234567890k-"
+
+    for (char_ of input_rut) {
+      if (!allowed.includes(char_)) {
+        document.getElementById("rut").value = input_rut.replace(char_, "")
+      }
+    }
+
+  })
+</script>
 
 {% endblock %}
