@@ -1,0 +1,59 @@
+{% extends 'administrador/extras.html' %}
+
+{% block contenido %}
+
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+
+            <form method="POST" class="card shadow-sm p-4" id="form-roles">
+                <h4 class="mb-3 text-center">Configuración de Roles</h4>
+                <input name="routes" id="routes" hidden>
+                <div class="mb-3">
+                    <label for="nombre_rol" class="form-label">Nombre del rol:</label>
+                    <input type="text" id="nombre_rol" name="nombre_rol" 
+                           class="form-control" placeholder="Ej: Administrador" required>
+                </div>
+
+                <div class="mb-3">
+                    <p class="fw-bold">Selecciona las rutas:</p>
+                    <div class="row">
+                        {% for route in routes.mensaje.private %}
+                            <div class="col-12 col-sm-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" 
+                                           onclick="agregar_route('{{ route }}')">
+                                    <label class="form-check-label" >
+                                        {{ route }}
+                                    </label>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Crear</button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    let routes = [];
+
+    function agregar_route(route) {
+        if (routes.includes(route)) {
+            routes.pop(route)
+        } else {
+            routes.push(route); // agrega la ruta
+        }
+        console.log(routes);
+    }
+
+    document.addEventListener("formdata", (e) => {
+        e.formData.set("routes", routes.join(",")) // Se envia como un str separado por comas
+    })
+</script>
+
+{% endblock %}

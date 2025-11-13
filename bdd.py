@@ -99,6 +99,7 @@ def cifrar_contrasena(str_contrasena: str) -> str:
 
 ###############################################
 # FUTURA INTEGRACION DE ESTA CLASE DE SEGURIDAD
+
 class Security:
 
     alph = "qwertyuiopasdfghjklñzxcvbnm"
@@ -129,6 +130,96 @@ class Security:
             return False
 
         return True
+    
+    @staticmethod
+    def leer_copia_seguridad(ruta_archivo: str) -> bytes:
+
+        with open(ruta_archivo, "rb") as respaldo_b:
+            respaldo_ = respaldo_b.read()
+
+        return {"path": ruta_archivo, "bytes": respaldo_}
+    
+    @staticmethod
+    def guardar_copia_seguridad(leer_dict: dict) -> None:
+
+        print(f"COPIA DE SEGURIDAD REALIZADA EXITOSAMENTE DE {leer_dict['path']}")
+        with open(leer_dict["path"], "wb") as respaldo_save:
+            respaldo_save.write(leer_dict["bytes"])
+        
+class Users:
+    """
+    Clase encargada de almacenar las acciones a realizar para designar, leer, y modificar\n
+    roles y rutas accesibles de la pagina web.
+    """
+    @staticmethod
+    def guardar_routes(new_routes_dict) -> dict:
+
+        path_r = "settings/routes.json"
+        emergency = Security.leer_copia_seguridad(path_r)
+
+        try:
+            with open(path_r, "w", encoding="UTF-8") as save_json:
+                json.dump(new_routes_dict, save_json, ensure_ascii=False, indent=2)
+        
+        except:
+            Security.guardar_copia_seguridad(emergency)
+            return json_de_mensaje(500, "ERROR: No se logro guardar la nueva version de roles.")
+        
+        return json_de_mensaje(200, "Ok.")
+
+    @staticmethod
+    def leer_routes(globa_l: bool = False) -> dict:
+        """
+        Funcion encargada de leer las rutas actuales, con los roles asignados.\n
+        globa_l: Es un bool, cuando esta activado, se devuelve el json sin validar.
+        """
+
+        path = "settings/routes.json"
+        
+        if globa_l:
+            with open(path, "r") as read_json:
+                return json.loads(read_json.read())
+
+        try:
+
+            with open(path, "r") as read_json:
+                result_routes = json.loads(read_json.read())
+        
+        except:
+            return json_de_mensaje(500, "ERROR: Formato incompatible del archivo routes.json.")
+        
+        return json_de_mensaje(200, result_routes)
+    
+    @staticmethod
+    def crear_rol(formulario: dict) -> dict:
+
+        # Se verifica que contenga todos los campos del formulario
+        campos_ = ["nombre_rol", "routes"]
+        if any(x not in campos_ for x in formulario):
+            return json_de_mensaje(404, "ERROR: Faltan parametros de consulta en tu consulta.")
+    
+        routes = formulario["routes"].split(",")
+        nombre_rol = formulario["nombre_rol"].lower()
+
+        routes_now = Users.leer_routes()
+
+        if routes_now["codigo"] != 200:
+            return routes_now
+
+        routes_now = routes_now["mensaje"]
+        all_private_routes = routes_now["private"]
+
+        # Se verifica que contenga rutas validas para asociar
+        if any(route not in all_private_routes for route in routes):
+            return json_de_mensaje(500, "Estas inyectando rutas inexistentes.")
+
+        routes_now["rol"].setdefault(nombre_rol, routes)
+        
+        resultado_guardar = Users.guardar_routes(routes_now)
+        if resultado_guardar["codigo"] != 200:
+            return resultado_guardar
+
+        return json_de_mensaje(200, f"Rol {nombre_rol} creado exitosamente.")
 
 class Settings:
     """
@@ -169,6 +260,22 @@ class Settings:
             return json_de_mensaje(500, "ERROR: No se logro guardar el nuevo contenido del archivo settings.json")
 
         return json_de_mensaje(200, "Datos actualizados. Los cambios se veran reflejados una vez reinicado el servidor.")
+
+    @staticmethod
+    def leer_settings(globa_l: bool = False):
+
+        path_sett = "settings/settings.json"
+        if globa_l:
+            with open(path_sett, "r", encoding="UTF-8") as leer_sett:
+                return json.loads(leer_sett.read())
+            
+        try:
+            with open(path_sett, "r", encoding="UTF-8") as leer_sett:
+                resultado_sett = json.loads(leer_sett.read())
+        except:
+            return json_de_mensaje(500, "ERROR: No se logro abrir el archivo settings/settings.json formato incompatible.")
+        
+        return json_de_mensaje(200, resultado_sett)
 
 class General:
     """

@@ -1,0 +1,65 @@
+{
+  "rol": {
+    "estudiante": [
+      "estudiante",
+      "taller_estudiante"
+    ],
+    "administrador": [
+      "administrador",
+      "administrador_mensajes",
+      "administrador_mensajes_vistos",
+      "administrador_crear_taller",
+      "administrar_taller_estudiantes",
+      "administrar_pagina",
+      "crear_roles"
+    ],
+    "noticiero": [
+      "noticiero",
+      "noticias"
+    ],
+    "profesor": [
+      "profesor",
+      "profesor_taller"
+    ],
+    "secretaria": [
+      "administrador_mensajes_vistos",
+      "administrar_taller_estudiantes",
+      "administrador_mensajes",
+      "noticias"
+    ],
+    "encargado_informatica": [
+      "crear_roles"
+    ],
+    "Coordinador": [
+      "administrador_mensajes_vistos",
+      "administrar_taller_estudiantes",
+      "noticiero",
+      "noticias"
+    ]
+  },
+  "public": [
+    "home",
+    "logout",
+    "contactanos",
+    "login",
+    "seccion_de_noticias",
+    "urgente",
+    "profesor_jefe_crear",
+    "talleres"
+  ],
+  "private": [
+    "estudiante",
+    "taller_estudiante",
+    "administrador",
+    "administrador_mensajes",
+    "administrador_mensajes_vistos",
+    "administrador_crear_taller",
+    "administrar_taller_estudiantes",
+    "administrar_pagina",
+    "noticiero",
+    "noticias",
+    "profesor",
+    "profesor_taller",
+    "crear_roles"
+  ]
+}

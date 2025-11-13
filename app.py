@@ -1,9 +1,11 @@
 import bdd
-from settings import * # Se importan los ajustes
 from flask import Flask, render_template, session, request, redirect, url_for
 
 app = Flask(__name__)
 app.secret_key = "xd"
+
+RUTAS = bdd.Users.leer_routes(True)
+PERSONALIZACION_WEB = bdd.Settings.leer_settings(True)
 
 @app.context_processor
 def context():
@@ -22,12 +24,12 @@ def limitar_acceso():
     # Creamos la URL para validar si tiene permisos para entrar en la seccion
     URL = request.endpoint
 
-    if all(ruta != URL for ruta in RUTAS_PUBLICAS):
+    if all(ruta != URL for ruta in RUTAS["public"]):
 
         if not session:
             return redirect(url_for("login"))
         
-        if all(ruta_permitida != URL for ruta_permitida in RUTAS_DE_USUARIOS[session["informacion"]["cargo"]]):
+        if all(ruta_permitida != URL for ruta_permitida in RUTAS["rol"][session["informacion"]["cargo"]]):
             return redirect(url_for("login"))
 
         print("TODO BIEN")
@@ -163,8 +165,10 @@ def administrador():
 
     ################# Seccion de metodo GET
 
+    roles = RUTAS["rol"].keys()
+
     # Usar el url para cambiar de acciones a utlizar pero no cambiar de direccion. es decir cambiar solo la plantilla
-    return render_template("administrador/administrador.html")
+    return render_template("administrador/administrador.html", roles = roles)
 
 @app.route("/administrador_mensajes", methods = ["POST", "GET"])
 def administrador_mensajes():
@@ -291,19 +295,47 @@ def administrar_taller_estudiantes():
 
     return render_template("administrador/aceptar_usuarios_taller.html", get = True, talleres = talleres_resultado["mensaje"])
 
-@app.route("/administrar_pagina", methods = ["POST", "GET"])
+@app.route("/administrar_pagina", methods = ["POST", "GET"]) ######### USA PERSONALIZACION_WEB EN GLOBAL
 def administrar_pagina():
-
+    global PERSONALIZACION_WEB
+    
     if request.method == "POST":
 
         formulario = request.form.to_dict()
         respuesta_modificar = bdd.Settings.modificar_template_base(formulario)
+
+        if respuesta_modificar["codigo"] == 200:
+            PERSONALIZACION_WEB = bdd.Settings.leer_settings(True) 
 
         return redirect(url_for("administrar_pagina", codigo = respuesta_modificar["codigo"], mensaje = respuesta_modificar["mensaje"]))
 
     ################ ZONA GET
     
     return render_template("administrador/administrar_pagina.html")
+
+@app.route("/crear_roles", methods = ["GET", "POST"]) ######### USA RUTAS EN GLOBAL
+def crear_roles():
+    global RUTAS
+
+    if request.method == "POST":
+        
+        formulario = request.form.to_dict()
+
+        resultado_crear_roles = bdd.Users.crear_rol(formulario)
+
+        if resultado_crear_roles["codigo"] == 200:
+            RUTAS = bdd.Users.leer_routes(True)
+
+        return redirect(url_for("crear_roles", codigo = resultado_crear_roles["codigo"], mensaje = resultado_crear_roles["mensaje"]))
+
+    ###################### ZONA GET
+
+    routes_get = bdd.Users.leer_routes()
+
+    if routes_get["codigo"] != 200:
+        return render_template("administrador/crear_roles", error = routes_get)
+
+    return render_template("administrador/crear_roles.html", routes = routes_get)
 
 ############################### Rutas de panel del noticiero
 
