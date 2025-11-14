@@ -107,9 +107,9 @@ class Security:
     url = ":/?&=%+"
 
     spc = "@_"
-
+    # EL RETORNO ''''''''''''FALSE SIEMPRE ES NEGATIVO ES DECIR SIEMPRE HAY ALGO MAL
     @staticmethod
-    def re_search(allowed: str, min_len: int, max_len: int, string_: str):
+    def re_search(allowed: str, min_len: int, max_len: int, string_: str) -> bool:
         """
         allowed: Parametros permitidos en el campo.\n
         string _: Campo a analizar.\n
@@ -131,6 +131,14 @@ class Security:
 
         return True
     
+    @staticmethod
+    def claves_existentes(claves: list, formulario: dict) -> bool:
+
+        if any(key not in formulario for key in claves):
+            return False
+        
+        return True
+
     @staticmethod
     def leer_copia_seguridad(ruta_archivo: str) -> bytes:
 
@@ -220,6 +228,62 @@ class Users:
             return resultado_guardar
 
         return json_de_mensaje(200, f"Rol {nombre_rol} creado exitosamente.")
+
+    @staticmethod
+    def buscar_usuarios(filtro_valor: str, filtro: str):
+
+        try:
+            filtro_resultado = list(estudiantes.find(
+                {
+                    filtro: filtro_valor
+                },
+
+                {
+                    "_id": 0, "cursos_asignados": 0, "taller_asignado": 0, "taller": 0, "curso_actual": 0, "lista_taller": 0
+                }
+
+            ))
+
+        except:
+            return json_de_mensaje(500, "ERROR: La base de datos no esta respondiendo como deberia a tu peticion.")
+        
+        if not filtro_resultado:
+            return json_de_mensaje(404, "No se logro encontrar referencia alguna al usuario buscado.")
+        
+        return json_de_mensaje(200, filtro_resultado)
+
+    @staticmethod
+    def reestablecer_contrasena(rut: str, contrasena_nueva: str) -> dict:
+
+        try:
+            resultado = estudiantes.update_one({"rut": rut}, {"$set": {"contrasena": cifrar_contrasena(contrasena_nueva)}})
+        
+        except:
+            return json_de_mensaje(500, "ERROR: Ocurrio un error inesperado al intentar modificar la contraseña del usuario.")
+        
+        if not resultado.acknowledged:
+            return json_de_mensaje(404, "No se logro modificar la contraseña del usuario.")
+        
+        return json_de_mensaje(200, "Contraseña del usuario modificada correctamente.")
+
+    @staticmethod
+    def usuario_habilitado(rut: str, habilitado: bool):
+
+        accion = "$unset" if habilitado else "$set"
+
+        try:
+
+            resultado = estudiantes.update_one({"rut": rut}, {accion: {
+                "deshabilitado": True
+            }})
+
+        except:
+            return json_de_mensaje(500, "ERROR: Ocurrio un error interno que no se logro modificar el estado del usuario.")
+        
+        if not resultado.acknowledged:
+            return json_de_mensaje(404, "No se logro modificar el estado del usuario.")
+        
+        return json_de_mensaje(200, "Estado del usuario modificado exitosamente.")
 
 class Settings:
     """

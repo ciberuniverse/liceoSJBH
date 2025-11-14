@@ -89,6 +89,11 @@ def login():
         if cookies["codigo"] != 200:
             return redirect(url_for("login", codigo = cookies["codigo"], mensaje = cookies["mensaje"]))
 
+        ######## Si el usuario esta deshabilitado por alguna razon se redirige al error
+        if "deshabilitado" in cookies["mensaje"]:
+            return render_template("error.html")
+
+
         session["informacion"] = cookies["mensaje"]
         cargo = session["informacion"]["cargo"]
 
@@ -336,6 +341,58 @@ def crear_roles():
         return render_template("administrador/crear_roles", error = routes_get)
 
     return render_template("administrador/crear_roles.html", routes = routes_get)
+
+
+@app.route("/administrar_usuarios", methods = ["POST", "GET"])
+def administrar_usuarios():
+
+    if request.method == "POST":
+
+        formulario = request.form.to_dict()
+        
+        if "accion" not in formulario:
+            return redirect(url_for("administrar_usuarios", codigo = 500, mensaje = "ERROR: Formulario incompleto o corrupto."))
+
+        if formulario["accion"] == "buscar":
+
+            if not bdd.Security.claves_existentes(["filtro_valor", "filtro"], formulario):
+                return redirect(url_for("administrar_usuarios", codigo = 500, mensaje = "ERROR: Formulario incompleto o corrupto."))
+
+            resultado = bdd.Users.buscar_usuarios(formulario["filtro_valor"], formulario["filtro"])
+
+            if resultado["codigo"] == 200:
+                return render_template("administrador/administrar_usuarios.html",
+                    usuarios = resultado["mensaje"],
+                    plantilla = "resultado_buscar"
+                )
+
+        if formulario["accion"] == "reestablecer_contrasena":
+
+            if "rut" not in formulario:
+                return redirect(url_for("administrar_usuarios", codigo = 500, mensaje = "ERROR: Formulario incompleto o corrupto."))
+            
+            resultado = bdd.Users.reestablecer_contrasena(formulario["rut"], "liceohualqui2025")
+
+        if formulario["accion"] == "habilitar_usuario":
+            
+            if "rut" not in formulario:
+                return redirect(url_for("administrar_usuarios", codigo = 500, mensaje = "ERROR: Formulario incompleto o corrupto."))
+            
+            resultado = bdd.Users.usuario_habilitado(formulario["rut"], True)
+
+        if formulario["accion"] == "deshabilitar_usuario":
+            
+            if "rut" not in formulario:
+                return redirect(url_for("administrar_usuarios", codigo = 500, mensaje = "ERROR: Formulario incompleto o corrupto."))
+            
+            resultado = bdd.Users.usuario_habilitado(formulario["rut"], False)
+
+        return redirect(url_for("administrar_usuarios", codigo = resultado["codigo"], mensaje = resultado["mensaje"]))
+
+
+    ################# Zona GET
+
+    return render_template("administrador/administrar_usuarios.html", get = True, cargos = RUTAS["rol"])
 
 ############################### Rutas de panel del noticiero
 

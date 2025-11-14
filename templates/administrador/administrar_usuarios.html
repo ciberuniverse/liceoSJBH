@@ -1,0 +1,125 @@
+{% extends 'administrador/extras.html' %}
+
+{% block contenido %}
+{% if get %}
+<div class="container mt-4">
+    <form method="POST" class="row g-3 p-4 border rounded bg-light shadow-sm">
+        <div class="col-md-6">
+            <label for="filtro_valor" class="form-label">Valor a buscar</label>
+            <!-- Contenedor dinámico -->
+            <div id="dinamico">
+                <input type="text" name="filtro_valor" id="filtro_valor" class="form-control"
+                    placeholder="Ingresa el RUT">
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <label for="filtro" class="form-label">Filtro</label>
+            <select name="filtro" id="filtro" class="form-select">
+                <option value="rut">RUT</option>
+                <option value="nombre">Nombre</option>
+                <option value="cargo">Cargo</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 d-grid align-items-end">
+            <button type="submit" name="accion" value="buscar" class="btn btn-primary">
+                Buscar
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const filtroSelect = document.getElementById("filtro");
+    const dinamico = document.getElementById("dinamico");
+
+    filtroSelect.addEventListener("change", () => {
+        let filtro = filtroSelect.value;
+
+        if (filtro === "cargo") {
+            dinamico.innerHTML = `
+                <select name="filtro_valor" id="filtro_valor" class="form-select">
+                    {% for cargo in cargos %}
+                        <option value="{{ cargo }}">{{ cargo | capitalize }}</option>
+                    {% endfor %}
+                </select>
+            `;
+        } else {
+            dinamico.innerHTML = `
+                <input type="text" name="filtro_valor" id="filtro_valor" 
+                       class="form-control" placeholder="Ingresa el valor">
+            `;
+            let filtro_valor = document.getElementById("filtro_valor");
+
+            if (filtro === "nombre") {
+                filtro_valor.setAttribute("placeholder", "Ingrese el nombre");
+            }
+            if (filtro === "rut") {
+                filtro_valor.setAttribute("placeholder", "Ingrese el RUT");
+            }
+        }
+    });
+</script>
+
+{% endif %}
+
+{% if plantilla == "resultado_buscar" %}
+<div class="container mt-5">
+    <h3 class="mb-4 text-center text-primary fw-bold">Resultados de la búsqueda</h3>
+    <div class="row gy-4">
+        {% for usuario in usuarios %}
+        <div class="col-sm-12 col-md-6 col-lg-4">
+            <form method="POST">
+                <div class="card h-100 shadow-lg border-0 rounded-3">
+                    <!-- Encabezado con color primary -->
+                    <div class="card-header bg-primary text-white fw-semibold">
+                        {{ usuario.get('nombre', 'Usuario') | capitalize }}
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            {% for key, value in usuario.items() %}
+                            {% if key == "rut" %}
+                            <li class="list-group-item">
+                                <strong>{{ key | capitalize }}:</strong> {{ value }}
+                            </li>
+                            <input type="hidden" name="rut" value="{{ value }}">
+                            {% elif key == "contrasena" %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <strong>Contraseña:</strong> Restablecer a
+                                    <span class="badge bg-secondary">liceohualqui2025</span>
+                                </span>
+                                <button type="submit" name="accion" value="reestablecer_contrasena"
+                                    class="btn btn-sm btn-warning">
+                                    Restablecer
+                                </button>
+                            </li>
+                            {% else %}
+                            <li class="list-group-item">
+                                <strong>{{ key | capitalize }}:</strong> {{ value }}
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="card-footer text-end bg-light">
+                        <button type="submit" name="accion" value="deshabilitar_usuario"
+                            class="btn btn-outline-danger btn-sm">
+                            Deshabilitar
+                        </button>
+                        <button type="submit" name="accion" value="habilitar_usuario"
+                            class="btn btn-outline-success btn-sm">
+                            Habilitar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+{% endif %}
+{% endblock %}
