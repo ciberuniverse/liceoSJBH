@@ -6,6 +6,7 @@ app.secret_key = "xd"
 
 RUTAS = bdd.Users.leer_routes(True)
 PERSONALIZACION_WEB = bdd.Settings.leer_settings(True)
+PERSONALIZACION_WEB.setdefault("routes", RUTAS)
 
 @app.context_processor
 def context():
@@ -34,7 +35,7 @@ def limitar_acceso():
 
         print("TODO BIEN")
 
-#########################
+########################################### SECCION PUBLICA
 
 @app.route("/home", methods = ["GET"])
 def home():
@@ -93,23 +94,11 @@ def login():
         if "deshabilitado" in cookies["mensaje"]:
             return render_template("error.html")
 
-
         session["informacion"] = cookies["mensaje"]
         cargo = session["informacion"]["cargo"]
 
-        if "estudiante" == cargo:
-            return redirect(url_for("estudiante"))
-
-        if "profesor" == cargo:
-            return redirect(url_for("profesor"))
-        
-        if "noticiero" == cargo:
-            return redirect(url_for("noticiero"))
-        
-        if "administrador" == cargo:
-            return redirect(url_for("administrador"))
-        
-        return "error no logro obtener ninguna respuesta para este caso"
+        ##### Se obtienen las rutas del cargo asignado en routes.json y se redirige a la primera.
+        return redirect(url_for(RUTAS["rol"][cargo][0]))
 
     ################# Seccion de metodo GET
 
@@ -121,21 +110,8 @@ def login():
 
     cargo = session["informacion"]["cargo"]
 
-    if "estudiante" == cargo:
-        return redirect(url_for("estudiante"))
+    return redirect(url_for(RUTAS["rol"][cargo][0]))
 
-    if "profesor" == cargo:
-        return redirect(url_for("profesor"))
-    
-    if "noticiero" == cargo:
-        return redirect(url_for("noticiero"))
-    
-    if "administrador" == cargo:
-        return redirect(url_for("administrador"))
-
-    return "error no logro obtener ninguna respuesta para este caso"
-
-############################### Seccion de noticias
 @app.route("/seccion_de_noticias", methods = ["GET"])
 def seccion_de_noticias():
 
@@ -146,7 +122,6 @@ def seccion_de_noticias():
 
     return render_template("secciones/seccion_de_noticias.html", noticias = resultados["mensaje"])
     
-############################### Taller seccion estatica publica
 @app.route("/talleres", methods = ["GET"])
 def talleres():
 
@@ -173,7 +148,7 @@ def administrador():
     roles = RUTAS["rol"].keys()
 
     # Usar el url para cambiar de acciones a utlizar pero no cambiar de direccion. es decir cambiar solo la plantilla
-    return render_template("administrador/administrador.html", roles = roles)
+    return render_template("administrador/administrador.html", roles = roles, cargo = session["informacion"]["cargo"])
 
 @app.route("/administrador_mensajes", methods = ["POST", "GET"])
 def administrador_mensajes():
@@ -181,7 +156,7 @@ def administrador_mensajes():
     resultado = bdd.Administrador.listar_mensajes(0)
 
     if resultado["codigo"] != 200:
-        return render_template("administrador/contacto.html", error=resultado)
+        return render_template("administrador/contacto.html", error=resultado, cargo = session["informacion"]["cargo"])
 
     # POST: marcar mensaje como visto
     if request.method == "POST":
@@ -190,12 +165,12 @@ def administrador_mensajes():
             respuesta = bdd.Administrador.marcar_mensaje_como_visto(id_contacto)
 
             if respuesta["codigo"] != 200:
-                return render_template("administrador/contacto.html", contactos=resultado["mensaje"], error=respuesta)
+                return render_template("administrador/contacto.html", contactos=resultado["mensaje"], error=respuesta, cargo = session["informacion"]["cargo"])
 
-            return render_template("administrador/contacto.html", contactos=resultado["mensaje"], exito=respuesta)
+            return render_template("administrador/contacto.html", contactos=resultado["mensaje"], exito=respuesta, cargo = session["informacion"]["cargo"])
 
     # GET: mostrar listado de mensajes
-    return render_template("administrador/contacto.html", contactos=resultado["mensaje"])
+    return render_template("administrador/contacto.html", contactos=resultado["mensaje"], cargo = session["informacion"]["cargo"])
 
 @app.route("/administrador_mensajes_vistos", methods = ["POST", "GET"])
 def administrador_mensajes_vistos():
@@ -210,12 +185,25 @@ def administrador_mensajes_vistos():
             respuesta_eliminacion = bdd.Administrador.eliminar_mensaje(request.form["id_de_contacto"])
 
         if respuesta_eliminacion["codigo"] != 200:
-            return render_template("administrador/contacto.html", error = respuesta_eliminacion)
+            
+            return render_template("administrador/contacto.html",
+                error = respuesta_eliminacion,
+                cargo = session["informacion"]["cargo"]
+            )
         
         if resultado_lista_mensajes["codigo"] != 200:
-            return render_template("administrador/contacto.html", error = resultado_lista_mensajes, exito = respuesta_eliminacion)
+
+            return render_template("administrador/contacto.html",
+                error = resultado_lista_mensajes,
+                exito = respuesta_eliminacion,
+                cargo = session["informacion"]["cargo"]
+            )
         
-        return render_template("administrador/contacto.html", contactos_vistos = resultado_lista_mensajes["mensaje"], exito = respuesta_eliminacion)
+        return render_template("administrador/contacto.html",
+            contactos_vistos = resultado_lista_mensajes["mensaje"],
+            exito = respuesta_eliminacion,
+            cargo = session["informacion"]["cargo"]
+        )
 
     ################################### Seccion GET
 
@@ -240,9 +228,15 @@ def administrador_crear_taller():
     resultado_profesores = bdd.Administrador.listar_profesores_talleristas()
 
     if resultado_profesores["codigo"] != 200:
-        return redirect(url_for("administrador_crear_taller", codigo = resultado["codigo"], mensaje = resultado["mensaje"]))
+        return redirect(url_for("administrador_crear_taller",
+            codigo = resultado["codigo"],
+            mensaje = resultado["mensaje"])
+        )
 
-    return render_template("administrador/crear_taller.html", profesores = resultado_profesores["mensaje"])
+    return render_template("administrador/crear_taller.html",
+        profesores = resultado_profesores["mensaje"],
+        cargo = session["informacion"]["cargo"]
+    )
 
 @app.route("/administrar_taller_estudiantes", methods = ["POST", "GET"])
 def administrar_taller_estudiantes():
@@ -258,7 +252,11 @@ def administrar_taller_estudiantes():
 
             resultado_taller = bdd.General.obtener_informacion_taller(request.form["taller"])
 
-            return render_template("administrador/aceptar_usuarios_taller.html", buscar_taller = True, taller = resultado_taller["mensaje"])
+            return render_template("administrador/aceptar_usuarios_taller.html",
+                buscar_taller = True,
+                taller = resultado_taller["mensaje"],
+                cargo = session["informacion"]["cargo"]
+            )
         
         if accion == "inscribir_alumnos":
 
@@ -267,7 +265,10 @@ def administrar_taller_estudiantes():
 
             resultado_asignacion = bdd.Administrador.aceptar_alumnos(data_alumnos)
             
-            return redirect(url_for("administrar_taller_estudiantes", codigo = resultado_asignacion["codigo"], mensaje = resultado_asignacion["mensaje"]))
+            return redirect(url_for("administrar_taller_estudiantes",
+                codigo = resultado_asignacion["codigo"],
+                mensaje = resultado_asignacion["mensaje"])
+            )
 
 
         if accion == "quitar_del_taller":
@@ -296,9 +297,9 @@ def administrar_taller_estudiantes():
     talleres_resultado = bdd.General.todos_los_talleres()
 
     if talleres_resultado["codigo"] != 200:
-        return render_template("administrador/aceptar_usuarios_taller.html", error = talleres_resultado)
+        return render_template("administrador/aceptar_usuarios_taller.html", error = talleres_resultado, cargo = session["informacion"]["cargo"])
 
-    return render_template("administrador/aceptar_usuarios_taller.html", get = True, talleres = talleres_resultado["mensaje"])
+    return render_template("administrador/aceptar_usuarios_taller.html", get = True, talleres = talleres_resultado["mensaje"], cargo = session["informacion"]["cargo"])
 
 @app.route("/administrar_pagina", methods = ["POST", "GET"]) ######### USA PERSONALIZACION_WEB EN GLOBAL
 def administrar_pagina():
@@ -310,13 +311,13 @@ def administrar_pagina():
         respuesta_modificar = bdd.Settings.modificar_template_base(formulario)
 
         if respuesta_modificar["codigo"] == 200:
-            PERSONALIZACION_WEB = bdd.Settings.leer_settings(True) 
+            PERSONALIZACION_WEB = bdd.Settings.leer_settings(True)
 
         return redirect(url_for("administrar_pagina", codigo = respuesta_modificar["codigo"], mensaje = respuesta_modificar["mensaje"]))
 
     ################ ZONA GET
     
-    return render_template("administrador/administrar_pagina.html")
+    return render_template("administrador/administrar_pagina.html", cargo = session["informacion"]["cargo"])
 
 @app.route("/crear_roles", methods = ["GET", "POST"]) ######### USA RUTAS EN GLOBAL
 def crear_roles():
@@ -338,10 +339,9 @@ def crear_roles():
     routes_get = bdd.Users.leer_routes()
 
     if routes_get["codigo"] != 200:
-        return render_template("administrador/crear_roles", error = routes_get)
+        return render_template("administrador/crear_roles", error = routes_get, cargo = session["informacion"]["cargo"])
 
-    return render_template("administrador/crear_roles.html", routes = routes_get)
-
+    return render_template("administrador/crear_roles.html", routes = routes_get, cargo = session["informacion"]["cargo"])
 
 @app.route("/administrar_usuarios", methods = ["POST", "GET"])
 def administrar_usuarios():
@@ -392,7 +392,7 @@ def administrar_usuarios():
 
     ################# Zona GET
 
-    return render_template("administrador/administrar_usuarios.html", get = True, cargos = RUTAS["rol"])
+    return render_template("administrador/administrar_usuarios.html", get = True, cargos = RUTAS["rol"], cargo = session["informacion"]["cargo"])
 
 ############################### Rutas de panel del noticiero
 
@@ -415,13 +415,13 @@ def noticiero():
             resultado = bdd.Noticiero.listar_alertas()
 
             if resultado["codigo"] == 200:
-                return render_template("noticiero/noticias.html", resultados = resultado["mensaje"])
+                return render_template("noticiero/noticias.html", resultados = resultado["mensaje"], cargo = session["informacion"]["cargo"])
 
         if request.form["accion"] == "listar_noticias":
             resultado = bdd.Noticiero.listar_noticias()
 
             if resultado["codigo"] == 200:            
-                return render_template("noticiero/noticias.html", resultados = resultado["mensaje"])
+                return render_template("noticiero/noticias.html", resultados = resultado["mensaje"], cargo = session["informacion"]["cargo"])
 
         if request.form["accion"] == "eliminar_noti":
             resultado = bdd.Noticiero.eliminar_noticia(request.form["id_noticia"])
@@ -434,7 +434,7 @@ def noticiero():
         # Esto redirige a la pagina principal de noticiero con el codigo de error
         return redirect(url_for("noticiero", codigo = resultado["codigo"], mensaje = resultado["mensaje"]))
 
-    return render_template("noticiero/noticiero.html")
+    return render_template("noticiero/noticiero.html", cargo = session["informacion"]["cargo"])
 
 ################### API NOTICIAS OBTENER LA ULTIMA NOTICIA URGENTE
 @app.route("/urgente")
@@ -461,7 +461,7 @@ def profesor():
     if lista_cursos["codigo"] != 200:
         return redirect(url_for("administrar_taller_estudiantes", codigo = lista_cursos["codigo"], mensaje = lista_cursos["mensaje"]))
 
-    return render_template("profesor/profesor.html", cursos = lista_cursos["mensaje"])
+    return render_template("profesor/profesor.html", cursos = lista_cursos["mensaje"], cargo = session["informacion"]["cargo"])
 
 @app.route("/profesor_taller", methods = ["POST", "GET"])
 def profesor_taller():
@@ -470,7 +470,7 @@ def profesor_taller():
 
     # Si hubo un error al obtener el taller, se muestra la plantilla con el mensaje de error
     if profesor_taller["codigo"] != 200:
-        return render_template("profesor/profesor_taller.html", error=profesor_taller)
+        return render_template("profesor/profesor_taller.html", error = profesor_taller, cargo = session["informacion"]["cargo"])
 
     # Si el método es POST, se procesan acciones enviadas desde el formulario
     if request.method == "POST":
@@ -488,10 +488,10 @@ def profesor_taller():
             resultado = bdd.Profesor.asignar_nota_taller(formulario_web)
 
         # Luego de ejecutar la acción, se redirige a la misma vista con el resultado como parámetros GET
-        return redirect(url_for("profesor_taller", codigo=resultado["codigo"], mensaje=resultado["mensaje"]))
+        return redirect(url_for("profesor_taller", codigo = resultado["codigo"], mensaje = resultado["mensaje"]))
 
     # Si el método es GET, se muestra la plantilla con los datos del taller
-    return render_template("profesor/profesor_taller.html", taller=profesor_taller["mensaje"])
+    return render_template("profesor/profesor_taller.html", taller = profesor_taller["mensaje"], cargo = session["informacion"]["cargo"])
 
 @app.route("/profesor_jefe_crear", methods = ["POST", "GET"])
 def profesor_jefe_crear():
@@ -517,16 +517,16 @@ def profesor_jefe_crear():
     resultado_profesores = bdd.General.listar_profesores()
 
     if resultado_profesores["codigo"] != 200:
-        return render_template("profesor/jefe/crear.html", error = resultado_profesores)
+        return render_template("profesor/jefe/crear.html", error = resultado_profesores, cargo = session["informacion"]["cargo"])
 
-    return render_template("profesor/jefe/crear.html", profesores = resultado_profesores["mensaje"])
+    return render_template("profesor/jefe/crear.html", profesores = resultado_profesores["mensaje"], cargo = session["informacion"]["cargo"])
 
 
 ############################### Rutas de panel del estudiante
 
 @app.route("/estudiante", methods = ["POST", "GET"])
 def estudiante():
-    return render_template("estudiante/estudiante.html")
+    return render_template("estudiante/estudiante.html", cargo = session["informacion"]["cargo"])
 
 @app.route("/taller_estudiante", methods = ["POST", "GET"])
 def taller_estudiante():
@@ -548,11 +548,11 @@ def taller_estudiante():
 
     # Si es que el estudiante ya tiene o esta en un taller
     if verificacion_taller["codigo"] == 202:
-        return render_template("estudiante/talleres.html", in_taller = True, informacion_rut = verificacion_taller["mensaje"])
+        return render_template("estudiante/talleres.html", in_taller = True, informacion_rut = verificacion_taller["mensaje"], cargo = session["informacion"]["cargo"])
 
     # Si el usuario esta esta en un taller o da error
     if verificacion_taller["codigo"] != 200:
-        return render_template("estudiante/talleres.html", error = verificacion_taller)
+        return render_template("estudiante/talleres.html", error = verificacion_taller, cargo = session["informacion"]["cargo"])
     
     #######################################
 
@@ -561,7 +561,7 @@ def taller_estudiante():
     if resultado["codigo"] != 200:
         return render_template("estudiante/talleres.html", error = resultado) # Esto redirige a una pagina de error
 
-    return render_template("estudiante/talleres.html", not_in_taller = True, talleres = resultado["mensaje"])
+    return render_template("estudiante/talleres.html", not_in_taller = True, talleres = resultado["mensaje"], cargo = session["informacion"]["cargo"])
 
 if __name__ == '__main__':
     app.run(debug=True)

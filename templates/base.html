@@ -52,7 +52,19 @@
             style="position:absolute;right:0;top:42px;min-width:220px;background:var(--card);box-shadow:0 6px 20px rgba(12,16,43,0.06);border-radius:8px;padding:12px;display:none;z-index:60">
             <!-- Bloque de menu desplegable para usuarios -->
             {% block izquierda %}
+
+            {% if cargo %}
+
+            {% for route in routes["rol"][cargo] %}
+            <li><a class="nav-link color" href="{{ route }}">{{ route | capitalize | replace("_", " ") }}</a></li>
+            {% endfor %}
+            <li><a class="nav-link" href="logout">Cerrar Sesion</a></li>
+
+            {% else %}
             <li><a class="nav-link color" href="login">Inicia Sesion</a></li>
+
+            {% endif %}
+
             {% endblock %}
 
           </div>
