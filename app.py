@@ -2,7 +2,7 @@ import bdd
 from flask import Flask, render_template, session, request, redirect, url_for
 
 app = Flask(__name__)
-app.secret_key = "xd"
+app.secret_key = bdd.SECRET_KEY
 
 RUTAS = bdd.Users.leer_routes(True)
 PERSONALIZACION_WEB = bdd.Settings.leer_settings(True)

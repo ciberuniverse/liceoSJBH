@@ -7,8 +7,12 @@ import os, json
 
 if "herna" not in os.getcwd():
     HOST = MongoClient(os.environ.get("HOST"))
+    #SECRET_KEY = os.environ.get("SECRET_KEY")
 else:
     HOST = MongoClient("mongodb://localhost:27017/")
+
+SECRET_KEY = "324535542d953171e82ff39f647e41baeb53ce0b11f127a8da2fce199f5fd8955c368f1db7c7b1cb32abc6e236bb96d5cd85d65812a7506036fb362c47344ddf"
+    
     
 BDD = HOST["colegio"]
 
@@ -548,6 +552,24 @@ class Administrador:
 
         if "contrasena" in informacion_json:
             informacion_json["contrasena"] = cifrar_contrasena(informacion_json["contrasena"])
+
+        #### Si es que tiene alguna carga se le agregara
+        if "carga_apoderado" in informacion_json and informacion_json["carga_apoderado"]:
+
+            informacion_json["carga_apoderado"] = informacion_json["carga_apoderado"].split(",")
+
+            ############## verificacion de existencia de usuarios
+            try:
+                coincidencia_ruts = list(estudiantes.find({"rut": {"$in": informacion_json["carga_apoderado"]}, "cargo": "estudiante"}))
+
+            except:
+                return json_de_mensaje(500, "ERROR: Fallo al intentar buscar coincidencias en el rut de cargas.")
+            
+            if not coincidencia_ruts:
+                return json_de_mensaje(404, "No se logro encontrar ningun rut REAL para asociar a este apoderado.")
+                
+
+        #################
 
         try:
             resultados = estudiantes.insert_one(informacion_json)

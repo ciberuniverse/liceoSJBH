@@ -22,27 +22,20 @@
       "profesor",
       "profesor_taller"
     ],
-    "secretaria": [
-      "administrador_mensajes_vistos",
-      "administrar_taller_estudiantes",
-      "administrador_mensajes",
-      "noticias"
-    ],
-    "encargado_informatica": [
-      "crear_roles"
-    ],
-    "Coordinador": [
-      "administrador_mensajes_vistos",
-      "administrar_taller_estudiantes",
-      "noticiero",
-      "noticias"
-    ],
-    "prueba": [
-      "crear_roles",
-      "administrar_usuarios"
-    ],
     "apoderado": [
       "apoderado"
+    ],
+    "staff": [
+      "noticiero",
+      "administrar_taller_estudiantes",
+      "administrador_mensajes_vistos",
+      "administrador",
+      "taller_estudiante",
+      "administrador_mensajes",
+      "administrador_crear_taller",
+      "administrar_pagina",
+      "noticias",
+      "crear_roles"
     ]
   },
   "public": [

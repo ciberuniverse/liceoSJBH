@@ -60,6 +60,9 @@
           </select>
         </div>
 
+        <div id="apoderado_sec">
+        </div>
+
         <button type="submit" name="accion" id="accion" value="crear" class="btn btn-success">Crear</button>
       </form>
 
@@ -68,6 +71,70 @@
 </div>
 
 <script>
+
+let CARGAS = [];
+
+  function agregar_cargas() {
+    const input = document.getElementById("rut_carga");
+    const valor = input.value.trim();
+
+    if (valor) {
+      const lista = document.getElementById("mostrar_rut");
+
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+
+      // botón de quitar que también actualiza el array
+      const btnQuitar = document.createElement("button");
+      btnQuitar.type = "button";
+      btnQuitar.className = "btn btn-sm btn-outline-danger";
+      btnQuitar.textContent = "Quitar";
+      btnQuitar.onclick = () => {
+        const index = CARGAS.indexOf(valor);
+        if (index > -1) {
+          CARGAS.splice(index, 1);
+        }
+        li.remove();
+        document.getElementById("carga_apoderado").setAttribute("value", CARGAS.join(","));
+      };
+
+      li.innerHTML = `<span>${valor}</span>`;
+      li.appendChild(btnQuitar);
+
+      lista.appendChild(li);
+
+      // actualizar array y campo oculto
+      CARGAS.push(valor);
+      document.getElementById("carga_apoderado").setAttribute("value", CARGAS.join(","));
+
+      input.value = "";
+    }
+  }
+
+  document.getElementById("cargo").addEventListener("change", (e) => {
+    const seleccion = e.target.value;
+
+    if (seleccion === "apoderado") {
+      document.getElementById("apoderado_sec").innerHTML = `
+        <div class="mb-3">
+          <label for="rut_carga" class="form-label">RUT del Estudiante</label>
+          <div class="input-group">
+            <input id="rut_carga" type="text" class="form-control" placeholder="Ingrese RUT">
+            <button class="btn btn-outline-primary" type="button" onclick="agregar_cargas()">Agregar</button>
+          </div>
+        </div>
+        <input name="carga_apoderado" id="carga_apoderado" value="" hidden>
+        <ul id="mostrar_rut" class="list-group list-group-flush"></ul>
+      `;
+      // reiniciar array al cambiar cargo
+      CARGAS = [];
+      document.getElementById("carga_apoderado").setAttribute("value", CARGAS.join(","));
+
+    } else {
+      document.getElementById("apoderado_sec").innerHTML = "";
+      CARGAS = [];
+    }
+  });
   document.getElementById("rut").addEventListener("input", () => {
     
     let input_rut = document.getElementById("rut").value.toLowerCase()
