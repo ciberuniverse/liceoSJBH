@@ -40,6 +40,9 @@
     "prueba": [
       "crear_roles",
       "administrar_usuarios"
+    ],
+    "apoderado": [
+      "apoderado"
     ]
   },
   "public": [
@@ -50,8 +53,8 @@
     "seccion_de_noticias",
     "urgente",
     "profesor_jefe_crear",
-    "talleres",
-    "micuenta"
+    "micuenta",
+    "talleres"
   ],
   "private": [
     "estudiante",
@@ -67,6 +70,7 @@
     "profesor",
     "profesor_taller",
     "crear_roles",
-    "administrar_usuarios"
+    "administrar_usuarios",
+    "apoderado"
   ]
 }

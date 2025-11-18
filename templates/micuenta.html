@@ -3,43 +3,42 @@
 {% block contenido %}
 {% set usuario = informacion["mensaje"] %}
 
-<div class="container my-4">
+<div class="container py-4">
   <div class="row justify-content-center">
     <div class="col-12 col-sm-10 col-md-8 col-lg-6">
-      <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-header bg-gradient-primary text-white">
+      <div class="card border rounded-3 shadow-sm">
+        
+        <!-- Encabezado -->
+        <div class="card-header bg-secondary text-white">
           <div class="d-flex justify-content-between align-items-center">
             <div>
-              <h5 class="mb-0">
+              <h5 class="mb-0 text-light">
                 {{ (usuario['nombres'] ~ ' ' ~ usuario['apellidos']) if usuario['nombres'] and usuario['apellidos'] else 'Contacto' }}
               </h5>
-              <small class="d-block text-light-50">
+              <small class="d-block text-light opacity-75">
                 {{ usuario['email'] if usuario.get('email') else '' }}
               </small>
             </div>
-            <span class="badge bg-white text-primary text-uppercase">
+            <span class="badge bg-light text-secondary text-uppercase border">
               {{ usuario['cargo'] if usuario['cargo'] else 'Sin cargo' }}
             </span>
           </div>
         </div>
 
+        <!-- Cuerpo -->
         <div class="card-body">
           <ul class="list-group list-group-flush mb-3">
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div><strong>Nombres:</strong> <span class="ms-2">{{ usuario['nombres'] }}</span></div>
+            <li class="list-group-item">
+              <strong>Nombres:</strong> <span class="ms-2">{{ usuario['nombres'] }}</span>
             </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div><strong>Apellidos:</strong> <span class="ms-2">{{ usuario['apellidos'] }}</span></div>
+            <li class="list-group-item">
+              <strong>Apellidos:</strong> <span class="ms-2">{{ usuario['apellidos'] }}</span>
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-center">
               <div><strong>RUT:</strong> <span id="rutText" class="ms-2">{{ usuario['rut'] }}</span></div>
               <div class="d-flex gap-2">
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="copyRut()">
-                  Copiar RUT
-                </button>
-                <a href="#" class="btn btn-sm btn-outline-secondary" onclick="event.preventDefault(); toggleClipboardHint()">
-                  ?
-                </a>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyRut()">Copiar</button>
+                <a href="#" class="btn btn-sm btn-outline-secondary" onclick="event.preventDefault(); toggleClipboardHint()">?</a>
               </div>
             </li>
             <li class="list-group-item">
@@ -47,30 +46,29 @@
             </li>
           </ul>
 
-          <!-- Sección colapsable: Configuración de la cuenta -->
+          <!-- Configuración de cuenta -->
           <div class="mb-2">
-            <button class="btn btn-light w-100 d-flex justify-content-between align-items-center" type="button"
+            <button class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center" type="button"
                     data-bs-toggle="collapse" data-bs-target="#accountSettings" aria-expanded="false" aria-controls="accountSettings">
               <span><strong>Configuración de la cuenta</strong></span>
-              <span class="badge bg-secondary">Opciones</span>
+              <span class="badge bg-light text-secondary border">Opciones</span>
             </button>
 
             <div class="collapse mt-3" id="accountSettings">
-              <div class="card card-body shadow-sm">
+              <div class="card card-body border shadow-sm">
                 <form method="POST" id="passwordForm">
                   <input type="hidden" name="rut" value="{{ usuario['rut'] }}">
-                  
+
                   <div class="mb-3">
                     <label for="contrasena_1" class="form-label">Nueva contraseña</label>
                     <div class="input-group">
                       <input name="contrasena_1" id="contrasena_1" type="password" class="form-control"
                              minlength="4" maxlength="20" required aria-describedby="contrasenaHelp">
-                      <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('contrasena_1')"
-                              aria-label="Mostrar u ocultar contraseña">
+                      <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('contrasena_1')" aria-label="Mostrar u ocultar contraseña">
                         <i class="bi bi-eye"></i>
                       </button>
                     </div>
-                    <div id="contrasenaHelp" class="form-text">4–20 caracteres</div>
+                    <div id="contrasenaHelp" class="form-text text-muted">Debe tener entre 4 y 20 caracteres.</div>
                   </div>
 
                   <div class="mb-3">
@@ -78,27 +76,25 @@
                     <div class="input-group">
                       <input name="contrasena_2" id="contrasena_2" type="password" class="form-control"
                              minlength="4" maxlength="20" required>
-                      <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('contrasena_2')"
-                              aria-label="Mostrar u ocultar contraseña">
+                      <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('contrasena_2')" aria-label="Mostrar u ocultar contraseña">
                         <i class="bi bi-eye"></i>
                       </button>
                     </div>
                   </div>
 
                   <div class="d-flex justify-content-end gap-2">
-                    <button type="submit" class="btn btn-primary" id="submitBtn" name="accion" value="modificar_contrasena">Modificar contraseña</button>
-                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="collapse"
-                            data-bs-target="#accountSettings">Cancelar</button>
+                    <button type="submit" class="btn btn-secondary" id="submitBtn" name="accion" value="modificar_contrasena">Modificar contraseña</button>
+                    <button type="button" class="btn btn-outline-dark" data-bs-toggle="collapse" data-bs-target="#accountSettings">Cancelar</button>
                   </div>
                 </form>
               </div>
             </div>
           </div>
-
         </div>
 
+        <!-- Footer -->
         <div class="card-footer bg-light d-flex justify-content-between align-items-center gap-2">
-          <a href="logout" class="btn btn-dark btn-sm">Cerrar Sesión</a>
+          <a href="logout" class="btn btn-outline-dark btn-sm">Cerrar Sesión</a>
           <small class="text-muted">Última actividad: {{ usuario['ultima_actividad'] if usuario.get('ultima_actividad') else 'No disponible' }}</small>
         </div>
 
@@ -106,6 +102,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- Scripts: validación simple, copiar al portapapeles y toggle contraseña -->
 <script>

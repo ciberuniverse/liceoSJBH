@@ -152,9 +152,9 @@ def micuenta():
     informacion_rut = bdd.General.obtener_informacion_rut(session["informacion"]["rut"])
     
     if informacion_rut["codigo"] != 200:
-        return render_template("micuenta.html", error = informacion_rut)
+        return render_template("micuenta.html", error = informacion_rut, rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
 
-    return render_template("micuenta.html", informacion = informacion_rut)
+    return render_template("micuenta.html", informacion = informacion_rut, rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
 
 @app.route("/seccion_de_noticias", methods = ["GET"])
 def seccion_de_noticias():
@@ -221,7 +221,7 @@ def administrador_mensajes_vistos():
     resultado_lista_mensajes = bdd.Administrador.listar_mensajes(1) # Si en el futuro hay queja por repeticion de mensajes es por esto
     
     if resultado_lista_mensajes["codigo"] != 200:
-        return render_template("administrador/contacto.html", error = resultado_lista_mensajes)
+        return render_template("administrador/contacto.html", error = resultado_lista_mensajes, rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
 
     if request.method == "POST":
 
@@ -232,7 +232,7 @@ def administrador_mensajes_vistos():
             
             return render_template("administrador/contacto.html",
                 error = respuesta_eliminacion,
-                cargo = session["informacion"]["cargo"]
+                rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]]
             )
         
         if resultado_lista_mensajes["codigo"] != 200:
@@ -240,18 +240,18 @@ def administrador_mensajes_vistos():
             return render_template("administrador/contacto.html",
                 error = resultado_lista_mensajes,
                 exito = respuesta_eliminacion,
-                cargo = session["informacion"]["cargo"]
+                rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]]
             )
         
         return render_template("administrador/contacto.html",
             contactos_vistos = resultado_lista_mensajes["mensaje"],
             exito = respuesta_eliminacion,
-            cargo = session["informacion"]["cargo"]
+            rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]]
         )
 
     ################################### Seccion GET
 
-    return render_template("administrador/contacto.html", contactos_vistos = resultado_lista_mensajes["mensaje"])
+    return render_template("administrador/contacto.html", contactos_vistos = resultado_lista_mensajes["mensaje"], rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
 
 @app.route("/administrador_crear_taller", methods = ["POST", "GET"])
 def administrador_crear_taller():
@@ -279,7 +279,7 @@ def administrador_crear_taller():
 
     return render_template("administrador/crear_taller.html",
         profesores = resultado_profesores["mensaje"],
-        cargo = session["informacion"]["cargo"]
+        rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]]
     )
 
 @app.route("/administrar_taller_estudiantes", methods = ["POST", "GET"])
@@ -606,6 +606,25 @@ def taller_estudiante():
         return render_template("estudiante/talleres.html", error = resultado) # Esto redirige a una pagina de error
 
     return render_template("estudiante/talleres.html", not_in_taller = True, talleres = resultado["mensaje"], rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
+
+############################### Ruta plataforma Apoderado
+
+@app.route("/apoderado")
+def apoderado():
+    
+    if request.method == "POST":
+        pass
+
+    ############### ZONA GET
+
+    rut_apoderado = session["informacion"]["rut"]
+    resultado_apoderado = bdd.Apoderado.buscar_hijos(rut_apoderado)
+
+    if resultado_apoderado["codigo"] != 200:
+        return render_template("apoderado/principal_apoderado.html", error = resultado_apoderado)
+
+    return render_template("apoderado/principal_apoderado.html", informacion_cargas = resultado_apoderado["mensaje"], rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
+
 
 if __name__ == '__main__':
     app.run(debug=True)

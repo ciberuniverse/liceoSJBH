@@ -15,7 +15,7 @@ BDD = HOST["colegio"]
 ROOT_DIR = os.getcwd() 
 MEDIA_DIR = os.path.join(ROOT_DIR, "static", "media")
 
-estudiantes = BDD["estudiantes"]
+estudiantes = BDD["estudiantes"] ######### ES DONDE ESTAN LOS USUARIOS
 talleres = BDD["talleres"]
 noticias = BDD["noticias"]
 contacto = BDD["contacto"]
@@ -103,6 +103,61 @@ def cifrar_contrasena(str_contrasena: str) -> str:
 
 ###############################################
 # FUTURA INTEGRACION DE ESTA CLASE DE SEGURIDAD
+
+class Apoderado:
+
+    @staticmethod
+    def buscar_hijos(rut: str) -> dict:
+
+        resultado_rut = General.obtener_informacion_rut(rut)
+        if resultado_rut["codigo"] != 200:
+            return resultado_rut
+        
+        if "carga_apoderado" not in resultado_rut["mensaje"]:
+            return json_de_mensaje(200, resultado_rut)
+        
+        try:
+            resultado_cargas = list(estudiantes.aggregate([
+                {"$match": {"rut": rut}},
+                {"$lookup": {
+                    "from": "estudiantes",                
+                    "localField": "carga_apoderado",
+                    "foreignField": "rut",          
+                    "as": "cargas"              
+                }},
+                {"$project": {"_id": 0, "contrasena": 0, "cargas._id": 0, "cargas.contrasena": 0}}
+            ]))
+
+        except:
+            return json_de_mensaje(500, "ERROR: No se logro obtener informacion de tus cargas.")
+        
+
+        if not resultado_cargas:
+            return json_de_mensaje(404, "No se logro encontrar ningun resultado asociado a tu rut.")
+        
+        resultado_cargas = resultado_cargas[0]
+
+        # Se le agrega a la informacion del alummno la informacion del taller inscrito
+        for carga in resultado_cargas["cargas"]:
+
+            if "taller" not in carga:
+                continue
+                        
+            taller_info = General.obtener_informacion_taller(carga["taller"])
+            posicion = resultado_cargas["cargas"].index(carga)
+            
+            # Si no se logro obtener informacion del taller se borra para que el frontend muestre no encntrado
+            if taller_info["codigo"] != 200:
+                carga.pop("taller")
+
+            # En el caso contrario, se envia la informacion del taller en el que su hijo se encuentra.
+            else:            
+                carga["taller"] = taller_info["mensaje"]
+
+            resultado_cargas["cargas"][posicion] = carga
+
+        return json_de_mensaje(200, resultado_cargas)
+
 
 class Security:
 
@@ -461,7 +516,7 @@ class General:
         
         if not resultado:
             return json_de_mensaje(404, "No se encontro el rut en la bdd.")
-        print(resultado[0])
+        #print(resultado[0])
         return json_de_mensaje(200, resultado[0])
 
 class Administrador:
