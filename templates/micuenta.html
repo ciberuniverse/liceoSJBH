@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+{% set usuario = informacion["mensaje"] %}
+
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-gradient-primary text-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-0">
+                {{ (usuario['nombres'] ~ ' ' ~ usuario['apellidos']) if usuario['nombres'] and usuario['apellidos'] else 'Contacto' }}
+              </h5>
+              <small class="d-block text-light-50">
+                {{ usuario['email'] if usuario.get('email') else '' }}
+              </small>
+            </div>
+            <span class="badge bg-white text-primary text-uppercase">
+              {{ usuario['cargo'] if usuario['cargo'] else 'Sin cargo' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div><strong>Nombres:</strong> <span class="ms-2">{{ usuario['nombres'] }}</span></div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div><strong>Apellidos:</strong> <span class="ms-2">{{ usuario['apellidos'] }}</span></div>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div><strong>RUT:</strong> <span id="rutText" class="ms-2">{{ usuario['rut'] }}</span></div>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="copyRut()">
+                  Copiar RUT
+                </button>
+                <a href="#" class="btn btn-sm btn-outline-secondary" onclick="event.preventDefault(); toggleClipboardHint()">
+                  ?
+                </a>
+              </div>
+            </li>
+            <li class="list-group-item">
+              <strong>Cargo:</strong> <span class="ms-2 text-capitalize">{{ usuario['cargo'] if usuario['cargo'] else 'Sin definir' }}</span>
+            </li>
+          </ul>
+
+          <!-- Sección colapsable: Configuración de la cuenta -->
+          <div class="mb-2">
+            <button class="btn btn-light w-100 d-flex justify-content-between align-items-center" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#accountSettings" aria-expanded="false" aria-controls="accountSettings">
+              <span><strong>Configuración de la cuenta</strong></span>
+              <span class="badge bg-secondary">Opciones</span>
+            </button>
+
+            <div class="collapse mt-3" id="accountSettings">
+              <div class="card card-body shadow-sm">
+                <form method="POST" id="passwordForm">
+                  <input type="hidden" name="rut" value="{{ usuario['rut'] }}">
+                  
+                  <div class="mb-3">
+                    <label for="contrasena_1" class="form-label">Nueva contraseña</label>
+                    <div class="input-group">
+                      <input name="contrasena_1" id="contrasena_1" type="password" class="form-control"
+                             minlength="4" maxlength="20" required aria-describedby="contrasenaHelp">
+                      <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('contrasena_1')"
+                              aria-label="Mostrar u ocultar contraseña">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                    </div>
+                    <div id="contrasenaHelp" class="form-text">4–20 caracteres</div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="contrasena_2" class="form-label">Confirmar contraseña</label>
+                    <div class="input-group">
+                      <input name="contrasena_2" id="contrasena_2" type="password" class="form-control"
+                             minlength="4" maxlength="20" required>
+                      <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('contrasena_2')"
+                              aria-label="Mostrar u ocultar contraseña">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-primary" id="submitBtn" name="accion" value="modificar_contrasena">Modificar contraseña</button>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="collapse"
+                            data-bs-target="#accountSettings">Cancelar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="card-footer bg-light d-flex justify-content-between align-items-center gap-2">
+          <a href="logout" class="btn btn-dark btn-sm">Cerrar Sesión</a>
+          <small class="text-muted">Última actividad: {{ usuario['ultima_actividad'] if usuario.get('ultima_actividad') else 'No disponible' }}</small>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts: validación simple, copiar al portapapeles y toggle contraseña -->
+<script>
+    document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      const target = document.querySelector(btn.getAttribute('data-bs-target'));
+      if (!target) return;
+      target.classList.toggle('show');
+    });
+  });
+  // Copiar RUT al portapapeles
+  function copyRut() {
+    const rut = document.getElementById('rutText').innerText.trim();
+    if (!navigator.clipboard) {
+      const ta = document.createElement('textarea');
+      ta.value = rut;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      ta.remove();
+    } else {
+      navigator.clipboard.writeText(rut).catch(() => {});
+    }
+    // Indicador simple (puedes personalizar)
+    const btn = event?.currentTarget;
+    if (btn) {
+      const original = btn.innerText;
+      btn.innerText = 'Copiado';
+      setTimeout(() => btn.innerText = original, 1200);
+    }
+  }
+
+  // Mostrar/ocultar contraseña
+  function togglePassword(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.type = (el.type === 'password') ? 'text' : 'password';
+  }
+
+  // Validación básica del formulario antes de enviar
+  document.getElementById('passwordForm').addEventListener('submit', function(e) {
+    
+    const P1_element = document.getElementById("contrasena_1")
+    const P2_element = document.getElementById("contrasena_2")
+
+    const p1 = document.getElementById('contrasena_1').value;
+    const p2 = document.getElementById('contrasena_2').value;
+
+    if (!p1 || !p2) {
+      e.preventDefault();
+      alert('Ambos campos de contraseña son obligatorios.');
+      return;
+    }
+    if (p1.length < 4 || p1.length > 20) {
+      e.preventDefault();
+      alert('La contraseña debe tener entre 4 y 20 caracteres.');
+      return;
+    }
+    if (p1 !== p2) {
+      e.preventDefault();
+      alert('Las contraseñas no coinciden.');
+      return;
+    }
+
+    P1_element.removeAttribute("name")
+    P2_element.removeAttribute("name")
+
+    let hidden = document.querySelector('input[name="contrasena"]');
+    if (!hidden) {
+      hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = 'contrasena';
+      this.appendChild(hidden);
+    }
+    hidden.value = p1;
+
+    // Si quieres, aquí puedes deshabilitar el botón para evitar envíos múltiples
+  });
+
+  function toggleClipboardHint() {
+    alert('Haz clic en "Copiar RUT" para copiar el RUT al portapapeles.');
+  }
+</script>
+
+<style>
+  /* Estilos locales para mejorar apariencia */
+  .bg-gradient-primary {
+    background: linear-gradient(90deg, #0d6efd 0%, #0b5ed7 100%);
+  }
+  .text-light-50 { color: rgba(255,255,255,0.85); }
+  @media (max-width: 576px) {
+    .card-header h5 { font-size: 1.05rem; }
+  }
+</style>
+{% endblock %}

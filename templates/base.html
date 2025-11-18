@@ -53,11 +53,12 @@
             <!-- Bloque de menu desplegable para usuarios -->
             {% block izquierda %}
 
-            {% if cargo %}
+            {% if rutas_permitidas %}
 
-            {% for route in routes["rol"][cargo] %}
-            <li><a class="nav-link color" href="{{ route }}">{{ route | capitalize | replace("_", " ") }}</a></li>
+            {% for ruta in rutas_permitidas %}
+            <li><a class="nav-link color" href="{{ ruta }}">{{ ruta | capitalize | replace("_", " ") }}</a></li>
             {% endfor %}
+            <li><a class="nav-link text-warning" href="micuenta">Mi Cuenta</a></li>
             <li><a class="nav-link" href="logout">Cerrar Sesion</a></li>
 
             {% else %}

@@ -36,6 +36,10 @@ def verificar_estado_de_peticion(resultado) -> dict:
 
 def json_de_mensaje(codigo, resultado_o_mensaje) -> dict:
     """Crea un json con el formato: { 'codigo': 000, 'mensaje': 'resultado o mensaje de error' }"""
+    
+    if codigo == 500:
+        print(f"\033[1;30;41m  ERRROR {codigo}: {resultado_o_mensaje}  \033[0m")
+
     return {"codigo": codigo, "mensaje": resultado_o_mensaje}
 
 def obtener_fecha() -> str:
@@ -1118,23 +1122,22 @@ class Public:
 
         # Esta linea es unicamente de DEBUG y developer. Una vez en la nuve se debera
         # crear un usuario administrador el cual tendra un rut asociado.
-        if usuario != "root":
 
-            valid = [
-                Security.re_search(
-                    "1234567890-k",
-                    7, 12,
-                    usuario
-                ),
-                Security.re_search(
-                    Security.alph + Security.num + Security.spc,
-                    4, 20,
-                    contrasena
-                )
-            ]
+        valid = [
+            Security.re_search(
+                "1234567890-k",
+                7, 12,
+                usuario
+            ),
+            Security.re_search(
+                Security.alph + Security.num + Security.spc,
+                4, 20,
+                contrasena
+            )
+        ]
 
-            if not all(valid):
-                return json_de_mensaje(500, "Estas enviando parametros o logitudes no permitidas.")
+        if not all(valid):
+            return json_de_mensaje(500, "Estas enviando parametros o logitudes no permitidas.")
 
         no_sql_str = no_sql({"usuario": usuario, "contrasena": contrasena})
 
