@@ -1,10 +1,13 @@
 from pymongo import MongoClient
+from xhtml2pdf import pisa
 from bson.objectid import ObjectId # Importar ObjectId
 from datetime import datetime
 from hashlib import blake2b
+import io, os, json, redis
 
-import os, json
-
+"""
+redis_client = redis.StrictRedis(host="localhost", port=6379, decode_responses=True)
+"""
 if "herna" not in os.getcwd():
     HOST = MongoClient(os.environ.get("HOST"))
     #SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -16,7 +19,8 @@ SECRET_KEY = "324535542d953171e82ff39f647e41baeb53ce0b11f127a8da2fce199f5fd8955c
     
 BDD = HOST["colegio"]
 
-ROOT_DIR = os.getcwd() 
+ROOT_DIR = os.getcwd()
+TEMPLATES_DIR = os.path.join(ROOT_DIR, "static", "informes_templates")
 MEDIA_DIR = os.path.join(ROOT_DIR, "static", "media")
 
 estudiantes = BDD["estudiantes"] ######### ES DONDE ESTAN LOS USUARIOS
@@ -30,7 +34,18 @@ NOT_ALLOWED = r";$&|{}[]<>\"'\\`"
 
 
 ##################### Funciones auxiliares
+"""
+def cache_consultar(cache_key: str) -> bool | dict:
 
+    tmp_get = redis_client.get(cache_key)
+    if not tmp_get:
+        return False
+    
+    return json.loads(tmp_get)
+
+def cache_actualizar(cache_key: str, consulta_cachear: dict, expiracion: int = 300) -> bool:
+    redis_client.setex(cache_key, expiracion, json.dumps(consulta_cachear))
+"""
 def verificar_estado_de_peticion(resultado) -> dict:
     
     if resultado["codigo"] == 200:
@@ -62,7 +77,7 @@ def no_sql(formulario: dict) -> dict:
     
     return json_de_mensaje(200, "Exito.")
 
-def obtener_path_normalizado(cadena_str: str) -> dict:
+def obtener_path_normalizado(cadena_str: str) -> str:
     """Normaliza los path de Imagenes a '/'."""
     return cadena_str.replace("\\", "/")
 
@@ -105,8 +120,99 @@ def guardar_imagen(seccion: str, name_frontend: str, formulario_file) -> dict:
 def cifrar_contrasena(str_contrasena: str) -> str:
     return blake2b(str_contrasena.encode("utf-8")).hexdigest()
 
+
+
 ###############################################
 # FUTURA INTEGRACION DE ESTA CLASE DE SEGURIDAD
+
+class Informes_pdf:
+
+    @staticmethod
+    def leer_plantilla_html(nombre_plantilla: str) -> dict:
+        try:
+            ruta_plantilla = obtener_path_normalizado(TEMPLATES_DIR) + "/" + nombre_plantilla + ".html"
+            print(ruta_plantilla)
+            with open(ruta_plantilla, "r", encoding="UTF-8") as leer_plantilla:
+                return json_de_mensaje(200, leer_plantilla.read())
+        
+        except:
+            return json_de_mensaje(500, f"ERROR: No se logro leer la plantilla {nombre_plantilla}.")
+        
+    @staticmethod
+    def generar_pdf(plantilla_html: str, nombre_archivo: str) -> dict:
+        
+        buffer_en_memoria = io.BytesIO()
+
+        try:
+            nombre_archivo = "static/informes/" + nombre_archivo + ".pdf"
+
+            with open(nombre_archivo, "wb") as archivo_pdf:
+                
+                pisa.CreatePDF(
+                    io.StringIO(plantilla_html),
+                    dest = buffer_en_memoria
+                )
+
+            buffer_en_memoria.seek(0)
+
+        except:
+            return json_de_mensaje(500, "ERROR: No se logro generar el informe correctamente.")
+
+        return json_de_mensaje(200, buffer_en_memoria)
+
+    @staticmethod
+    def generar_pase_de_salida(plantilla_nombre: str, formulario: dict) -> dict:
+
+        plantilla_pase = Informes_pdf.leer_plantilla_html(plantilla_nombre)
+        if plantilla_pase["codigo"] != 200:
+            return plantilla_pase
+        
+        resultado_seguridad = Security.claves_existentes(["nombre_apoderado", "rut_apoderado", "rut_estudiante", "hora_salida"], formulario)
+        if not resultado_seguridad:
+            return json_de_mensaje(404, "Estas enviando un formulario incompleto.")
+
+        plantilla: str = plantilla_pase["mensaje"]
+
+        #### Modifica la variable de la plantilla por cada key en el formulario
+        # los nombres de las variables en el formulario son iguales que en la plantilla
+        for key in formulario:
+            plantilla = plantilla.replace(key, formulario[key])
+
+        return Informes_pdf.generar_pdf(plantilla, "xd")
+        ######## GENERAR UNA PLANTILLA
+
+    @staticmethod
+    def generar_certificado_alumno_regular(plantilla_nombre: str, formulario: dict) -> dict:
+
+        plantilla_str = Informes_pdf.leer_plantilla_html(plantilla_nombre)
+        if plantilla_str["codigo"] != 200:
+            return plantilla_str
+        
+        informacion_rut = General.obtener_informacion_rut(formulario["rut_estudiante"])
+        if informacion_rut["codigo"] != 200:
+            return informacion_rut
+        
+        formulario["nombre_estudiante"] = informacion_rut["mensaje"]["nombres"] + " " + informacion_rut["mensaje"]["apellidos"]
+        formulario["fecha_actual"] = obtener_fecha()
+        formulario["ano_actual"] = formulario["fecha_actual"].split("-")[2]
+
+        ############### ESTAS CLAVES DEBEN DE ESTAR SI O SI PARA EL INFORME
+        resultado_seguridad = Security.claves_existentes(
+            ["telefono_colegio", "direccion_colegio", "nombre_estudiante", "rut_estudiante", "fecha_actual", "ano_actual"],
+            formulario
+        )
+        if not resultado_seguridad:
+            return resultado_seguridad
+        
+        plantilla: str = plantilla_str["mensaje"]
+        for key in formulario:
+            plantilla = plantilla.replace(key, formulario[key])
+
+        resultado_certificado = Informes_pdf.generar_pdf(plantilla, "xd")
+        if resultado_certificado["codigo"] != 200:
+            return resultado_certificado
+        
+        return resultado_certificado
 
 class Apoderado:
 
@@ -162,6 +268,43 @@ class Apoderado:
 
         return json_de_mensaje(200, resultado_cargas)
 
+    @staticmethod
+    def asignar_pase(rut_apoderado: str, datos_pase: dict) -> dict:
+
+        informacion_rut = General.obtener_informacion_rut(datos_pase["rut_estudiante"])   
+        if informacion_rut["codigo"] != 200:
+            return informacion_rut
+
+        ########## MODIFICACION DE INFORMACION PARA GENERAR EL PDF
+        datos_pase.pop("accion")
+        datos_pase["fecha_actual"] = obtener_fecha()
+        datos_pase["nombre_estudiante"] = str(informacion_rut["mensaje"]["nombres"] + " " + informacion_rut["mensaje"]["apellidos"]).upper()
+        
+        print(datos_pase)
+        # EL SPLIT DA COMO RESULTADO DOS VARIABLES QUE MODIFICAN LO FALTANTE
+        datos_pase["fecha_retiro"], datos_pase["hora_salida"] = datos_pase["hora_salida"].split("T")
+        try:
+            modificacion_apoderados = estudiantes.update_one({"rut": rut_apoderado}, {"$push": {"retiro_alumno": datos_pase}})
+
+        except:
+            return json_de_mensaje(500, "ERROR: No se logro modificar la modificacion de apoderados.")
+        
+        if not modificacion_apoderados:
+            return json_de_mensaje(404, "No se encontro ningun rut para asociar el pase.")
+        
+        return json_de_mensaje(200, f"El pase del apoderado con rut {rut_apoderado} esta disponible en su seccion de /mistramites.")
+
+    @staticmethod
+    def obtener_pases(rut_apoderado: str) -> dict:
+
+        informacion_apoderado = General.obtener_informacion_rut(rut_apoderado)
+        if informacion_apoderado["codigo"] != 200:
+            return informacion_apoderado
+        
+        if "retiro_alumno" not in informacion_apoderado["mensaje"]:
+            return json_de_mensaje(404, "No tiene ninguna solicitud de retiro para generar.")
+        
+        return json_de_mensaje(200, informacion_apoderado["mensaje"]["retiro_alumno"])
 
 class Security:
 
@@ -362,6 +505,7 @@ class Settings:
             json_new = {
                 "nombre_colegio": formulario["nombre_colegio"],
                 "lema_colegio": formulario["lema_colegio"],
+                "nombre_director": formulario["nombre_director"],
 
                 "redes_sociales": [
                     {"facebook": formulario["facebook"]},
@@ -510,7 +654,6 @@ class General:
         return json_de_mensaje(404, "No se logro encontrar ningun taller en la base de datos.")
 
     def obtener_informacion_rut(rut: str) -> dict:
-        """Obtiene informacion del rut (Todo)."""
 
         try:
             resultado = list(estudiantes.find({"rut": rut}))
@@ -520,14 +663,161 @@ class General:
         
         if not resultado:
             return json_de_mensaje(404, "No se encontro el rut en la bdd.")
-        #print(resultado[0])
+
         return json_de_mensaje(200, resultado[0])
+
+    @staticmethod
+    def obtener_informacion_curso(id_curso: str) -> dict:
+        
+        try:
+            resultado_curso = list(cursos.aggregate([
+                {"$match": {"_id": ObjectId(id_curso)}},
+                {"$lookup": {
+                    "from": "estudiantes",                
+                    "localField": "alumnos",
+                    "foreignField": "rut",          
+                    "as": "alumnos_curso"              
+                }},
+                {"$project": {"_id": 0, "alumnos_curso._id": 0, "alumnos_curso.contrasena": 0}}
+            ]))
+
+
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: No se logro obtener informacion de los cursos. {err}")
+
+        if not resultado_curso:
+            return json_de_mensaje(404, "No se logro encontrar ningun curso asociado al id.")
+
+        return json_de_mensaje(200, resultado_curso[0])
+
+    @staticmethod
+    def obtener_informacion_rut_personalizado(rut: str, no_listar_key: list) -> dict:
+
+        no_listar = {key: 0 for key in no_listar_key}
+
+        try:
+            resultado_list = list(estudiantes.find({"rut": rut}, no_listar))
+        
+        except:
+            return json_de_mensaje(500, "ERROR: No logramos extraer la informacion de la bdd.")
+        
+        if not resultado_list:
+            return json_de_mensaje(404, f"No se logro encontrar ningun resultado asociado al rut {rut}")
+
+        return json_de_mensaje(200, resultado_list[0])
 
 class Administrador:
     """
     Clase contenedora de todas las funciones activas que\n
     utiliza y accede el Administrador.
     """
+
+    @staticmethod
+    def crear_curso(formulario_json: dict):
+        
+        formulario_json.pop("accion")
+
+        seguridad_ = Security.claves_existentes(["grado_curso", "letra_curso", "curso_informacion"], formulario_json)
+        if not seguridad_:
+            return json_de_mensaje(402, "Estas enviando un formulario incompleto o corrupto.")
+        
+        try:
+            informacion_curso = json.loads(formulario_json["curso_informacion"])
+        
+        except:
+            return json_de_mensaje(500, "No se logro leer adecuadamente el objeto enviado.")
+        
+        seguridad_json = Security.claves_existentes(["materias", "alumnos"], informacion_curso)
+        if not seguridad_json:
+            return json_de_mensaje(402, "Estas enviando un formulario incompleto o corrupto.")
+        
+        if not informacion_curso["alumnos"]:
+            return json_de_mensaje(402, "No hay ningun alumno asignado a este curso.")
+        
+        ################ SE VERIFICAN LOS RUTS QUE EXISTAN
+        
+        verificar_ruts = list(informacion_curso["materias"].keys())
+        profesores_ruts = verificar_ruts.copy()
+
+        verificar_ruts.extend(informacion_curso["alumnos"])
+
+        try:
+            resultado = list(estudiantes.find({"rut": {"$in": verificar_ruts}}, {"_id": 0,"rut": 1}))
+
+        except:
+            return json_de_mensaje(500, "ERROR: No se logro buscar la informacion solicitada.")
+        
+        if not resultado:
+            return json_de_mensaje(404, "No se logro encontrar ninguna informacion asociada a los ruts de profesores y estudiantes.")
+        
+        resultado_tmp = str(resultado)
+        for rut_vf in verificar_ruts:
+            
+            if rut_vf in resultado_tmp:
+                continue
+            
+            return json_de_mensaje(404, f"El rut {rut_vf} no se encuentra en la base de datos.")
+
+        ################## 
+        # Se le da formato a la consulta para mongo db
+        informacion_curso["materias"] = { x:informacion_curso["materias"][x] for x in informacion_curso["materias"] }
+
+        curso_format = {
+            "curso": str(formulario_json["grado_curso"] + "°" + formulario_json["letra_curso"]).lower(),
+            "materias": informacion_curso["materias"],
+            "alumnos": informacion_curso["alumnos"]
+        }
+
+        try:
+            curso_creado = cursos.insert_one(curso_format)
+        except:
+            return json_de_mensaje(500, "ERROR: Ocurrio un error al intentar crear el curso.")
+        
+        if not curso_creado.acknowledged:
+            return json_de_mensaje(404, "No se logro insertar completamente el curso.")
+        
+        resultado_asignar_alumno = asignar_curso_a_alumno(
+            ruts = curso_format["alumnos"],
+            id_curso = curso_creado.inserted_id
+        )
+        if resultado_asignar_alumno["codigo"] != 200:
+            return resultado_asignar_alumno
+        
+        resultado_asignar_profesor = asignar_curso_a_profesor(
+            id_curso = curso_creado.inserted_id,
+            ruts = profesores_ruts
+        )
+        if resultado_asignar_profesor["codigo"] != 200:
+            return resultado_asignar_profesor
+        return json_de_mensaje(200, "Curso creado exitosamente.")
+
+    @staticmethod
+    def asignar_curso_alumno(ruts: list, curso_id: ObjectId) -> dict:
+        
+        try:
+            resultado = estudiantes.update_many({"rut": {"$in": ruts}, "cargo": "estudiante"}, {"$set": {"curso_actual": ObjectId(curso_id)}})
+
+        except:
+            return json_de_mensaje(500, "ERROR: No se logro asignar el curso a los estudiantes.")
+        
+        if not resultado.acknowledged:
+            return json_de_mensaje(404, "No se les logro asignar el curso a todos.")
+        
+        return json_de_mensaje(200, "Se les asigno el curso correctamente a los estudiantes.")
+    
+    @staticmethod
+    def asignar_curso_profesores(ruts: list, curso_id: ObjectId) -> dict:
+
+        try:
+            resultado = estudiantes.update_many({"rut": {"$in": ruts}}, {"$push": {"cursos_asignados": curso_id}})
+        
+        except:
+            return json_de_mensaje(500, "ERROR: No se logro asignar el curso a los profesores.")
+        
+        if not resultado.acknowledged:
+            return json_de_mensaje(404, "No se les logro asignar el curso a todos.")
+        
+        return json_de_mensaje(200, "Se les asigno el curso correctamente a los profesores.")
 
     def listar_profesores_talleristas() -> dict:
 
@@ -567,7 +857,18 @@ class Administrador:
             
             if not coincidencia_ruts:
                 return json_de_mensaje(404, "No se logro encontrar ningun rut REAL para asociar a este apoderado.")
-                
+            
+            ########### Asignacion de apoderado a estudiantes
+
+            try:
+                asignar_apoderado_a_estudiante = estudiantes.update_many({"rut": {"$in": informacion_json["carga_apoderado"]}, "cargo": "estudiante"}, {"$set": {"apoderado": informacion_json["rut"]}})
+            
+            except:
+                return json_de_mensaje(500, "ERROR: No se logro asignar el apoderado a los estudiantes.")
+            
+            if not asignar_apoderado_a_estudiante.acknowledged:
+                return json_de_mensaje(404, "No se lograron asignar el apoderado a uno o mas estudiantes.")
+            
 
         #################
 
@@ -813,18 +1114,40 @@ class Profesor:
     """
     Funciones que utiliza el perfil de Profesor y sus dependencias.
     """
-
+    @staticmethod
     def listar_cursos_de_profesor(rut_de_profesor) -> dict:
         
         try:
-            respuesta = list(estudiantes.find({"cargo": "profesor", "rut": rut_de_profesor}, {"cursos_asignados": 1}))
+            respuesta = list(estudiantes.aggregate([
+                {"$match": {"rut": rut_de_profesor}},
+                {"$lookup": {
+                    "from": "cursos",                
+                    "localField": "cursos_asignados",
+                    "foreignField": "_id",          
+                    "as": "cursos_informacion"              
+                }},
+                {"$project": {
+                    "_id": 0,
+                    "contrasena": 0,
+                    "cursos_asignados": 0,
+                    "cursos_informacion.alumnos": 0,
+                }}
+            ]))
 
         except:
-            return json_de_mensaje(500, "Error, no se logro obtener la lista desde la base de datos.")
+            return json_de_mensaje(500, "Error: No se logro obtener la lista desde la base de datos.")
         
         if not respuesta:
             return json_de_mensaje(404, f"No se logro encontrar ningun curso asociado al rut {rut_de_profesor}.")
         
+        respuesta = respuesta[0]
+
+        for curso in respuesta["cursos_informacion"]:
+            
+            idx = respuesta["cursos_informacion"].index(curso)
+            respuesta["cursos_informacion"][idx]["_id"] = str(respuesta["cursos_informacion"][idx]["_id"])
+            respuesta["cursos_informacion"][idx]["materias"] = {rut_de_profesor: curso["materias"][rut_de_profesor]}
+
         return json_de_mensaje(200, respuesta)
 
     def listar_taller_de_profesor(rut_de_profesor) -> dict:
@@ -920,6 +1243,10 @@ class Profesor:
             return json_de_mensaje(404, "No se logro dejar a todos presentes.")
         
         return json_de_mensaje(200, f"Los {len(alumnos_rut)} estudiantes han quedado presentes en la fecha {fecha_lista}.")
+
+
+
+
 
 class Noticiero:
     """Funciones que corresponden al uso del Noticiero."""
@@ -1122,6 +1449,34 @@ class Estudiante:
 
         return json_de_mensaje(202, resultado_taller_estudiante[0])
     
+    def resumen_de_mi_perfil(rut: str) -> dict:
+
+    
+        rut_informacion = General.obtener_informacion_rut(rut)
+        if rut_informacion["codigo"] != 200:
+            return rut_informacion    
+
+        if "taller" in rut_informacion["mensaje"]:
+
+            informacion_taller = General.obtener_informacion_taller(ObjectId(rut_informacion["mensaje"]["taller"]))
+            
+            if informacion_taller["codigo"] != 200:
+                return informacion_taller
+
+            rut_informacion["mensaje"]["taller"] = informacion_taller["mensaje"]
+        
+        if "apoderado" in rut_informacion["mensaje"]:
+            apoderado_info = General.obtener_informacion_rut(rut_informacion["mensaje"]["apoderado"])
+            
+            if apoderado_info["codigo"] != 200:
+                return apoderado_info
+
+            rut_informacion["mensaje"]["apoderado"] = apoderado_info["mensaje"]
+        
+        print(rut_informacion["mensaje"])
+
+        return json_de_mensaje(200, rut_informacion["mensaje"])
+
 class Public:
     """
     Acciones/funciones que se utilizan de manera publica.
@@ -1222,7 +1577,22 @@ class Public:
             return no_sql_str
 
         try:
-            resultado = list(estudiantes.find({"rut": usuario, "contrasena": cifrar_contrasena(contrasena)}, {"_id": 0, "contrasena": 0, "cursos_asignados": 0, "taller_asignado": 0, "taller": 0}))
+            resultado = list(estudiantes.find(
+                {
+                    "rut": usuario, 
+                    "contrasena": cifrar_contrasena(contrasena)
+                },
+                ############## LO QUE ES SENSIBLE VA AQUI ABAJO, Y LO QUE CONTIENE OBJECTID 
+                {
+                    "_id": 0,
+                    "contrasena": 0,
+                    "cursos_asignados": 0,
+                    "taller_asignado": 0,
+                    "taller": 0,
+                    "curso_actual": 0
+                }
+            ))
+            print(resultado[0])
         except:
             return json_de_mensaje(500, "Ocurrio un error al buscar en la base de datos un usuario o contraseña.")
         

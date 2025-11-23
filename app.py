@@ -1,5 +1,5 @@
 import bdd
-from flask import Flask, render_template, session, request, redirect, url_for
+from flask import Flask, render_template, session, request, redirect, url_for, Response
 
 app = Flask(__name__)
 app.secret_key = bdd.SECRET_KEY
@@ -438,6 +438,26 @@ def administrar_usuarios():
 
     return render_template("administrador/administrar_usuarios.html", get = True, cargos = RUTAS["rol"], rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
 
+@app.route("/crear_curso", methods = ["POST", "GET"])
+def crear_curso():
+
+    if request.method == "POST":
+        
+        formulario_ = request.form.to_dict()
+        if "accion" not in formulario_:
+            return redirect(url_for("crear_curso", codigo = 500, mensaje = "ERROR: Formulario incompleto o corrupto."))
+
+        if formulario_["accion"] == "crear_curso":
+            resultado = bdd.Administrador.crear_curso(formulario_)
+
+        return redirect(url_for("crear_curso", codigo = resultado["codigo"], mensaje = resultado["mensaje"]))
+
+    profesores = bdd.General.listar_profesores()
+    if profesores["codigo"] != 200:
+        return profesores
+    
+    return render_template("administrador/crear_curso.html", profesores = profesores["mensaje"])
+
 ############################### Rutas de panel del noticiero
 
 @app.route("/noticiero", methods = ["POST", "GET"])
@@ -496,16 +516,31 @@ def urgente():
 @app.route("/profesor", methods = ["POST", "GET"])
 def profesor():
 
+    if request.method == "POST":
+        
+        formulario = request.form.to_dict()
+        if "accion" not in formulario:
+            return redirect(url_for("profesor", codigo = 402, mensaje = "Estas enviando un formulario corrupto o incompleto."))
+        
+        if formulario["accion"] == "administrar_curso":
+
+            if "id_curso" not in formulario:
+                return redirect(url_for("profesor", codigo = 402, mensaje = "Estas enviando un formulario corrupto o incompleto."))
+            
+            respuesta = bdd.General.obtener_informacion_curso(formulario["id_curso"])
+            if respuesta["codigo"] != 200:
+                return redirect(url_for("profesor", codigo = respuesta["codigo"], mensaje = respuesta["mensaje"]))
+        
+            return render_template("profesor/administrar_curso.html", informacion_curso = respuesta["mensaje"])
+
+
     #################### Seccion GET
-
     lista_cursos = bdd.Profesor.listar_cursos_de_profesor(session["informacion"]["rut"])
-
-    ############# USAR AGREGATE PARA OBTENER LOS RUTS DE LOS PARTICIPANTES del CURSO
 
     if lista_cursos["codigo"] != 200:
         return redirect(url_for("administrar_taller_estudiantes", codigo = lista_cursos["codigo"], mensaje = lista_cursos["mensaje"]))
 
-    return render_template("profesor/profesor.html", cursos = lista_cursos["mensaje"], rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
+    return render_template("profesor/profesor.html", informacion_profesor = lista_cursos["mensaje"], rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
 
 @app.route("/profesor_taller", methods = ["POST", "GET"])
 def profesor_taller():
@@ -570,7 +605,20 @@ def profesor_jefe_crear():
 
 @app.route("/estudiante", methods = ["POST", "GET"])
 def estudiante():
-    return render_template("estudiante/estudiante.html", rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
+
+    ############### ZONA GET
+
+    informacion_perfil = bdd.Estudiante.resumen_de_mi_perfil(session["informacion"]["rut"])
+    
+    if informacion_perfil["codigo"] != 200:
+        
+        return render_template("estudiante/estudiante.html",
+            error = informacion_perfil,
+            rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]]
+        )
+
+
+    return render_template("estudiante/estudiante.html", perfil = informacion_perfil["mensaje"], rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
 
 @app.route("/taller_estudiante", methods = ["POST", "GET"])
 def taller_estudiante():
@@ -609,12 +657,40 @@ def taller_estudiante():
 
 ############################### Ruta plataforma Apoderado
 
-@app.route("/apoderado")
+@app.route("/apoderado", methods = ["GET", "POST"])
 def apoderado():
     
     if request.method == "POST":
-        pass
 
+        formulario = request.form.to_dict()
+        if "accion" not in formulario:
+            return redirect(url_for("apoderado", codigo = 404, mensaje = "ERROR: Estas enviando formularios incompletos."))
+        
+        if "obtener_certificado" == formulario["accion"]:
+
+            if "rut_estudiante" not in formulario:
+                return redirect(url_for("apoderado", codigo = 404, mensaje = "ERROR: Estas enviando formularios incompletos."))
+
+            ########## Le pasamos informacion actualizada directamente desde la variable global para evitar malos formatos
+            formulario_certificado = {
+                "telefono_colegio": PERSONALIZACION_WEB["telefono_colegio"],
+                "direccion_colegio": PERSONALIZACION_WEB["direccion_colegio"],
+                "nombre_director": PERSONALIZACION_WEB["nombre_director"],
+                "rut_estudiante": formulario["rut_estudiante"]
+            }
+
+            resultado_alumno_reg = bdd.Informes_pdf.generar_certificado_alumno_regular("tmp_alumno_regular", formulario_certificado)
+
+            if resultado_alumno_reg["codigo"] != 200:
+                return redirect(url_for("apoderado", codigo = resultado_alumno_reg["codigo"], mensaje = resultado_alumno_reg["mensaje"]))
+
+            return Response(
+                resultado_alumno_reg["mensaje"],
+                mimetype="application/pdf",
+                headers={
+                    "Content-Disposition": f"inline; filename=certificado_alumno_regular_{formulario['rut_estudiante']}.pdf"
+                }
+            )
     ############### ZONA GET
 
     rut_apoderado = session["informacion"]["rut"]
@@ -624,6 +700,76 @@ def apoderado():
         return render_template("apoderado/principal_apoderado.html", error = resultado_apoderado)
 
     return render_template("apoderado/principal_apoderado.html", informacion_cargas = resultado_apoderado["mensaje"], rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
+
+@app.route("/retirar_alumno", methods = ["GET", "POST"])
+def retirar_alumno():
+
+    if request.method == "POST":
+
+        formulario = request.form.to_dict()
+
+        if "accion" not in formulario:
+            return redirect(url_for("retirar_alumno", codigo = 404, mensaje = "ERROR: Estas enviando un formulario incompleto."))
+        
+        if formulario["accion"] == "descargar_pase":
+            
+            # Envia el formulario que ya esta hecho por el inspector lo envia a la seccion de generar pase. Y genera el informe.
+            resultado = bdd.Informes_pdf.generar_pase_de_salida("tmp_pase", formulario)
+
+            if resultado["codigo"] == 200:
+                return Response(
+                    resultado["mensaje"],
+                    mimetype="application/pdf",
+                    headers={
+                        "Content-Disposition": "inline; filename=pase_retiro.pdf"
+                    }
+                )
+
+        return redirect(url_for("retirar_alumno", codigo = resultado["codigo"], mensaje = resultado["mensaje"]))
+
+    ################### ZONA GET
+
+    pases_para_generar = bdd.Apoderado.obtener_pases(session["informacion"]["rut"])
+    if pases_para_generar["codigo"] != 200:
+        return render_template("apoderado/retirar_alumno.html", error = pases_para_generar)
+
+    return render_template("apoderado/retirar_alumno.html", pases = pases_para_generar["mensaje"]) 
+
+############################## Encargado de generar pases
+
+@app.route("/generar_pase", methods = ["GET", "POST"])
+def generar_pase():
+
+    if request.method == "POST":
+
+        formulario = request.form.to_dict()
+        print("xd")
+        if "accion" not in formulario:
+            return redirect(url_for("generar_pase", codigo = 404, mensaje = "ERROR: Estas enviando un formulario incompleto."))
+
+        if formulario["accion"] == "buscar_carga":
+            
+            if "rut" not in formulario:
+                return redirect(url_for("generar_pase", codigo = 404, mensaje = "ERROR: Estas enviando un formulario incompleto."))
+
+            rut_apoderado = request.form["rut"]
+            informacion_apoderado_cargas = bdd.Apoderado.buscar_hijos(rut_apoderado)
+
+            if informacion_apoderado_cargas["codigo"] != 200:
+                return redirect(url_for("generar_pase",
+                    codigo = informacion_apoderado_cargas["codigo"],
+                    mensaje = informacion_apoderado_cargas["mensaje"]
+                ))
+            
+            return render_template("administrador/generar_pase_virtual.html", informacion_rut = informacion_apoderado_cargas["mensaje"], mostrar_info = True)
+            
+        if formulario["accion"] == "generar_pase":
+
+            resultado_pase = bdd.Apoderado.asignar_pase(formulario["rut_apoderado"], formulario)            
+            return redirect(url_for("generar_pase", codigo = resultado_pase["codigo"], mensaje = resultado_pase["mensaje"]))
+
+        
+    return render_template("administrador/generar_pase_virtual.html", get = True)
 
 
 if __name__ == '__main__':

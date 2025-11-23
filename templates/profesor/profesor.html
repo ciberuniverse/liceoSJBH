@@ -2,10 +2,47 @@
 
 {% block contenido %}
 
-{% for curso in cursos %}
+<div class="container mt-4">
 
-    {{ curso.cursos_asignados }}
+    <!-- Información del docente -->
+    <div class="alert alert-primary fw-bold">
+        <i class="bi bi-person-badge"></i>
+        Nombre Docente: {{ informacion_profesor['nombres'] }} {{ informacion_profesor['apellidos'] }}
+    </div>
 
-{% endfor %}
+    <hr>
+
+    <!-- Cursos del docente -->
+    <div class="row">
+        {% for curso in informacion_profesor['cursos_informacion'] %}
+        <div class="col-md-6 mb-3">
+            <div class="card border-success shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-journal-bookmark"></i>
+                    Curso asignado: {{ curso['curso'] | upper }}
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="d-flex flex-column gap-2">
+                        <input type="hidden" name="id_curso" value="{{ curso['_id'] }}">
+                        
+                        <p class="card-text">
+                            <strong>Clase que Rindes:</strong><br>
+                            <span class="badge bg-info text-dark">
+                                {{ curso['materias'][informacion_profesor['rut']] }}
+                            </span>
+                        </p>
+                        
+                        <button name="accion" value="administrar_curso" 
+                                class="btn btn-outline-primary mt-auto">
+                            <i class="bi bi-gear"></i> Administrar Curso
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
 
 {% endblock %}

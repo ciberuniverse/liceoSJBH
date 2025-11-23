@@ -23,7 +23,8 @@
       "profesor_taller"
     ],
     "apoderado": [
-      "apoderado"
+      "apoderado",
+      "retirar_alumno"
     ],
     "staff": [
       "noticiero",
@@ -35,7 +36,8 @@
       "administrador_crear_taller",
       "administrar_pagina",
       "noticias",
-      "crear_roles"
+      "crear_roles",
+      "administrar_usuarios"
     ]
   },
   "public": [
@@ -47,7 +49,9 @@
     "urgente",
     "profesor_jefe_crear",
     "micuenta",
-    "talleres"
+    "talleres",
+    "crear_curso"
+
   ],
   "private": [
     "estudiante",
@@ -64,6 +68,8 @@
     "profesor_taller",
     "crear_roles",
     "administrar_usuarios",
-    "apoderado"
+    "apoderado",
+    "retirar_alumno",
+    "generar_pase"
   ]
 }

@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<form class="container mt-4" method="POST">
+
+    <div class="mb-3">
+        <label for="grado_curso" class="form-label fw-bold">Curso</label>
+        <div class="input-group" style="max-width: 200px;">
+            <input type="number" class="form-control text-center" id="grado_curso" name="grado_curso" min="1" max="8"
+                required placeholder="Grado">
+            <span class="input-group-text">-</span>
+            <input type="text" class="form-control text-center" id="letra_curso" name="letra_curso" maxlength="1"
+                minlength="1" pattern="[A-Za-z]" required placeholder="Letra">
+        </div>
+        <div class="form-text">Ejemplo: 3 - B</div>
+    </div>
+    <!-- Docentes asignados -->
+    <div id="docentes_info" class="mb-3">
+        <!-- Aquí se irán agregando los docentes con sus materias -->
+    </div>
+
+    <!-- Selección de profesor -->
+    <div class="mb-3">
+        <label for="seleccion_profesor" class="form-label fw-bold">Seleccionar Profesor</label>
+        <select id="seleccion_profesor" class="form-select" required>
+            <option value="" disabled selected>Seleccione un profesor</option>
+            {% for profesor in profesores %}
+            <option id="{{ profesor['rut'] }}" value="{{ profesor['rut'] }}">
+                {{ profesor['nombres'] }} {{ profesor['apellidos'] }} | {{ profesor['rut'] }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <hr>
+
+    <!-- Alumnos -->
+    <div class="mb-3">
+        <label for="alumno" class="form-label fw-bold">Agregar Alumno</label>
+        <div class="input-group">
+            <input type="text" placeholder="RUT del alumno" id="alumno" class="form-control">
+            <button type="button" class="btn btn-outline-primary" onclick="agregar_alumno()">Agregar</button>
+        </div>
+    </div>
+
+    <!-- Lista de alumnos -->
+    <div id="alumnos_mostrar" class="mb-3">
+        <!-- Aquí se mostrarán los alumnos -->
+    </div>
+
+    <!-- Botón crear curso -->
+    <button type="submit" name="accion" value="crear_curso" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Crear Curso
+    </button>
+</form>
+
+<!-- Modal artesanal con estilo Bootstrap -->
+<div id="materiaModal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Asignar materia al docente</h5>
+                <button type="button" class="btn-close btn-close-white" onclick="cerrarModal()"></button>
+            </div>
+            <div class="modal-body">
+                <p id="docenteSeleccionado" class="fw-bold"></p>
+                <input type="text" id="materiaInput" class="form-control" placeholder="Ingrese la materia">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarMateria()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Modal artesanal con look Bootstrap */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-dialog {
+        margin: 10% auto;
+        max-width: 500px;
+    }
+</style>
+
+<script>
+    let CURSO_INFO = { "materias": {}, "alumnos": [] };
+    let docenteSeleccionadoRut = null;
+
+    function eliminar_alumno(alumno) {
+        CURSO_INFO["alumnos"].pop(alumno)
+        document.getElementById(`mostrar_alumno_${alumno}`).remove()
+    }
+
+    function agregar_alumno() {
+        let alumno = document.getElementById("alumno").value
+        
+        if (CURSO_INFO["alumnos"].includes(alumno)) {
+            alert("El alumno ya esta en este curso.")
+            return
+        }
+
+        CURSO_INFO["alumnos"].push(alumno)
+
+        document.getElementById("alumnos_mostrar").innerHTML += `
+        <div id="mostrar_alumno_${alumno}" class="alert alert-info d-flex justify-content-between align-items-center">
+            <span>${alumno}</span>
+            <button type="button" class="btn btn-sm btn-danger" onclick="eliminar_alumno('${alumno}')">Eliminar</button>
+        </div>
+        `
+
+        document.getElementById("alumno").value = ""
+
+    }
+
+    function agregar_docente(rut_docente) {
+        if (!rut_docente) return;
+
+        if (JSON.stringify(CURSO_INFO["materias"]).includes(rut_docente)) {
+            alert("El docente ya esta realizando clases en este curso.")
+            return
+        }
+
+        let select = document.getElementById("seleccion_profesor");
+        let informacion_docente = select.options[select.selectedIndex].text;
+
+        docenteSeleccionadoRut = rut_docente;
+        document.getElementById("docenteSeleccionado").innerText = informacion_docente;
+
+        document.getElementById("materiaModal").style.display = "block";
+    }
+
+    function eliminar_del_curso(materia) {
+        delete CURSO_INFO.materias[materia];
+        let bloque = document.getElementById("info_curso_" + materia);
+        if (bloque) bloque.remove();
+    }
+
+    function cerrarModal() {
+        document.getElementById("materiaModal").style.display = "none";
+    }
+
+    function guardarMateria() {
+        let materia = document.getElementById("materiaInput").value.trim().toLowerCase();
+        let docente = document.getElementById("docenteSeleccionado").innerText;
+
+        if (!materia) {
+            alert("Debe ingresar una materia.");
+            return;
+        }
+
+        CURSO_INFO.materias[docenteSeleccionadoRut] = materia;
+
+        document.getElementById("docentes_info").innerHTML += `
+            <div id="info_curso_${materia}" class="alert alert-secondary d-flex justify-content-between align-items-center">
+                <p class="mb-0">${docente} → Materia: <strong>${materia}</strong></p>
+                <button type="button" class="btn btn-sm btn-danger" onclick="eliminar_del_curso('${materia}')">Eliminar</button>
+            </div>
+        `;
+
+        document.getElementById("materiaInput").value = "";
+        cerrarModal();
+    }
+
+    document.getElementById("seleccion_profesor").addEventListener("change", () => {
+        let rut_profesor = document.getElementById("seleccion_profesor").value;
+        agregar_docente(rut_profesor);
+    });
+
+
+    document.addEventListener("formdata", (e) => {
+        e.formData.set("curso_informacion", JSON.stringify(CURSO_INFO));
+    })
+
+</script>
+
+{% endblock %}

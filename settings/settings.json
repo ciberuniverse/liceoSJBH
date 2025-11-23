@@ -1,9 +1,10 @@
 {
   "nombre_colegio": "Liceo San Juan Bautista De Hualqui",
   "lema_colegio": "Construyendo tu futuro",
+  "nombre_director": "CHRISTIAN E. CORMACK KNUDSEN",
   "redes_sociales": [
     {
-      "facebook": "https://www.facebook.com/p/Liceo-San-Juan-Bautista-de-Hualqui-100064107240744/"
+      "facebook": "https://www.facebook.com/share/1DB9cvRLWj/"
     },
     {
       "youtube": "https://www.youtube.com/@PROFE.NAVOTHPEREZ"
@@ -12,7 +13,7 @@
       "twitter": ""
     },
     {
-      "instagram": "https://www.instagram.com/@PROFE.NAVOTHPEREZ"
+      "instagram": "https://www.instagram.com/liceo.sanjuanbautista"
     }
   ],
   "correo_colegio": "liceosjbh@andaliensur.cl",

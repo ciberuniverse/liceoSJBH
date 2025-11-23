@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+
+
+{% block contenido %}
+
+{% if get %}
+<form method="POST" class="p-3 border rounded shadow-sm bg-light" style="max-width: 400px; margin: auto;">
+  <div class="mb-3">
+    <label for="rut" class="form-label">RUT del Apoderado Solicitante</label>
+    <input 
+      type="text" 
+      name="rut" 
+      id="rut" 
+      class="form-control" 
+      placeholder="Ej: 21724388-2" 
+      required>
+    <div class="form-text">Ingrese el RUT con guion y dígito verificador.</div>
+  </div>
+
+  <div class="text-center">
+    <button type="submit" name="accion" value="buscar_carga" class="btn btn-primary">
+      Buscar Cargas Apoderado
+    </button>
+  </div>
+</form>
+
+
+{% endif %}
+
+{% if mostrar_info %}
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm border-0 rounded-3">
+        
+        <!-- Encabezado -->
+        <div class="card-header bg-secondary text-white">
+          <h5 class="mb-0">Perfil del Apoderado</h5>
+        </div>
+
+        <!-- Datos del apoderado -->
+        <div class="card-body">
+            
+          <p><strong>Nombre:</strong> {{ informacion_rut.nombres }} {{ informacion_rut.apellidos }}</p>
+          <p><strong>RUT:</strong> {{ informacion_rut.rut }}</p>
+          <p><strong>Cargo:</strong> {{ informacion_rut.cargo | capitalize }}</p>
+
+          <!-- Lista de cargas -->
+          <h6 class="mt-4">Estudiantes asociados</h6>
+          <ul class="list-group mb-4">
+            {% for carga in informacion_rut.cargas %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ carga.nombres }} {{ carga.apellidos }} ({{ carga.rut }})</span>
+                <span class="badge bg-light text-dark">{{ carga.cargo | capitalize }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+
+          <!-- Formulario para generar pase -->
+          <h6 class="mt-4">Generar Pase Virtual</h6>
+          <form method="POST" class="border rounded-3 p-3 bg-light">
+            <input name="nombre_apoderado" value="{{ informacion_rut.nombres }} {{ informacion_rut.apellidos }}" hidden>
+            <input name="rut_apoderado" value="{{ informacion_rut.rut }}" hidden>
+
+            <div class="mb-3">
+              <label for="seleccion_carga" class="form-label">Seleccionar estudiante</label>
+              <select id="seleccion_carga" name="rut_estudiante" class="form-select" required>
+                <option value="" selected disabled>-- Seleccione --</option>
+                {% for carga in informacion_rut.cargas %}
+                  <option value="{{ carga.rut }}">
+                    {{ carga.nombres }} {{ carga.apellidos }} ({{ carga.rut }})
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="hora_salida" class="form-label">Hora de salida</label>
+              <input id="hora_salida" name="hora_salida" type="datetime-local" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="hora_llegada" class="form-label">Hora de llegada (opcional)</label>
+              <input id="hora_llegada" type="datetime-local" class="form-control">
+            </div>
+
+            <div class="d-flex justify-content-end">
+              <button type="submit" id="generar_pase" name="accion" value="generar_pase" class="btn btn-primary" onclick="not_repeat('generar_pase')" >
+                Generar Pase Virtual
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.getElementById("hora_llegada").addEventListener("change", () => {
+        document.getElementById("hora_llegada").setAttribute("name", "hora_llegada")
+    })
+
+    function not_repeat(id) {
+      document.getElementById(id).disabled = true
+    }
+</script>
+
+{% endif %}
+
+{% endblock %}

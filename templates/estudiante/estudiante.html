@@ -1,5 +1,77 @@
 {% extends 'base.html' %}
 
 {% block contenido %}
-soy estudiante y aqui deberia de ir el horario
+<div class="container mt-4">
+
+    <!-- Perfil del Estudiante -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-person-circle"></i> Perfil del Estudiante</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Nombre:</strong> {{ perfil["nombres"] }} {{ perfil["apellidos"] }}</p>
+                    <p><strong>RUT:</strong> {{ perfil["rut"] }}</p>
+                    <p><strong>Género:</strong> {{ perfil["genero"] }}</p>
+                    <p><strong>Fecha de nacimiento:</strong> {{ perfil["fecha_nacimiento"] }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Dirección:</strong> {{ perfil["direccion"] }}</p>
+                    <p><strong>Celular:</strong> {{ perfil["celular"] }}</p>
+                    <p><strong>Cargo:</strong> {{ perfil["cargo"] }}</p>
+                    <p><strong>Promedio final:</strong> {{ perfil["promedio_final"] }}</p>
+                    <p><strong>Asistencia:</strong> {{ perfil["asistencia"] }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Taller inscrito -->
+    {% if perfil["taller"] %}
+    <div class="card shadow mb-4">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0"><i class="bi bi-journal-bookmark-fill"></i> Taller inscrito</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Nombre:</strong> {{ perfil["taller"]["nombre"] }}</p>
+            <p><strong>Descripción:</strong> {{ perfil["taller"]["descripcion"] }}</p>
+            <p><strong>Cupos disponibles:</strong> {{ perfil["taller"]["cupos"] }}</p>
+            <p><strong>Horarios:</strong> {{ perfil["taller"]["horarios"] }}</p>
+            <p><strong>Profesor:</strong> {{ perfil["taller"]["profesor_nombre"] }}</p>
+
+            <h5 class="mt-3">Inscritos:</h5>
+            <ul class="list-group list-group-flush">
+                {% for inscrito in perfil["taller"]["inscritos"] %}
+                <li class="list-group-item">{{ inscrito["nombre"] }} ({{ inscrito["rut"] }})</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Apoderado -->
+    {% if perfil["apoderado"] %}
+    <div class="card shadow mb-4">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0"><i class="bi bi-people-fill"></i> Apoderado</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Nombre:</strong> {{ perfil["apoderado"]["nombres"] }} {{ perfil["apoderado"]["apellidos"]
+                        }}</p>
+                    <p><strong>RUT:</strong> {{ perfil["apoderado"]["rut"] }}</p>
+                    <p><strong>Fecha de nacimiento:</strong> {{ perfil["apoderado"]["fecha_nacimiento"] }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Dirección:</strong> {{ perfil["apoderado"]["direccion"] }}</p>
+                    <p><strong>Celular:</strong> {{ perfil["apoderado"]["celular"] }}</p>
+                    <p><strong>Cargo:</strong> {{ perfil["apoderado"]["cargo"] }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

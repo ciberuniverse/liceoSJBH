@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<form>
+    Solicitar Pase
+    <input>
+    <button>Solicitar</button>
+
+</form>
+
+{% if pases %}
+  <div class="container my-4" style="max-width: 650px;">
+
+    <h3 class="mb-4 text-center">Pases Virtuales Disponibles</h3>
+
+    {% for pase in pases %}
+      <form method="POST" class="card shadow-sm mb-4">
+        <div class="card-body">
+          <!-- Datos visibles -->
+          <ul class="list-unstyled mb-3">
+            <li><strong>Apoderado:</strong> {{ pase.nombre_apoderado }} <span class="text-muted">({{ pase.rut_apoderado }})</span></li>
+            <li><strong>Estudiante:</strong> {{ pase.nombre_estudiante }} <span class="text-muted">({{ pase.rut_estudiante }})</span></li>
+            <li><strong>Fecha Retiro:</strong> {{ pase.fecha_retiro }}</li>
+            <li><strong>Hora Salida:</strong> {{ pase.hora_salida }}</li>
+            <li><strong>Emitido:</strong> {{ pase.fecha_actual }}</li>
+          </ul>
+
+          <!-- Inputs ocultos -->
+          <input type="hidden" name="nombre_apoderado" value="{{ pase.nombre_apoderado }}">
+          <input type="hidden" name="rut_apoderado" value="{{ pase.rut_apoderado }}">
+          <input type="hidden" name="nombre_estudiante" value="{{ pase.nombre_estudiante }}">
+          <input type="hidden" name="rut_estudiante" value="{{ pase.rut_estudiante }}">
+          <input type="hidden" name="fecha_retiro" value="{{ pase.fecha_retiro }}">
+          <input type="hidden" name="hora_salida" value="{{ pase.hora_salida }}">
+          <input type="hidden" name="fecha_actual" value="{{ pase.fecha_actual }}">
+
+          <!-- Botón -->
+          <div class="text-end">
+            <button type="submit" name="accion" value="descargar_pase" class="btn btn-primary btn-sm">
+              📥 Generar Pase PDF
+            </button>
+          </div>
+        </div>
+      </form>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <div class="alert alert-info text-center my-4">
+    No hay pases disponibles en este momento.
+  </div>
+{% endif %}
+
+{% endblock %}

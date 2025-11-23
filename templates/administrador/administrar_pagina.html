@@ -27,6 +27,17 @@
            style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px">
   </div>
 
+  <div style="margin-bottom:25px">
+    <label for="nombre_director" style="display:block;font-weight:bold;margin-bottom:5px">Nombre del Director:</label>
+    <input type="text" name="nombre_director" id="nombre_director"
+           value="{{ nombre_director }}"
+           maxlength="80"
+           pattern="^[^$&|{}<>;'\"]+$"
+           title="Evita caracteres especiales como $, &, |, {}, <>, ;, ', \""
+           required
+           style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px">
+  </div>
+  
   <h3 style="margin-bottom:15px;color:#444">Redes Sociales</h3>
 
   {% for red in redes_sociales %}

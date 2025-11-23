@@ -5,7 +5,7 @@
   <div class="row justify-content-center">
     <div class="col-lg-8">
       <div class="card border-0 shadow-sm rounded-3">
-        
+
         <!-- Encabezado -->
         <div class="card-header bg-secondary text-white">
           <h4 class="mb-0">Perfil del Apoderado</h4>
@@ -18,57 +18,74 @@
           <p class="mb-3"><strong>Cargo:</strong> {{ informacion_cargas.cargo | capitalize }}</p>
 
           {% if "carga_apoderado" not in informacion_cargas %}
-            <div class="alert alert-secondary">
-              Este apoderado no tiene cargas asociadas actualmente.
-            </div>
+          <div class="alert alert-secondary">
+            Este apoderado no tiene cargas asociadas actualmente.
+          </div>
           {% else %}
-            <p><strong>RUTs de carga:</strong> {{ informacion_cargas.carga_apoderado | join(', ') }}</p>
+          <p><strong>RUTs de carga:</strong> {{ informacion_cargas.carga_apoderado | join(', ') }}</p>
 
-            <!-- Tabla de estudiantes -->
-            <h6 class="mt-4 mb-2 fw-semibold">Estudiantes Asociados</h6>
-            <table class="table table-bordered align-middle">
-              <thead class="table-light">
-                <tr>
-                  <th>Nombre</th>
-                  <th>RUT</th>
-                  <th>Cargo</th>
-                  <th>Fechas Taller</th>
-                  <th>Nota Taller</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for carga in informacion_cargas.cargas %}
-                <tr>
-                  <td>{{ carga.nombres }} {{ carga.apellidos }}</td>
-                  <td>{{ carga.rut }}</td>
-                  <td>{{ carga.cargo | capitalize }}</td>
-                  <td>
-                    {% for fecha in carga.lista_taller %}
-                      <span class="badge bg-light text-dark border">{{ fecha }}</span>
-                    {% endfor %}
-                  </td>
-                  <td class="text-center fw-bold">{{ carga.nota_taller }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+          <!-- Tabla de estudiantes -->
+          <h6 class="mt-4 mb-2 fw-semibold">Estudiantes Asociados</h6>
+          <table class="table table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Nombre</th>
+                <th>RUT</th>
+                <th>Cargo</th>
+                <th>Fechas Taller</th>
+                <th>Nota Taller</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for carga in informacion_cargas.cargas %}
+              <tr>
+                <td>{{ carga.nombres }} {{ carga.apellidos }}</td>
+                <td>{{ carga.rut }}</td>
 
-            <!-- Detalles del taller -->
-            {% for carga in informacion_cargas.cargas %}
-              {% if "taller" in carga %}
-              <div class="mt-4 border-start border-3 ps-3">
-                <h6 class="fw-semibold">Taller: {{ carga.taller.nombre }}</h6>
-                <p class="mb-1"><strong>Descripción:</strong> {{ carga.taller.descripcion }}</p>
-                <p class="mb-1"><strong>Horario:</strong> {{ carga.taller.horarios }}</p>
-                <p class="mb-1"><strong>Profesor:</strong> {{ carga.taller.profesor_nombre }} ({{ carga.taller.profesor_rut }})</p>
-                <p class="mb-1"><strong>Inscritos:</strong>
-                  {% for inscrito in carga.taller.inscritos %}
-                    <span class="badge bg-light text-dark border">{{ inscrito.nombre }} ({{ inscrito.rut }})</span>
+
+                <td>{{ carga.cargo | capitalize }}</td>
+                <td>
+                  {% for fecha in carga.lista_taller %}
+                  <span class="badge bg-light text-dark border">{{ fecha }}</span>
                   {% endfor %}
-                </p>
-              </div>
-              {% endif %}
-            {% endfor %}
+                </td>
+                <td class="text-center fw-bold">{{ carga.nota_taller }}</td>
+                <td class="text-end">
+                <!-- Boton de obtener certificado de alumno regular -->
+
+                  <form method="POST">
+
+                    <input name="rut_estudiante" value="{{ carga.rut }}" hidden>
+
+                    <button type="submit" name="accion" value="obtener_certificado"
+                      class="btn btn-sm btn-outline-primary">
+                      Certificado Alumno Regular
+                    </button>
+                  </form>
+
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <!-- Detalles del taller -->
+          {% for carga in informacion_cargas.cargas %}
+          {% if "taller" in carga %}
+          <div class="mt-4 border-start border-3 ps-3">
+            <h6 class="fw-semibold">Taller: {{ carga.taller.nombre }}</h6>
+            <p class="mb-1"><strong>Descripción:</strong> {{ carga.taller.descripcion }}</p>
+            <p class="mb-1"><strong>Horario:</strong> {{ carga.taller.horarios }}</p>
+            <p class="mb-1"><strong>Profesor:</strong> {{ carga.taller.profesor_nombre }} ({{ carga.taller.profesor_rut
+              }})</p>
+            <p class="mb-1"><strong>Inscritos:</strong>
+              {% for inscrito in carga.taller.inscritos %}
+              <span class="badge bg-light text-dark border">{{ inscrito.nombre }} ({{ inscrito.rut }})</span>
+              {% endfor %}
+            </p>
+          </div>
+          {% endif %}
+          {% endfor %}
           {% endif %}
         </div>
 
