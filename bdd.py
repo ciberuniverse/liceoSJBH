@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateOne
 from xhtml2pdf import pisa
 from bson.objectid import ObjectId # Importar ObjectId
 from datetime import datetime
@@ -120,7 +120,35 @@ def guardar_imagen(seccion: str, name_frontend: str, formulario_file) -> dict:
 def cifrar_contrasena(str_contrasena: str) -> str:
     return blake2b(str_contrasena.encode("utf-8")).hexdigest()
 
+def obtener_navbar(session_cookie: dict, rutas: dict, redirect: bool = False) -> list | dict:
 
+    ############## NO LA ESTOY OCUPANDO :c
+    """
+    Obtiene las rutas del usuario en base al cargo.\n
+    Retorna un dict con la informacion de las urtas para\n
+    las navbar y redirecciones.\n
+
+    Si redirect es True, se le redireccionara a la primera ruta\n
+    del rol asignado. Es decir, rutas[0].
+    """
+
+    cargo = session_cookie["informacion"]["cargo"]
+    rutas_cargo = rutas["rol"][cargo]
+    rutas_verbose = rutas["navbar"]
+
+    rutas_return = []
+    for ruta in rutas_cargo:
+
+        try:
+            if redirect:
+                return rutas_verbose[ruta]
+            
+            rutas_return.append((ruta, rutas_verbose[ruta]))
+        
+        except Exception as err:
+            json_de_mensaje(500, err)
+
+    return rutas_return
 
 ###############################################
 # FUTURA INTEGRACION DE ESTA CLASE DE SEGURIDAD
@@ -304,7 +332,7 @@ class Apoderado:
         if "retiro_alumno" not in informacion_apoderado["mensaje"]:
             return json_de_mensaje(404, "No tiene ninguna solicitud de retiro para generar.")
         
-        return json_de_mensaje(200, informacion_apoderado["mensaje"]["retiro_alumno"])
+        return json_de_mensaje(200, sorted(informacion_apoderado["mensaje"]["retiro_alumno"], key=lambda x: x["fecha_actual"], reverse=True))
 
 class Security:
 
@@ -359,7 +387,44 @@ class Security:
         print(f"COPIA DE SEGURIDAD REALIZADA EXITOSAMENTE DE {leer_dict['path']}")
         with open(leer_dict["path"], "wb") as respaldo_save:
             respaldo_save.write(leer_dict["bytes"])
+    
+    @staticmethod
+    def str_to_json(form_input: str) -> dict:
+
+        try:
+            str_ = json.loads(form_input)
         
+        except:
+            return json_de_mensaje(402, "El formato del JSON en STR es incompatible para darle formato.")
+        
+        return json_de_mensaje(200, str_)
+
+    @staticmethod
+    def str_to_float(valor_float_str: str) -> float:
+
+        # Tomar solo los primeros 3 caracteres
+        raw = valor_float_str[:3]
+
+        # Filtrar solo números
+        new_valor = "".join([c for c in raw if c.isdigit()])
+
+        long_str = len(new_valor)
+
+        if not new_valor or long_str < 1:
+            json_de_mensaje(500, "ESTAN ENVIANDO UN FORMULARIO CON STR SIN NUMEROS")
+            return 1.0
+
+        if long_str == 1:
+            numero_retorno = float(new_valor)
+        
+        if long_str == 2 or long_str == 3:
+            numero_retorno = float(new_valor[0] + "." + new_valor[1])
+
+        if numero_retorno > 7 or numero_retorno < 1:
+            return float(1.0)
+        
+        return numero_retorno
+
 class Users:
     """
     Clase encargada de almacenar las acciones a realizar para designar, leer, y modificar\n
@@ -653,6 +718,33 @@ class General:
 
         return json_de_mensaje(404, "No se logro encontrar ningun taller en la base de datos.")
 
+    def todos_los_cursos() -> dict:
+
+        try:
+            resp_ = list(cursos.find({}, {"_id": 1, "curso": 1, "alumnos": 1}))
+        
+        except:
+            return json_de_mensaje(500, "Ocurrio un error en la base de datos que no se logro obtener los cursos.")
+
+        if not resp_:
+            return json_de_mensaje(404, "No se logro obtener la informacion de los cursos.")
+
+        res_return = []
+
+        for obj_ in resp_:
+
+            if "alumnos" not in obj_:
+                continue
+
+            obj_['alumnos'] = len(obj_['alumnos'])
+            res_return.append(obj_)
+
+        if not res_return:
+            return json_de_mensaje(404, "No se logro obtener la informacion de los cursos.")
+
+        return json_de_mensaje(200, res_return)
+    
+
     def obtener_informacion_rut(rut: str) -> dict:
 
         try:
@@ -678,15 +770,16 @@ class General:
                     "foreignField": "rut",          
                     "as": "alumnos_curso"              
                 }},
-                {"$project": {"_id": 0, "alumnos_curso._id": 0, "alumnos_curso.contrasena": 0}}
+                {"$project": {"_id": 0, "alumnos_curso._id": 0, "alumnos_curso.contrasena": 0 }}
             ]))
 
 
         except Exception as err:
             return json_de_mensaje(500, f"ERROR: No se logro obtener informacion de los cursos. {err}")
-
+        
         if not resultado_curso:
             return json_de_mensaje(404, "No se logro encontrar ningun curso asociado al id.")
+
 
         return json_de_mensaje(200, resultado_curso[0])
 
@@ -761,6 +854,7 @@ class Administrador:
         ################## 
         # Se le da formato a la consulta para mongo db
         informacion_curso["materias"] = { x:informacion_curso["materias"][x] for x in informacion_curso["materias"] }
+        ################################## PUEDEN HABER ERRORES A FUTURO CON LA LINEA DE ARRIBA
 
         curso_format = {
             "curso": str(formulario_json["grado_curso"] + "°" + formulario_json["letra_curso"]).lower(),
@@ -872,15 +966,48 @@ class Administrador:
 
         #################
 
+        if informacion_json["cargo"] == "estudiante":
+
+            if "curso_id" in informacion_json:
+                curso = informacion_json["curso_id"]
+                informacion_json.pop("curso_id")
+                
+                # Se guarda en un formato con la clave correcta y se envia
+                informacion_json["curso_actual"] = ObjectId(curso)
+
         try:
             resultados = estudiantes.insert_one(informacion_json)
         except:
             json_de_mensaje(500, "No se logro crear un nuevo usuario por un error.")
+
+        if informacion_json["cargo"] == "estudiante":
+
+            estudiante_curso = Administrador.asignar_estudiante_a_curso(
+                rut_estudiante = informacion_json["rut"],
+                id_curso = curso
+            )
+
+            if estudiante_curso["codigo"] != 200:
+                return estudiante_curso
         
         if not resultados.acknowledged:
             return json_de_mensaje(400, "La base de datos no completo el registro.")
         
         return json_de_mensaje(200, f"Se ha agregado al usuario {informacion_json['rut']} con cargo {informacion_json['cargo']} exitosamente.")
+
+    @staticmethod
+    def asignar_estudiante_a_curso(rut_estudiante: str, id_curso: str) -> dict:
+
+        try:
+            resultado = cursos.update_one({"_id": ObjectId(id_curso)}, {"$push": {"alumnos": rut_estudiante}})
+
+        except:
+            return json_de_mensaje(500, "ERROR: No se logro asignar el estudiante al curso.")
+        
+        if not resultado.acknowledged:
+            return json_de_mensaje(404, "No se logro encontrar el curso para agregar el alumno.")
+        
+        return json_de_mensaje(200, "Alumno agregado exitosamente.")
 
     def quitar_alumnos_del_taller(data_form: dict) -> dict:
 
@@ -1244,9 +1371,107 @@ class Profesor:
         
         return json_de_mensaje(200, f"Los {len(alumnos_rut)} estudiantes han quedado presentes en la fecha {fecha_lista}.")
 
+    def asignar_notas(data_form: dict) -> dict:
 
+        data_form.pop("accion")
 
+        resultado_seguridad = Security.claves_existentes(
+            claves = ["payload_json"],
+            formulario = data_form
+        )
+        if not resultado_seguridad:
+            return json_de_mensaje(402, "El formato de tu formulario no cumple con lo esperado.")
+        
+        ##########
+        materia_notas = Security.str_to_json(data_form["payload_json"])
+        if materia_notas["codigo"] != 200:
+            return materia_notas
+        
+        materia_notas = materia_notas["mensaje"]
 
+        resultado_check = Security.claves_existentes(["materia", "notas"], materia_notas)
+        if not resultado_check:
+            return json_de_mensaje(402, "El formato de tu formulario no cumple con lo esperado.")
+        
+        nombre_materia = materia_notas["materia"]
+        nombre_evaluacion = materia_notas["notas"]["nombre_prueba"]
+
+        if "notas_alumnos" not in materia_notas["notas"]:
+            return json_de_mensaje(402, "El formato de tu formulario no cumple con lo esperado.")
+        
+        notas_alumnos: list = materia_notas["notas"]["notas_alumnos"]
+
+        operacion_actualizar = []
+        for obj_tmp in notas_alumnos:
+
+            for rut, nota in obj_tmp.items():
+
+                operacion_actualizar.append(
+                    UpdateOne(
+                        {"rut": rut},
+                        {"$push": {f"materias.{nombre_materia}.notas": {"nombre_evaluacion": nombre_evaluacion, "nota": Security.str_to_float(nota)}}}
+                    )
+                )
+
+        try:
+            respuesta_ = estudiantes.bulk_write(operacion_actualizar)
+        except Exception as err:
+            return json_de_mensaje(500, f"Oucrrio un error inesperado. Contactar al administrador o encargado de informatica. Linea 1306. {err}")
+        
+        if not respuesta_.acknowledged:
+            return json_de_mensaje(404, "No se logro modificar a los estudiantes del curso sus notas.")
+        
+        return json_de_mensaje(200, "Notas asignadas a los alumnos correctamente.")
+
+    def pasar_lista(data_form: dict) -> dict:
+
+        data_form.pop("accion")
+
+        if "payload_json" not in data_form:
+            return json_de_mensaje(402, "El formulario que estas enviando esta incompleto o corrupto.")
+        
+        resultado_json = Security.str_to_json(data_form["payload_json"])
+        if resultado_json["codigo"] != 200:
+            return resultado_json
+        
+        resultado_json = resultado_json["mensaje"] #### ESTO ES PORQUE RETORNA UN DICT CON CODIGO Y MENSAJE
+        resultado_sec = Security.claves_existentes(["materia", "alumnos_presentes"], resultado_json)
+        if not resultado_sec:
+            return json_de_mensaje(402, "Estas enviando un json incompleto.")
+        
+        materia = resultado_json["materia"]
+        alumnos_presentes = resultado_json["alumnos_presentes"]
+
+        if not alumnos_presentes:
+            return json_de_mensaje(402, "Estas enviando una lista de estudiantes vacia.")
+
+        operacion_actualizar = []
+        fecha_actual = obtener_fecha()
+        
+        try:
+            for alumno in alumnos_presentes:
+
+                operacion_actualizar.append(
+                    UpdateOne(
+                        {"rut": alumno},
+                        {"$push": {
+                            f"materias.{materia}.asistencia": fecha_actual}}
+                    )
+                )
+
+        except Exception as err:
+            return json_de_mensaje(500, f"Ocurrio un error: {err}.")
+
+        try:
+            respuesta_ = estudiantes.bulk_write(operacion_actualizar)
+        except Exception as err:
+            return json_de_mensaje(500, f"Oucrrio un error inesperado. Contactar al administrador o encargado de informatica. Linea 1306. {err}")
+        
+        if not respuesta_.acknowledged:
+            return json_de_mensaje(404, "No se logro modificar a los estudiantes del curso sus notas.")
+        
+
+        return json_de_mensaje(200, f"Se ha dejado presentes a un total de {len(alumnos_presentes)} en {materia}.")
 
 class Noticiero:
     """Funciones que corresponden al uso del Noticiero."""
@@ -1472,7 +1697,8 @@ class Estudiante:
                 return apoderado_info
 
             rut_informacion["mensaje"]["apoderado"] = apoderado_info["mensaje"]
-        
+            
+
         print(rut_informacion["mensaje"])
 
         return json_de_mensaje(200, rut_informacion["mensaje"])
@@ -1569,7 +1795,7 @@ class Public:
         ]
 
         if not all(valid):
-            return json_de_mensaje(500, "Estas enviando parametros o logitudes no permitidas.")
+            return json_de_mensaje(402, "Estas enviando parametros o logitudes no permitidas.")
 
         no_sql_str = no_sql({"usuario": usuario, "contrasena": contrasena})
 
@@ -1592,7 +1818,7 @@ class Public:
                     "curso_actual": 0
                 }
             ))
-            print(resultado[0])
+
         except:
             return json_de_mensaje(500, "Ocurrio un error al buscar en la base de datos un usuario o contraseña.")
         

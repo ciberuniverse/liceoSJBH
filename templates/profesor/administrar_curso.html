@@ -1,1 +1,269 @@
-{{ informacion_curso }}
+{% extends "base.html" %}
+
+{% block contenido %}
+<div class="container mt-4">
+
+    <!-- Información del curso -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4 class="fw-bold">{{ informacion_curso.curso|upper }}</h4>
+            <p class="mb-1">
+                <strong>Tu asignatura:</strong>
+                {{ informacion_curso.materias[rut_profesor] | capitalize }}
+            </p>
+        </div>
+    </div>
+    {% if informacion_curso['alumnos_curso'] %}
+
+    <!-- Botones de acciones -->
+    <div class="mb-3 d-flex gap-2">
+        <button class="btn btn-primary" onclick="mostrar_ocultos('asignar_nota_nombre')">
+            Asignar Notas
+        </button>
+
+        <button class="btn btn-success" onclick="mostrar_ocultos('pasar_lista')">
+            Pasar lista
+        </button>
+    </div>
+
+    <!-- Nombre de evaluación -->
+    <div class="card p-3 mb-3 asignar_nota_nombre" hidden>
+        <label class="form-label fw-bold">Nombre de la evaluación</label>
+        <input name="nombre_nota" id="nombre_nota" class="form-control mb-2" type="text" minlength="3" maxlength="40">
+        <button class="btn btn-warning" onclick="empezar_evaluar()">Empezar a evaluar</button><br>
+        <button class="btn btn-danger"
+            onclick="cancelar('asignar_nota_nombre'); cancelar('asignar_nota')">Cancelar</button>
+    </div>
+
+    <!-- Lista de alumnos -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Tus alumnos</h5>
+        </div>
+
+        <ul class="list-group list-group-flush">
+
+            {% for alumno in informacion_curso['alumnos_curso'] %}
+            <li class="list-group-item py-3">
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <!-- Datos del alumno -->
+                    <div class="mb-2">
+                        <strong>{{ alumno.nombres }} {{ alumno.apellidos }}</strong><br>
+                        <small class="text-muted">{{ alumno.rut }}</small>
+                        <small onclick="mostrar_ocultos('anotaciones_alumno_{{ alumno.rut }}')" class="text-warning fw-bold"
+                            style="cursor:pointer;">
+                            <i class="bi bi-journal-text me-1"></i>Anotación
+                        </small>
+                    </div>
+
+                    <!-- Pasar lista -->
+                    <div class="pasar_lista" id="lista_{{ alumno.rut }}" onclick="alumno_presente('{{ alumno.rut }}')"
+                        hidden style="cursor:pointer;">
+                        <span class="badge bg-danger p-2">Marcar Presente</span>
+                    </div>
+
+                    <!-- Asignar nota -->
+                    <div class="asignar_nota" hidden>
+                        <div class="d-flex align-items-center gap-2">
+                            <input id="nota_{{ alumno.rut }}" type="number" inputmode="numeric"
+                                class="form-control form-control-sm text-center" style="max-width:80px;">
+
+                            <button class="btn btn-sm btn-success d-flex align-items-center"
+                                onclick="asignar_nota('{{ alumno.rut }}')" id="boton_{{ alumno.rut }}">
+                                <i class="bi bi-check-circle me-1"></i> Guardar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="anotaciones_alumno_{{ alumno.rut }}" hidden>
+                        <div class="card shadow-sm mt-3">
+                            <div class="card-body">
+                                <!-- Rut oculto -->
+                                <input name="rut_alumno" value="{{ alumno.rut }}" hidden>
+
+                                <!-- Asunto -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Asunto</label>
+                                    <input name="asunto" type="text" minlength="4" maxlength="100" class="form-control"
+                                        placeholder="Título breve de la anotación">
+                                </div>
+
+                                <!-- Descripción -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Descripción</label>
+                                    <textarea name="descripcion" rows="3" class="form-control"
+                                        placeholder="Ingrese la descripción de la anotación."></textarea>
+                                </div>
+
+                                <!-- Botón -->
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" name="accion" value="anotacion_alumno"
+                                        class="btn btn-primary">
+                                        <i class="bi bi-pencil-square me-1"></i> Guardar Anotación
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notas existentes -->
+                    <div class="ms-3">
+
+                        {% if alumno.materias %}
+                        {% set asignatura = informacion_curso.materias[rut_profesor] %}
+                        {% set notas = alumno.materias[asignatura].notas %}
+
+                        {% if notas %}
+                        <div class="d-flex flex-column gap-1">
+
+                            {% for evaluacion in notas %}
+                            <div class="d-flex justify-content-between align-items-center small text-muted">
+
+                                <span class="fw-semibold text-dark">
+                                    {{ evaluacion.nombre_evaluacion }}
+                                </span>
+
+                                <span class="badge rounded-pill bg-light text-dark border">
+                                    {{ evaluacion.nota }}
+                                </span>
+
+                            </div>
+                            {% endfor %}
+
+                        </div>
+
+                        {% else %}
+                        <span class="badge bg-light text-dark border">Sin notas registradas</span>
+                        {% endif %}
+
+                        {% else %}
+                        <span class="badge bg-light text-dark border">Sin notas</span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+            </li>
+
+            {% endfor %}
+
+        </ul>
+        {% else %}
+        <div class="alert alert-info text-center m-3">
+            No hay alumnos registrados para este curso.
+        </div>
+        {% endif %}
+
+        <div class="asignar_nota" hidden>
+            <br>
+            <form method="POST" id="form_subir_notas">
+                <button type="submit" id="subir_notas" name="accion" value="subir_notas" class="btn btn-primary px-4">
+                    <i class="bi bi-upload me-2"></i>Subir Notas
+                </button>
+            </form>
+            <br>
+        </div>
+
+        <div class="pasar_lista" hidden>
+            <form method="POST" id="form_pasar_lista">
+                <button type="submit" id="pasar_lista_boton" name="accion" value="pasar_lista"
+                    class="btn btn-success px-4">
+                    Dejar Presente
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    let materia = "{{ informacion_curso.materias[rut_profesor] }}"
+
+    let ALUMNOS_PRESENTES = []
+    let NOTAS_ALUMNOS = {
+        "nombre_prueba": "",
+        "notas_alumnos": []
+    }
+
+    function mostrar_ocultos(clase_tag) {
+        document.querySelectorAll(`.${clase_tag}`).forEach(f => f.hidden = false);
+    }
+
+    function cancelar(clase_tag) {
+        document.querySelectorAll(`.${clase_tag}`).forEach(f => f.hidden = true);
+    }
+
+    function alumno_presente(rut) {
+
+        if (ALUMNOS_PRESENTES.includes(rut)) {
+            ALUMNOS_PRESENTES = ALUMNOS_PRESENTES.filter(r => r !== rut)
+            document.getElementById(`lista_${rut}`).innerHTML = `<span class="badge bg-danger p-2">Marcar Presente</span>`
+            return
+        }
+
+        ALUMNOS_PRESENTES.push(rut)
+        document.getElementById(`lista_${rut}`).innerHTML = `<span class="badge bg-success p-2">Presente</span>`
+    }
+
+    function empezar_evaluar() {
+        NOTAS_ALUMNOS["nombre_prueba"] = document.getElementById("nombre_nota").value
+        mostrar_ocultos('asignar_nota')
+    }
+
+    function asignar_nota(rut) {
+
+        const BTN_RUT = document.getElementById(`boton_${rut}`)
+        let nota = document.getElementById(`nota_${rut}`).value;
+        BTN_RUT.innerHTML = 'Modificar'
+        BTN_RUT.setAttribute("class", "btn btn-sm btn-warning")
+
+        let push_notas = { [rut]: nota };
+
+        // Si ya existe una nota para este rut, la eliminamos
+        if (NOTAS_ALUMNOS.notas_alumnos.some(obj => obj.hasOwnProperty(rut))) {
+            NOTAS_ALUMNOS.notas_alumnos = NOTAS_ALUMNOS.notas_alumnos.filter(
+                obj => !obj.hasOwnProperty(rut)
+            );
+        }
+
+        // Agregamos la nueva nota
+        NOTAS_ALUMNOS.notas_alumnos.push(push_notas);
+
+        console.log(NOTAS_ALUMNOS);
+    }
+
+    document.getElementById("form_subir_notas").addEventListener("formdata", (e) => {
+
+        const fd = e.formData;
+
+        const payload = {
+            materia: `${materia}`,
+            notas: NOTAS_ALUMNOS
+        };
+
+        fd.append("payload_json", JSON.stringify(payload));
+
+        console.log("FormData final:", [...fd.entries()]);
+    });
+
+    document.getElementById("form_pasar_lista").addEventListener("formdata", (e) => {
+
+        const fd = e.formData;
+
+        const payload = {
+            materia: `${materia}`,
+            alumnos_presentes: ALUMNOS_PRESENTES
+        };
+
+        fd.append("payload_json", JSON.stringify(payload));
+
+        console.log(payload)
+        console.log("FormData final:", [...fd.entries()]);
+    });
+
+</script>
+
+{% endblock %}

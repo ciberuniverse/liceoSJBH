@@ -12,7 +12,8 @@
       "administrar_taller_estudiantes",
       "administrar_pagina",
       "crear_roles",
-      "administrar_usuarios"
+      "administrar_usuarios",
+      "crear_curso"
     ],
     "noticiero": [
       "noticiero",
@@ -37,7 +38,9 @@
       "administrar_pagina",
       "noticias",
       "crear_roles",
-      "administrar_usuarios"
+      "administrar_usuarios",
+      "generar_pase",
+      "crear_curso"
     ]
   },
   "public": [
@@ -49,9 +52,7 @@
     "urgente",
     "profesor_jefe_crear",
     "micuenta",
-    "talleres",
-    "crear_curso"
-
+    "talleres"
   ],
   "private": [
     "estudiante",
@@ -70,6 +71,26 @@
     "administrar_usuarios",
     "apoderado",
     "retirar_alumno",
-    "generar_pase"
-  ]
+    "generar_pase",
+    "crear_curso"
+  
+  ],
+  "navbar": {
+    "estudiante": "Mis Notas",
+    "taller_estudiante": "Mi Taller",
+    "administrador": "Crear Usuarios",
+    "administrador_mensajes": "Solicitud de Contacto",
+    "administrador_mensajes_vistos": "Mensajes Vistos",
+    "administrador_crear_taller": "Crear Talleres",
+    "administrar_taller_estudiantes": "Administrar Talleres",
+    "administrar_pagina": "Modificar WEB",
+    "noticiero": "Administrar Noticias",
+    "profesor": "Mis Clases",
+    "profesor_taller": "Mi Taller",
+    "crear_roles": "Crear Cargos",
+    "administrar_usuarios": "Administrar Usuarios",
+    "apoderado": "Mis Pupilos",
+    "retirar_alumno": "Retirar Alumno",
+    "generar_pase": "Generar Pases"
+  }
 }

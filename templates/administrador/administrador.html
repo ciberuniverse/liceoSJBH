@@ -53,6 +53,7 @@
         <div class="mb-3">
           <label for="cargo" class="form-label">Cargo</label>
           <select class="form-select" name="cargo" id="cargo" required>
+            <option value="" selected disabled>Seleccione un cargo</option>
 
             {% for rol in roles %}
               <option value="{{ rol }}">{{ rol | capitalize }}</option>
@@ -60,7 +61,7 @@
           </select>
         </div>
 
-        <div id="apoderado_sec">
+        <div id="bloque_dinamico">
         </div>
 
         <button type="submit" name="accion" id="accion" value="crear" class="btn btn-success">Crear</button>
@@ -114,8 +115,22 @@ let CARGAS = [];
   document.getElementById("cargo").addEventListener("change", (e) => {
     const seleccion = e.target.value;
 
-    if (seleccion === "apoderado") {
-      document.getElementById("apoderado_sec").innerHTML = `
+    if (seleccion === "estudiante") {
+      document.getElementById("bloque_dinamico").innerHTML = `
+
+        <div class="mb-3">
+          <label for="curso" class="form-label">Curso</label>
+          <select class="form-select" name="curso_id" id="curso" required>
+            <option value="" selected disabled>Seleccione un curso</option>
+            {% for curso in cursos %}
+              <option value="{{ curso['_id'] }}">{{ curso['curso'] | upper }} | Alumnos: {{ curso.alumnos }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      `;
+
+    } else if (seleccion === "apoderado") {
+      document.getElementById("bloque_dinamico").innerHTML = `
         <div class="mb-3">
           <label for="rut_carga" class="form-label">RUT del Estudiante</label>
           <div class="input-group">
@@ -131,7 +146,7 @@ let CARGAS = [];
       document.getElementById("carga_apoderado").setAttribute("value", CARGAS.join(","));
 
     } else {
-      document.getElementById("apoderado_sec").innerHTML = "";
+      document.getElementById("bloque_dinamico").innerHTML = "";
       CARGAS = [];
     }
   });

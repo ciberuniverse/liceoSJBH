@@ -190,9 +190,18 @@ def administrador():
     ################# Seccion de metodo GET
 
     roles = RUTAS["rol"].keys()
+    cursos = bdd.General.todos_los_cursos()
+    if cursos["codigo"] != 200:
+        cursos = [{"curso": "No disponible", "_id": "0", "alumnos": 0}]
+
+    cursos = cursos["mensaje"]
 
     # Usar el url para cambiar de acciones a utlizar pero no cambiar de direccion. es decir cambiar solo la plantilla
-    return render_template("administrador/administrador.html", roles = roles, rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
+    return render_template("administrador/administrador.html",
+        cursos = cursos,
+        roles = roles,
+        rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]]
+    )
 
 @app.route("/administrador_mensajes", methods = ["POST", "GET"])
 def administrador_mensajes():
@@ -530,8 +539,21 @@ def profesor():
             respuesta = bdd.General.obtener_informacion_curso(formulario["id_curso"])
             if respuesta["codigo"] != 200:
                 return redirect(url_for("profesor", codigo = respuesta["codigo"], mensaje = respuesta["mensaje"]))
+            
+            #print(respuesta)
+            return render_template("profesor/administrar_curso.html", informacion_curso = respuesta["mensaje"], rut_profesor = session["informacion"]["rut"])
+
+        if formulario["accion"] == "subir_notas":
+            respuesta = bdd.Profesor.asignar_notas(formulario)
+
+        if formulario["accion"] == "pasar_lista":
+            respuesta = bdd.Profesor.pasar_lista(formulario)
         
-            return render_template("profesor/administrar_curso.html", informacion_curso = respuesta["mensaje"])
+        print(respuesta)
+
+        return redirect(url_for("profesor", codigo = respuesta["codigo"], mensaje = respuesta["mensaje"]))
+
+
 
 
     #################### Seccion GET
@@ -704,6 +726,11 @@ def apoderado():
 @app.route("/retirar_alumno", methods = ["GET", "POST"])
 def retirar_alumno():
 
+    apoderado_informacion = {
+        "nombre": session["informacion"]["nombres"] + " " + session["informacion"]["apellidos"],
+        "rut": session["informacion"]["rut"]
+    }
+
     if request.method == "POST":
 
         formulario = request.form.to_dict()
@@ -731,14 +758,19 @@ def retirar_alumno():
 
     pases_para_generar = bdd.Apoderado.obtener_pases(session["informacion"]["rut"])
     if pases_para_generar["codigo"] != 200:
-        return render_template("apoderado/retirar_alumno.html", error = pases_para_generar)
+        return render_template("apoderado/retirar_alumno.html", error = pases_para_generar, informacion_apoderado = apoderado_informacion)
 
-    return render_template("apoderado/retirar_alumno.html", pases = pases_para_generar["mensaje"]) 
+    return render_template("apoderado/retirar_alumno.html", pases = pases_para_generar["mensaje"], informacion_apoderado = apoderado_informacion) 
 
 ############################## Encargado de generar pases
 
 @app.route("/generar_pase", methods = ["GET", "POST"])
 def generar_pase():
+
+    informacion_encargado = {
+        "nombre": session["informacion"]["nombres"] + " " + session["informacion"]["apellidos"] + "Cargo: " + session["informacion"]["cargo"].capitalize(),
+        "rut": session["informacion"]["rut"]
+    }
 
     if request.method == "POST":
 
@@ -761,7 +793,13 @@ def generar_pase():
                     mensaje = informacion_apoderado_cargas["mensaje"]
                 ))
             
-            return render_template("administrador/generar_pase_virtual.html", informacion_rut = informacion_apoderado_cargas["mensaje"], mostrar_info = True)
+            return render_template("administrador/generar_pase_virtual.html",
+                informacion_rut = informacion_apoderado_cargas["mensaje"],
+                mostrar_info = True,
+
+                informacion_encargado = informacion_encargado,
+                db_documento = rut_apoderado
+            )
             
         if formulario["accion"] == "generar_pase":
 
@@ -769,7 +807,7 @@ def generar_pase():
             return redirect(url_for("generar_pase", codigo = resultado_pase["codigo"], mensaje = resultado_pase["mensaje"]))
 
         
-    return render_template("administrador/generar_pase_virtual.html", get = True)
+    return render_template("administrador/generar_pase_virtual.html", get = True, informacion_encargado = informacion_encargado)
 
 
 if __name__ == '__main__':

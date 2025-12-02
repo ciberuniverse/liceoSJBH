@@ -4,26 +4,78 @@
 
 {% block contenido %}
 
-{% if get %}
-<form method="POST" class="p-3 border rounded shadow-sm bg-light" style="max-width: 400px; margin: auto;">
-  <div class="mb-3">
-    <label for="rut" class="form-label">RUT del Apoderado Solicitante</label>
-    <input 
-      type="text" 
-      name="rut" 
-      id="rut" 
-      class="form-control" 
-      placeholder="Ej: 21724388-2" 
-      required>
-    <div class="form-text">Ingrese el RUT con guion y dígito verificador.</div>
-  </div>
 
-  <div class="text-center">
-    <button type="submit" name="accion" value="buscar_carga" class="btn btn-primary">
-      Buscar Cargas Apoderado
-    </button>
+<!-- HTML del chat -->
+
+{% if not db_documento %}
+
+<div class="container my-4">
+
+  <!-- Contenedor con scroll -->
+  <div class="mx-auto border rounded shadow-sm bg-light"
+       style="max-height:300px; overflow-y:auto; width:80%;">
+
+    <table class="table table-striped table-bordered table-sm mb-0 text-center align-middle">
+      <thead class="table-primary">
+        <tr>
+          <th class="fw-bold">Solicitudes de Retiro Online</th>
+        </tr>
+      </thead>
+      <tbody id="chat" class="table-group-divider">
+        <!-- filas dinámicas aquí -->
+      </tbody>
+    </table>
+
   </div>
-</form>
+</div>
+
+
+{% else %}
+<div class="container">
+  <h3>Chat Solicitud Pase</h3>
+  <div id="chat" style="border:1px solid #ccc; padding:10px; height:200px; overflow-y:auto;"></div>
+  <form id="chatForm" class="mt-2">
+    <input type="text" id="mensaje" placeholder="Escribe tu mensaje" class="form-control mb-2" required>
+    <button type="submit" class="btn btn-primary">Enviar</button>
+  </form>
+</div>
+
+{% endif %}
+
+
+
+<script>
+  document.getElementById("hora_llegada").addEventListener("change", () => {
+    document.getElementById("hora_llegada").setAttribute("name", "hora_llegada")
+  })
+
+  function not_repeat(id) {
+    document.getElementById(id).style.zIndex = 0
+  }
+</script>
+
+{% if get %}
+<hr>
+<div class="card shadow-sm" style="max-width: 500px; margin:auto;">
+  <div class="card-header bg-primary text-white text-center">
+    <h1 class="h4 mb-0">Ingreso Manual</h1>
+  </div>
+  <div class="card-body bg-light">
+    <form method="POST" class="p-3 border rounded bg-white">
+      <div class="mb-3">
+        <label for="rut" class="form-label">RUT del Apoderado Solicitante</label>
+        <input type="text" name="rut" id="rut" class="form-control" placeholder="Ej: 21724388-2" required>
+        <div class="form-text">Ingrese el RUT con guion y dígito verificador.</div>
+      </div>
+
+      <div class="text-center">
+        <button type="submit" name="accion" value="buscar_carga" class="btn btn-primary">
+          Buscar Cargas Apoderado
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
 
 {% endif %}
@@ -33,7 +85,7 @@
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="card shadow-sm border-0 rounded-3">
-        
+
         <!-- Encabezado -->
         <div class="card-header bg-secondary text-white">
           <h5 class="mb-0">Perfil del Apoderado</h5>
@@ -41,7 +93,7 @@
 
         <!-- Datos del apoderado -->
         <div class="card-body">
-            
+
           <p><strong>Nombre:</strong> {{ informacion_rut.nombres }} {{ informacion_rut.apellidos }}</p>
           <p><strong>RUT:</strong> {{ informacion_rut.rut }}</p>
           <p><strong>Cargo:</strong> {{ informacion_rut.cargo | capitalize }}</p>
@@ -50,16 +102,16 @@
           <h6 class="mt-4">Estudiantes asociados</h6>
           <ul class="list-group mb-4">
             {% for carga in informacion_rut.cargas %}
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>{{ carga.nombres }} {{ carga.apellidos }} ({{ carga.rut }})</span>
-                <span class="badge bg-light text-dark">{{ carga.cargo | capitalize }}</span>
-              </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ carga.nombres }} {{ carga.apellidos }} ({{ carga.rut }})</span>
+              <span class="badge bg-light text-dark">{{ carga.cargo | capitalize }}</span>
+            </li>
             {% endfor %}
           </ul>
 
           <!-- Formulario para generar pase -->
           <h6 class="mt-4">Generar Pase Virtual</h6>
-          <form method="POST" class="border rounded-3 p-3 bg-light">
+          <form method="POST" class="border rounded-3 p-3 bg-light" id="pase_form">
             <input name="nombre_apoderado" value="{{ informacion_rut.nombres }} {{ informacion_rut.apellidos }}" hidden>
             <input name="rut_apoderado" value="{{ informacion_rut.rut }}" hidden>
 
@@ -68,9 +120,9 @@
               <select id="seleccion_carga" name="rut_estudiante" class="form-select" required>
                 <option value="" selected disabled>-- Seleccione --</option>
                 {% for carga in informacion_rut.cargas %}
-                  <option value="{{ carga.rut }}">
-                    {{ carga.nombres }} {{ carga.apellidos }} ({{ carga.rut }})
-                  </option>
+                <option value="{{ carga.rut }}">
+                  {{ carga.nombres }} {{ carga.apellidos }} ({{ carga.rut }})
+                </option>
                 {% endfor %}
               </select>
             </div>
@@ -84,9 +136,10 @@
               <label for="hora_llegada" class="form-label">Hora de llegada (opcional)</label>
               <input id="hora_llegada" type="datetime-local" class="form-control">
             </div>
-
+            <input name="accion" value="generar_pase" hidden>
             <div class="d-flex justify-content-end">
-              <button type="submit" id="generar_pase" name="accion" value="generar_pase" class="btn btn-primary" onclick="not_repeat('generar_pase')" >
+              <button type="submit" id="generar_pase" class="btn btn-primary"
+                onclick="not_repeat('generar_pase')">
                 Generar Pase Virtual
               </button>
             </div>
@@ -98,16 +151,182 @@
   </div>
 </div>
 
-<script>
-    document.getElementById("hora_llegada").addEventListener("change", () => {
-        document.getElementById("hora_llegada").setAttribute("name", "hora_llegada")
-    })
 
-    function not_repeat(id) {
-      document.getElementById(id).disabled = true
-    }
-</script>
 
 {% endif %}
+
+<script type="module">
+  // Importar Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, getDocs, collectionGroup, deleteDoc, doc }
+    from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+  // Configuración de tu proyecto
+  const firebaseConfig = {
+    apiKey: "AIzaSyAQjC5ZFV3TyR_2sYM_PRI88HiFniMh5N0",
+    authDomain: "chat-liceo.firebaseapp.com",
+    projectId: "chat-liceo",
+    storageBucket: "chat-liceo.appspot.com",
+    messagingSenderId: "694774742200",
+    appId: "1:694774742200:web:50d6054ebdead96d84c84d",
+    measurementId: "G-RL3VCLD0T3"
+  };
+  
+  
+  // Inicializar Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const chatBox = document.getElementById("chat");
+  var NOT_REPEAT_RUT = []
+
+  {% if not db_documento %}
+
+
+  function verificar_rut_generar(rut) {
+    // Normalizar a string y minúsculas
+    rut = String(rut).toLowerCase();
+    
+    console.log(NOT_REPEAT_RUT, rut)
+    // Si ya está en la lista de repetidos → no se lista
+    if (NOT_REPEAT_RUT.includes(rut)) {
+      console.log("invalido ya existe", rut)
+      return true; // inválido
+    }
+
+    // Validar caracteres permitidos (solo números y 'k')
+    const formatoValido = /^[0-9k-]+$/;
+    if (!formatoValido.test(rut)) {
+      console.log("invalido", rut)
+
+      return true; // inválido
+    }
+
+    // Si es válido, lo agregamos a la lista de repetidos
+    NOT_REPEAT_RUT.push(rut);
+
+    return false; // válido → se lista
+  }
+
+  // Listar todos los chats de todas las subcolecciones "chat"
+  async function listarTodosLosChats() {
+    const chatsRef = collectionGroup(db, "chat");
+    const snapshot = await getDocs(chatsRef);
+    chatBox.innerHTML = "";
+    NOT_REPEAT_RUT = [];
+
+    snapshot.forEach(doc => {
+      const msg = doc.data();
+
+      if (!verificar_rut_generar(msg.rut)) {
+        chatBox.innerHTML += `
+<tr>
+  <td>
+    <form method="POST" class="mb-0 d-flex justify-content-between align-items-center">
+      <!-- Izquierda -->
+      <strong>${msg.autor || "Sin autor"}</strong>
+      <input type="hidden" name="rut" value="${msg.rut}">
+      
+      <!-- Derecha -->
+      <button type="submit" name="accion" value="buscar_carga" class="btn btn-primary btn-sm">
+        Administrar Solicitud
+      </button>
+    </form>
+  </td>
+</tr>
+
+          
+          `;
+      }
+    }
+    )
+  }
+
+  // Escuchar en tiempo real todos los chats
+  const q = query(collectionGroup(db, "chat"));
+  onSnapshot(q, snapshot => {
+    chatBox.innerHTML = "";
+    NOT_REPEAT_RUT = [];
+    snapshot.forEach(doc => {
+      const msg = doc.data();
+
+      if (!verificar_rut_generar(msg.rut)) {
+        chatBox.innerHTML += `
+<tr>
+  <td>
+    <form method="POST" class="mb-0 d-flex justify-content-between align-items-center">
+      <!-- Izquierda -->
+      <strong>${msg.autor || "Sin autor"}</strong>
+      <input type="hidden" name="rut" value="${msg.rut}">
+      
+      <!-- Derecha -->
+      <button type="submit" name="accion" value="buscar_carga" class="btn btn-primary btn-sm">
+        Administrar Solicitud
+      </button>
+    </form>
+  </td>
+</tr>
+`;
+      }
+    }
+
+    )
+  });
+
+  {% else %}
+  // Referencia a la subcolección "chat" de un documento específico
+  const ver_peticiones = collection(db, "mensajes", "{{ db_documento }}", "chat");
+
+  // Función para enviar un mensaje
+  async function enviarMensaje(texto) {
+    await addDoc(ver_peticiones, {
+      autor: "{{ informacion_encargado['nombre'] }}",
+      texto: texto,
+      fecha: serverTimestamp()
+    });
+  }
+
+  // Escuchar mensajes en tiempo real de ese chat
+  const q = query(ver_peticiones, orderBy("fecha"));
+  onSnapshot(q, snapshot => {
+    chatBox.innerHTML = "";
+    snapshot.forEach(doc => {
+      const msg = doc.data();
+      chatBox.innerHTML += `<p><strong>${msg.autor}:</strong> ${msg.texto}</p>`;
+    });
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+
+    document.getElementById("generar_pase").addEventListener("click", async (e) => {
+
+    e.preventDefault()
+
+    await enviarMensaje("-------{{ db_documento }}-------")
+    
+
+    document.querySelector("#pase_form").submit();
+
+    })
+  {% endif %}
+
+
+
+
+
+  // Ejecutar al cargar la página
+
+
+
+  // Manejar el formulario
+  document.getElementById("chatForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const texto = document.getElementById("mensaje").value;
+    enviarMensaje(texto);
+    document.getElementById("mensaje").value = "";
+  });
+
+  listarTodosLosChats()
+
+</script>
+
 
 {% endblock %}

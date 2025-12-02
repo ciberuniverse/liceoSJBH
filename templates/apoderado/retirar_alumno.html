@@ -2,54 +2,173 @@
 
 {% block contenido %}
 
-<form>
-    Solicitar Pase
-    <input>
-    <button>Solicitar</button>
+<div class="container my-4">
+  <div class="row">
+    <!-- Columna izquierda: Chat -->
+    <div class="col-md-6">
+      <h3 class="text-center">Solicita El retiro de tu Pupilo: Chat Directo</h3>
 
-</form>
+      <div id="chat" style="border:1px solid #ccc; padding:10px; height:200px; overflow-y:auto; border-radius:6px;">
+      </div>
 
-{% if pases %}
-  <div class="container my-4" style="max-width: 650px;">
-
-    <h3 class="mb-4 text-center">Pases Virtuales Disponibles</h3>
-
-    {% for pase in pases %}
-      <form method="POST" class="card shadow-sm mb-4">
-        <div class="card-body">
-          <!-- Datos visibles -->
-          <ul class="list-unstyled mb-3">
-            <li><strong>Apoderado:</strong> {{ pase.nombre_apoderado }} <span class="text-muted">({{ pase.rut_apoderado }})</span></li>
-            <li><strong>Estudiante:</strong> {{ pase.nombre_estudiante }} <span class="text-muted">({{ pase.rut_estudiante }})</span></li>
-            <li><strong>Fecha Retiro:</strong> {{ pase.fecha_retiro }}</li>
-            <li><strong>Hora Salida:</strong> {{ pase.hora_salida }}</li>
-            <li><strong>Emitido:</strong> {{ pase.fecha_actual }}</li>
-          </ul>
-
-          <!-- Inputs ocultos -->
-          <input type="hidden" name="nombre_apoderado" value="{{ pase.nombre_apoderado }}">
-          <input type="hidden" name="rut_apoderado" value="{{ pase.rut_apoderado }}">
-          <input type="hidden" name="nombre_estudiante" value="{{ pase.nombre_estudiante }}">
-          <input type="hidden" name="rut_estudiante" value="{{ pase.rut_estudiante }}">
-          <input type="hidden" name="fecha_retiro" value="{{ pase.fecha_retiro }}">
-          <input type="hidden" name="hora_salida" value="{{ pase.hora_salida }}">
-          <input type="hidden" name="fecha_actual" value="{{ pase.fecha_actual }}">
-
-          <!-- Botón -->
-          <div class="text-end">
-            <button type="submit" name="accion" value="descargar_pase" class="btn btn-primary btn-sm">
-              📥 Generar Pase PDF
-            </button>
-          </div>
+      <form id="chatForm" class="mt-2">
+        <input type="text" id="mensaje" placeholder="Escribe tu mensaje" class="form-control mb-2" required>
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary">Enviar</button>
         </div>
       </form>
-    {% endfor %}
-  </div>
+    </div>
 
-{% else %}
-  <div class="alert alert-info text-center my-4">
-    No hay pases disponibles en este momento.
+    <!-- Columna derecha: Pases en tabla -->
+    <div class="col-md-6">
+      {% if pases %}
+      <h3 class="mb-4 text-center">Pases Virtuales Disponibles</h3>
+
+      <table class="table table-striped table-bordered table-sm">
+        <thead class="table-primary">
+          <tr>
+            <th>Apoderado</th>
+            <th>Estudiante</th>
+            <th>Fecha Retiro</th>
+            <th>Hora Salida</th>
+            <th>Emitido</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pase in pases %}
+          <tr>
+            <td>{{ pase.nombre_apoderado }} <span class="text-muted">({{ pase.rut_apoderado }})</span></td>
+            <td>{{ pase.nombre_estudiante }} <span class="text-muted">({{ pase.rut_estudiante }})</span></td>
+            <td>{{ pase.fecha_retiro }}</td>
+            <td>{{ pase.hora_salida }}</td>
+            <td>{{ pase.fecha_actual }}</td>
+            <td>
+              <form method="POST" class="mb-0">
+                <!-- Inputs ocultos -->
+                <input type="hidden" name="nombre_apoderado" value="{{ pase.nombre_apoderado }}">
+                <input type="hidden" name="rut_apoderado" value="{{ pase.rut_apoderado }}">
+                <input type="hidden" name="nombre_estudiante" value="{{ pase.nombre_estudiante }}">
+                <input type="hidden" name="rut_estudiante" value="{{ pase.rut_estudiante }}">
+                <input type="hidden" name="fecha_retiro" value="{{ pase.fecha_retiro }}">
+                <input type="hidden" name="hora_salida" value="{{ pase.hora_salida }}">
+                <input type="hidden" name="fecha_actual" value="{{ pase.fecha_actual }}">
+
+                <button type="submit" name="accion" value="descargar_pase" class="btn btn-primary btn-sm">
+                  Generar PDF
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% else %}
+      <div class="alert alert-info text-center my-4">
+        No hay pases disponibles en este momento.
+      </div>
+      {% endif %}
+    </div>
   </div>
-{% endif %}
+</div>
+
+
+
+
+
+
+<script type="module">
+  // Importar Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, deleteDoc, doc, getDocs }
+    from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+  // Configuración de tu proyecto
+  const firebaseConfig = {
+    apiKey: "AIzaSyAQjC5ZFV3TyR_2sYM_PRI88HiFniMh5N0",
+    authDomain: "chat-liceo.firebaseapp.com",
+    projectId: "chat-liceo",
+    storageBucket: "chat-liceo.appspot.com",
+    messagingSenderId: "694774742200",
+    appId: "1:694774742200:web:50d6054ebdead96d84c84d",
+    measurementId: "G-RL3VCLD0T3"
+  };
+  const chatBox = document.getElementById("chat");
+
+  async function borrarMensajeConSubcolecciones() {
+    try {
+      chatBox.style.display = false
+      const docRef = doc(db, "mensajes", "{{ informacion_apoderado['rut'] }}");
+
+      // 1. Recorremos las subcolecciones conocidas
+      const subcolecciones = ["chat"]; // pon aquí los nombres de tus subcolecciones
+
+      for (const sub of subcolecciones) {
+        const subColRef = collection(docRef, sub);
+        const snapshot = await getDocs(subColRef);
+
+        // 2. Borramos cada documento dentro de la subcolección
+        for (const subDoc of snapshot.docs) {
+          await deleteDoc(subDoc.ref);
+        }
+      }
+
+      // 3. Finalmente borramos el documento principal
+      await deleteDoc(docRef);
+
+      console.log("Documento y subcolecciones eliminados:", "{{ informacion_apoderado['rut'] }}");
+
+      const mensaje = "Se le asignó un pase correctamente. Recargue la página y descargue su pase virtual. Que tenga una buena tarde.";
+      window.location.href = window.location.pathname + "?codigo=200&mensaje=" + encodeURIComponent(mensaje);
+
+    } catch (error) {
+      console.error("Error al eliminar en cascada:", error);
+    }
+  }
+
+
+  // Inicializar Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Referencia a la colección de mensajes
+  const mensajesRef = collection(db, "mensajes", "{{ informacion_apoderado['rut'] }}", "chat");
+
+  // Función para enviar un mensaje
+  async function enviarMensaje(texto) {
+    await addDoc(mensajesRef, {
+      autor: "{{ informacion_apoderado['nombre'] }}",
+      rut: "{{ informacion_apoderado['rut'] }}",
+      texto: texto,
+      fecha: serverTimestamp()
+    });
+  }
+
+  // Escuchar mensajes en tiempo real
+  const q = query(mensajesRef, orderBy("fecha"));
+  onSnapshot(q, snapshot => {
+    chatBox.innerHTML = "";
+    snapshot.forEach(doc => {
+      const msg = doc.data();
+      chatBox.innerHTML += `<p><strong>${msg.autor}:</strong> ${msg.texto}</p>`;
+
+      if (msg.texto.includes("-------{{ informacion_apoderado['rut'] }}-------")) {
+        borrarMensajeConSubcolecciones()
+      }
+
+    });
+  });
+
+  // Manejar el formulario
+  document.getElementById("chatForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const texto = document.getElementById("mensaje").value;
+    enviarMensaje(texto);
+    document.getElementById("mensaje").value = "";
+  });
+</script>
+
+
 
 {% endblock %}
