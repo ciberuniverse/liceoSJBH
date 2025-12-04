@@ -102,13 +102,25 @@
   </div>
 
   <div style="text-align:right;margin-top:30px">
-    <button type="submit" style="padding:10px 20px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer">
+    <button type="submit" name="accion" value="modificar_base" style="padding:10px 20px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer">
       Guardar Cambios
     </button>
   </div>
 
 </form>
 
+<hr>
+
+<div id="nuevo_ano" hidden>
+
+  <form method="POST" enctype="multipart/form-data">
+    <h3>Sube la Base De Datos de Estudiantes. EXEL</h3>
+    <input type="file" name="exel">
+    <button type="submit" name="accion" value="nuevo_ano">Subir Exel de Estudiantes</button>
+  </form>
+
+</div>
+<button onclick="mostrar_ano()">Nuevo Año Escolar</button>
 
 <!-- Disclaimer -->
 <div id="disclaimer" style="display:none;position:fixed;bottom:20px;right:20px;background:#fff3cd;color:#856404;border:1px solid #ffeeba;padding:15px 20px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);z-index:1000;font-size:14px">
@@ -117,6 +129,11 @@
 </div>
 
 <script>
+
+  function mostrar_ano() {
+    document.getElementById("nuevo_ano").hidden = false
+  }
+
   window.addEventListener('load', function() {
     const aviso = document.getElementById('disclaimer');
     aviso.style.display = 'block';

@@ -3,11 +3,8 @@ from xhtml2pdf import pisa
 from bson.objectid import ObjectId # Importar ObjectId
 from datetime import datetime
 from hashlib import blake2b
-import io, os, json, redis
+import io, os, json, pandas
 
-"""
-redis_client = redis.StrictRedis(host="localhost", port=6379, decode_responses=True)
-"""
 if "herna" not in os.getcwd():
     HOST = MongoClient(os.environ.get("HOST"))
     #SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -34,18 +31,7 @@ NOT_ALLOWED = r";$&|{}[]<>\"'\\`"
 
 
 ##################### Funciones auxiliares
-"""
-def cache_consultar(cache_key: str) -> bool | dict:
 
-    tmp_get = redis_client.get(cache_key)
-    if not tmp_get:
-        return False
-    
-    return json.loads(tmp_get)
-
-def cache_actualizar(cache_key: str, consulta_cachear: dict, expiracion: int = 300) -> bool:
-    redis_client.setex(cache_key, expiracion, json.dumps(consulta_cachear))
-"""
 def verificar_estado_de_peticion(resultado) -> dict:
     
     if resultado["codigo"] == 200:
@@ -120,11 +106,11 @@ def guardar_imagen(seccion: str, name_frontend: str, formulario_file) -> dict:
 def cifrar_contrasena(str_contrasena: str) -> str:
     return blake2b(str_contrasena.encode("utf-8")).hexdigest()
 
-def obtener_navbar(session_cookie: dict, rutas: dict, redirect: bool = False) -> list | dict:
-
-    ############## NO LA ESTOY OCUPANDO :c
+def obtener_navbar(session_cookie: dict, rutas_rol: dict, redirect: bool = False) -> list | str:
     """
-    Obtiene las rutas del usuario en base al cargo.\n
+    Obtiene las rutas del usuario en base al cargo almacenado en su cookie:\n
+    "informacion": {"cargo": "estudiante"}
+    \n\n
     Retorna un dict con la informacion de las urtas para\n
     las navbar y redirecciones.\n
 
@@ -133,25 +119,15 @@ def obtener_navbar(session_cookie: dict, rutas: dict, redirect: bool = False) ->
     """
 
     cargo = session_cookie["informacion"]["cargo"]
-    rutas_cargo = rutas["rol"][cargo]
-    rutas_verbose = rutas["navbar"]
+    rutas_rol = rutas_rol[cargo]
 
-    rutas_return = []
-    for ruta in rutas_cargo:
-
-        try:
-            if redirect:
-                return rutas_verbose[ruta]
-            
-            rutas_return.append((ruta, rutas_verbose[ruta]))
-        
-        except Exception as err:
-            json_de_mensaje(500, err)
-
-    return rutas_return
+    if redirect:
+        return rutas_rol[0]
+    
+    return rutas_rol
 
 ###############################################
-# FUTURA INTEGRACION DE ESTA CLASE DE SEGURIDAD
+######## CLASES DE SEPARACION DE LOGICA
 
 class Informes_pdf:
 
@@ -278,9 +254,13 @@ class Apoderado:
         # Se le agrega a la informacion del alummno la informacion del taller inscrito
         for carga in resultado_cargas["cargas"]:
 
+            resultado_promedio_carga = General.calcular_promedios_materias_y_final(carga)
+            if resultado_promedio_carga["codigo"] == 200:
+                carga["materias"]["promedios"] = resultado_promedio_carga["mensaje"]
+
             if "taller" not in carga:
                 continue
-                        
+            
             taller_info = General.obtener_informacion_taller(carga["taller"])
             posicion = resultado_cargas["cargas"].index(carga)
             
@@ -744,7 +724,6 @@ class General:
 
         return json_de_mensaje(200, res_return)
     
-
     def obtener_informacion_rut(rut: str) -> dict:
 
         try:
@@ -798,6 +777,60 @@ class General:
             return json_de_mensaje(404, f"No se logro encontrar ningun resultado asociado al rut {rut}")
 
         return json_de_mensaje(200, resultado_list[0])
+
+    @staticmethod
+    def calcular_promedios_materias_y_final(informacion_estudiante: str | dict, rut: bool = False) -> dict:
+
+        ######## Si es que necesitamos obtener la informacion del usuario por su rut
+        if rut:
+
+            resultado = General.obtener_informacion_rut(informacion_estudiante)
+            if resultado["codigo"] != 200:
+                return resultado
+            
+
+            if "materias" not in resultado["mensaje"]:
+                return json_de_mensaje(404, "No hay materias a que calcular el promedio.")
+            
+            alumno_materias = resultado["mensaje"]["materias"]
+
+        ######3 Si no se usa la variable que es dict
+        else:
+
+            if "materias" not in informacion_estudiante:
+                return json_de_mensaje(404, "No hay materias a que calcular el promedio.")
+            
+            alumno_materias = informacion_estudiante["materias"]
+
+        materias_promedio = []
+        calc_promedio_final = []
+
+        try:
+            for materia, info_materia in alumno_materias.items(): 
+
+                notas = []
+                
+                for nota in info_materia["notas"]:
+                    notas.append(nota["nota"])
+
+                promedio_final_materia = round(sum(notas) / len(notas), 1)
+
+                calc_promedio_final.append(promedio_final_materia)
+                materias_promedio.append({materia: promedio_final_materia})
+
+            promedio_final = round(sum(calc_promedio_final) / len(calc_promedio_final), 1)       
+
+            print(f"Promedio Final Alumno: {promedio_final} =>>> {materias_promedio}")
+            
+            info_retorno = {
+                "materias_promedio": materias_promedio,
+                "promedio_final": promedio_final
+            }
+        
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: No se logro calcular el promedio del alumno: {err}")
+
+        return json_de_mensaje(200, info_retorno)
 
 class Administrador:
     """
@@ -1236,6 +1269,42 @@ class Administrador:
             return json_de_mensaje(404, "No se logro encontrar ninguna persona a contactar.")
         
         return json_de_mensaje(200, resultado)
+
+    def nuevo_ano(exel_form_files: bytes) -> dict:
+
+        usage_ing = {
+            "xls": "xlrd",
+            "xlsx": "openpyxl"
+        }
+
+        resultado_exel = guardar_imagen("exel", "exel", exel_form_files)
+        if resultado_exel["codigo"] != 200:
+            return resultado_exel
+        
+        ruta_exel = resultado_exel["mensaje"]
+        extencion = ruta_exel.split(".")
+        extencion = extencion[len(extencion) - 1]
+
+
+
+        xml_data = pandas.read_html(ruta_exel)
+        to_json_data = xml_data[0]
+        
+        json_data = to_json_data.to_json(
+            orient = "records",
+            force_ascii = False,
+            indent = 2
+        )
+
+        print(json_data)
+        # Para guardarlo en un archivo:
+        """        with open('salida.json', 'w', encoding='utf-8') as f:
+            f.write(json_data)"""
+
+
+
+        print(ruta_exel)
+        return json_de_mensaje(200, "XD")
 
 class Profesor:
     """
@@ -1676,19 +1745,20 @@ class Estudiante:
     
     def resumen_de_mi_perfil(rut: str) -> dict:
 
-    
         rut_informacion = General.obtener_informacion_rut(rut)
         if rut_informacion["codigo"] != 200:
             return rut_informacion    
 
         if "taller" in rut_informacion["mensaje"]:
-
-            informacion_taller = General.obtener_informacion_taller(ObjectId(rut_informacion["mensaje"]["taller"]))
             
-            if informacion_taller["codigo"] != 200:
-                return informacion_taller
+            if rut_informacion["mensaje"]["taller"] != "espera":
 
-            rut_informacion["mensaje"]["taller"] = informacion_taller["mensaje"]
+                informacion_taller = General.obtener_informacion_taller(rut_informacion["mensaje"]["taller"])
+                
+                if informacion_taller["codigo"] != 200:
+                    return informacion_taller
+
+                rut_informacion["mensaje"]["taller"] = informacion_taller["mensaje"]
         
         if "apoderado" in rut_informacion["mensaje"]:
             apoderado_info = General.obtener_informacion_rut(rut_informacion["mensaje"]["apoderado"])
@@ -1827,7 +1897,7 @@ class Public:
 
         return json_de_mensaje(200, resultado[0])
 
-#################### Seccion Profesor Jefe -- NO INCLUIDO YA QUE SE USA EDUPLAN
+#################### Seccion Profesor Jefe -- NO INCLUIDO -- Ahora el ADMINISTRADOR crea cursos
 
 def crear_curso_jefe(formulario: dict, profesor_jefe: str, profesor_jefe_rut: str) -> dict:
     

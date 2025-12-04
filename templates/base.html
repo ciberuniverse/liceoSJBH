@@ -211,7 +211,15 @@
 
     }
 
+    window.addEventListener('load', function() {
+      const aviso = document.getElementById('dinamic_mensaje');
 
+      aviso.style.display = 'block';
+      setTimeout(() => {
+        aviso.style.opacity = '0';
+        setTimeout(() => aviso.remove(), 1000);
+      }, 5000); // visible por 5 segundos
+    });
 
     (function () {
       const btn = document.getElementById('actionsBtn');

@@ -52,11 +52,13 @@
                             <ul class="list-unstyled mb-0">
                                 {% for ev in notas %}
                                 {% if ev is mapping %}
-                                <li class="small text-muted">{{ ev.nombre_evaluacion }}: <span class="fw-bold">{{ ev.nota }}</span></li>
+                                <li class="small text-muted">{{ ev.nombre_evaluacion }}: <span class="fw-bold">{{
+                                        ev.nota }}</span></li>
                                 {% else %}
                                 {% set ev_nombre = ev[0] if ev|length > 0 else 'Evaluación' %}
                                 {% set ev_nota = ev[1] if ev|length > 1 else '' %}
-                                <li class="small text-muted">{{ ev_nombre }}: <span class="fw-bold">{{ ev_nota }}</span></li>
+                                <li class="small text-muted">{{ ev_nombre }}: <span class="fw-bold">{{ ev_nota }}</span>
+                                </li>
                                 {% endif %}
                                 {% endfor %}
                             </ul>
@@ -71,7 +73,8 @@
                             {% if asistencia %}
                             <ul class="list-inline mb-0">
                                 {% for fecha in asistencia %}
-                                <li class="list-inline-item"><span class="badge bg-light text-dark border">{{ fecha }}</span></li>
+                                <li class="list-inline-item"><span class="badge bg-light text-dark border">{{ fecha
+                                        }}</span></li>
                                 {% endfor %}
                             </ul>
                             {% else %}
@@ -85,11 +88,16 @@
         </div>
     </div>
     {% else %}
-    <p class="text-muted fst-italic">No hay notas disponibles</p>
+    <div class="alert alert-warning d-flex align-items-center shadow-sm" role="alert">
+        <i class="bi bi-hourglass-split me-2"></i>
+        <div>
+            No hay notas disponibles asociadas a tu perfil.
+        </div>
+    </div>
     {% endif %}
 
     <!-- Taller inscrito -->
-    {% if perfil["taller"] %}
+    {% if perfil["taller"] and perfil["taller"] != "espera" %}
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-success text-white">
             <h5 class="mb-0 fw-semibold"><i class="bi bi-journal-bookmark-fill me-2"></i> Taller inscrito</h5>
@@ -104,12 +112,21 @@
             <h6 class="mt-3 text-secondary">Inscritos:</h6>
             <ul class="list-group list-group-flush">
                 {% for inscrito in perfil["taller"]["inscritos"] %}
-                <li class="list-group-item">{{ inscrito["nombre"] }} <small class="text-muted">({{ inscrito["rut"] }})</small></li>
+                <li class="list-group-item">{{ inscrito["nombre"] }} <small class="text-muted">({{ inscrito["rut"]
+                        }})</small></li>
                 {% endfor %}
             </ul>
         </div>
     </div>
+    {% else %}
+    <div class="alert alert-warning d-flex align-items-center shadow-sm" role="alert">
+        <i class="bi bi-hourglass-split me-2"></i>
+        <div>
+            Estás en <strong>lista de espera</strong> para ingresar a tu taller.
+        </div>
+    </div>
     {% endif %}
+
 
     <!-- Apoderado -->
     {% if perfil["apoderado"] %}
@@ -120,7 +137,8 @@
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <p><strong>Nombre:</strong> {{ perfil["apoderado"]["nombres"] }} {{ perfil["apoderado"]["apellidos"] }}</p>
+                    <p><strong>Nombre:</strong> {{ perfil["apoderado"]["nombres"] }} {{ perfil["apoderado"]["apellidos"]
+                        }}</p>
                     <p><strong>RUT:</strong> {{ perfil["apoderado"]["rut"] }}</p>
                     <p><strong>Fecha de nacimiento:</strong> {{ perfil["apoderado"]["fecha_nacimiento"] }}</p>
                 </div>

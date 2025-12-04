@@ -14,8 +14,10 @@
         <!-- Datos del apoderado -->
         <div class="card-body text-muted">
           <h5 class="fw-normal text-dark">{{ informacion_cargas.nombres }} {{ informacion_cargas.apellidos }}</h5>
-          <p class="mb-1"><strong class="text-dark">RUT:</strong> <span class="ms-1">{{ informacion_cargas.rut }}</span></p>
-          <p class="mb-3"><strong class="text-dark">Cargo:</strong> <span class="ms-1 text-capitalize">{{ informacion_cargas.cargo | capitalize }}</span></p>
+          <p class="mb-1"><strong class="text-dark">RUT:</strong> <span class="ms-1">{{ informacion_cargas.rut }}</span>
+          </p>
+          <p class="mb-3"><strong class="text-dark">Cargo:</strong> <span class="ms-1 text-capitalize">{{
+              informacion_cargas.cargo | capitalize }}</span></p>
 
           {% if "carga_apoderado" not in informacion_cargas %}
           <div class="alert alert-secondary mb-3">
@@ -23,7 +25,8 @@
           </div>
           {% else %}
           <p class="mb-3"><strong class="text-dark">RUTs de carga:</strong>
-            <span class="badge bg-transparent text-muted border border-secondary ms-2">{{ informacion_cargas.carga_apoderado | join(', ') }}</span>
+            <span class="badge bg-transparent text-muted border border-secondary ms-2">{{
+              informacion_cargas.carga_apoderado | join(', ') }}</span>
           </p>
 
           <!-- Tabla de estudiantes -->
@@ -48,11 +51,11 @@
                   <td class="text-capitalize text-muted">{{ carga.cargo | capitalize }}</td>
                   <td>
                     {% if carga.lista_taller %}
-                      {% for fecha in carga.lista_taller %}
-                        <span class="badge bg-transparent text-muted border border-secondary me-1 small">{{ fecha }}</span>
-                      {% endfor %}
+                    {% for fecha in carga.lista_taller %}
+                    <span class="badge bg-transparent text-muted border border-secondary me-1 small">{{ fecha }}</span>
+                    {% endfor %}
                     {% else %}
-                      <span class="badge bg-transparent text-muted border border-secondary small">Sin fechas</span>
+                    <span class="badge bg-transparent text-muted border border-secondary small">Sin fechas</span>
                     {% endif %}
                   </td>
                   <td class="text-center fw-semibold text-dark">{{ carga.nota_taller }}</td>
@@ -74,69 +77,95 @@
 
           <!-- Informes preliminares debajo de la tabla principal -->
           {% for carga in informacion_cargas.cargas %}
-            {% if "materias" in carga %}
-            <div class="mt-4">
-              <h6 class="fw-normal text-dark">Informe preliminar - {{ carga.nombres }} {{ carga.apellidos }}</h6>
-              <div class="table-responsive">
-                <table class="table table-sm table-bordered align-middle">
-                  <thead class="table-light">
-                    <tr>
-                      <th class="text-muted">Materia</th>
-                      <th class="text-muted">Evaluaciones y Notas</th>
-                      <th class="text-muted">Asistencia Fechas</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for nombre_materia, datos in carga['materias'].items() %}
-                    <tr>
-                      <td class="fw-semibold align-middle text-dark">{{ nombre_materia | capitalize }}</td>
+          {% if "materias" in carga %}
+          <div class="mt-4">
+            <h6 class="fw-normal text-dark">Informe preliminar - {{ carga.nombres }} {{ carga.apellidos }}</h6>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-muted">Materia</th>
+                    <th class="text-muted">Evaluaciones y Notas</th>
+                    <th class="text-muted">Asistencia Fechas</th>
+                    <th class="text-muted">Promedio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for nombre_materia, datos in carga['materias'].items() %}
+                  <tr>
+                    {% if nombre_materia != "promedios" %}
+                    <td class="fw-semibold align-middle text-dark">{{ nombre_materia | capitalize }}</td>
 
-                      <!-- Evaluaciones y notas -->
-                      <td>
-                        {% set notas = datos.get('notas') if datos is mapping else None %}
-                        {% if notas %}
-                          <div class="d-flex flex-column">
-                            {% for ev in notas %}
-                              {% if ev is mapping %}
-                                <span class="badge bg-transparent text-muted mb-1 border border-secondary small">
-                                  {{ ev.nombre_evaluacion }}: {{ ev.nota }}
-                                </span>
-                              {% else %}
-                                {% set ev_nombre = ev[0] if ev|length > 0 else 'Evaluación' %}
-                                {% set ev_nota = ev[1] if ev|length > 1 else '' %}
-                                <span class="badge bg-transparent text-muted mb-1 border border-secondary small">
-                                  {{ ev_nombre }}: {{ ev_nota }}
-                                </span>
-                              {% endif %}
-                            {% endfor %}
-                          </div>
+                    <!-- Evaluaciones y notas -->
+                    <td>
+                      {% set notas = datos.get('notas') if datos is mapping else None %}
+                      {% if notas %}
+                      <div class="d-flex flex-column">
+                        {% for ev in notas %}
+                        {% if ev is mapping %}
+                        <span class="badge bg-transparent text-muted mb-1 border border-secondary small">
+                          {{ ev.nombre_evaluacion }}: {{ ev.nota }}
+                        </span>
                         {% else %}
-                          <span class="badge bg-transparent text-muted border border-secondary small">Sin notas</span>
+                        {% set ev_nombre = ev[0] if ev|length > 0 else 'Evaluación' %}
+                        {% set ev_nota = ev[1] if ev|length > 1 else '' %}
+                        <span class="badge bg-transparent text-muted mb-1 border border-secondary small">
+                          {{ ev_nombre }}: {{ ev_nota }}
+                        </span>
                         {% endif %}
-                      </td>
+                        {% endfor %}
+                      </div>
+                      {% else %}
+                      <span class="badge bg-transparent text-muted border border-secondary small">Sin notas</span>
+                      {% endif %}
+                    </td>
 
-                      <!-- Asistencia como lista de fechas -->
-                      <td>
-                        {% set asistencia = datos.get('asistencia') if datos is mapping else None %}
-                        {% if asistencia %}
-                          {% for fecha in asistencia %}
-                            <span class="badge bg-transparent text-muted border border-secondary me-1 small">{{ fecha }}</span>
-                          {% endfor %}
-                        {% else %}
-                          <span class="badge bg-transparent text-muted border border-secondary small">Sin registro</span>
-                        {% endif %}
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+                    <!-- Asistencia como lista de fechas -->
+                    <td>
+                      {% set asistencia = datos.get('asistencia') if datos is mapping else None %}
+                      {% if asistencia %}
+                      {% for fecha in asistencia %}
+                      <span class="badge bg-transparent text-muted border border-secondary me-1 small">{{ fecha
+                        }}</span>
+                      {% endfor %}
+                      {% else %}
+                      <span class="badge bg-transparent text-muted border border-secondary small">Sin registro</span>
+                      {% endif %}
+                    </td>
+
+                    <!-- Promedio por materia -->
+                    <td>
+                      {% if carga['materias']['promedios'] and carga['materias']['promedios']['materias_promedio'] %}
+                      {% for prom in carga['materias']['promedios']['materias_promedio'] %}
+                      {% if nombre_materia in prom %}
+                      <span class="badge bg-success text-white small">{{ prom[nombre_materia] }}</span>
+                      {% endif %}
+                      {% endfor %}
+                      {% else %}
+                      <span class="badge bg-transparent text-muted border border-secondary small">Sin promedio</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endif %}
+
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
-            {% else %}
-            <div class="alert alert-light border mt-3">
-              <span class="text-muted">No hay materias registradas para {{ carga.nombres }} {{ carga.apellidos }}.</span>
+
+            <!-- Promedio final -->
+            {% if carga['materias']['promedios'] and carga['materias']['promedios']['promedio_final'] %}
+            <div class="alert alert-info mt-3">
+              <strong>Promedio final:</strong> {{ carga['materias']['promedios']['promedio_final'] }}
             </div>
             {% endif %}
+          </div>
+          {% else %}
+          <div class="alert alert-light border mt-3">
+            <span class="text-muted">No hay materias registradas para {{ carga.nombres }} {{ carga.apellidos }}.</span>
+          </div>
+          {% endif %}
+
           {% endfor %}
 
           <!-- Detalles del taller -->
@@ -144,16 +173,20 @@
           {% if "taller" in carga %}
           <div class="mt-4 ps-3 border-start border-2">
             <h6 class="fw-normal text-dark">Taller: {{ carga.taller.nombre }}</h6>
-            <p class="mb-1"><strong class="text-dark">Descripción:</strong> <span class="text-muted ms-1">{{ carga.taller.descripcion }}</span></p>
-            <p class="mb-1"><strong class="text-dark">Horario:</strong> <span class="text-muted ms-1">{{ carga.taller.horarios }}</span></p>
-            <p class="mb-1"><strong class="text-dark">Profesor:</strong> <span class="text-muted ms-1">{{ carga.taller.profesor_nombre }} ({{ carga.taller.profesor_rut }})</span></p>
+            <p class="mb-1"><strong class="text-dark">Descripción:</strong> <span class="text-muted ms-1">{{
+                carga.taller.descripcion }}</span></p>
+            <p class="mb-1"><strong class="text-dark">Horario:</strong> <span class="text-muted ms-1">{{
+                carga.taller.horarios }}</span></p>
+            <p class="mb-1"><strong class="text-dark">Profesor:</strong> <span class="text-muted ms-1">{{
+                carga.taller.profesor_nombre }} ({{ carga.taller.profesor_rut }})</span></p>
             <p class="mb-1"><strong class="text-dark">Inscritos:</strong>
               {% if carga.taller.inscritos %}
-                {% for inscrito in carga.taller.inscritos %}
-                  <span class="badge bg-transparent text-muted border border-secondary me-1 small">{{ inscrito.nombre }} ({{ inscrito.rut }})</span>
-                {% endfor %}
+              {% for inscrito in carga.taller.inscritos %}
+              <span class="badge bg-transparent text-muted border border-secondary me-1 small">{{ inscrito.nombre }} ({{
+                inscrito.rut }})</span>
+              {% endfor %}
               {% else %}
-                <span class="badge bg-transparent text-muted border border-secondary small">Sin inscritos</span>
+              <span class="badge bg-transparent text-muted border border-secondary small">Sin inscritos</span>
               {% endif %}
             </p>
           </div>

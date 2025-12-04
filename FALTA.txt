@@ -1,6 +1,4 @@
 AGREGAR URLS PARA CADA PERFIL DONDE LES SEAN DE UTILIDAD. 
-SE NECESITA TAMBIEN UNA VALIDACION EN EL INICIO DEL ESTUDIANTE, ASI VALIDAR
-CADA INFORMACION DE SU PERFIL.
 
 CREAR PANEL DE PROFESOR. EL PROFESOR PUEDE PASAR LISTA. EL PROFESOR PUEDE ASIGNAR NOTA A CADA ALUMNO.
 
@@ -18,8 +16,31 @@ id_curso: ObjectID("ma9as9a9asidas00daso0das") : Cuando quieres obtener informac
 
 EL ALUMNO PUEDE VER SUS NOTAS, EL ALUMNO PUEDE VER SU LISTA.
 
+PROGRAMAR CALCULAR PROMEDIOS DE ALUMNOS PARA VERIFICAR CON CUAL NOTA MINIMA DEBEN DE PASAR
 
-CACHEAR CON REDIS, WINDOWS NO ES MUY BUENO PARA ESO. PROBAR EN LINUX.
 
-CACHEAR => Listar Profesores
-        => Listar Alumnos
+ADMINISRADOR: Se sube la base de datos en xml ,se transforma a json y se formatea la base de datos para agregarla
+a la base de datos. Una vez dentro se crean y asocian los cursos a los alumnos. 
+
+pregunta: ¿Los profesores, tambien los asigna el MINEDUC tal como los estudiantes? y si es asi ya vienen 
+enlasados a un curso? por ejemplo la profesora Juanita realiza clases en el 3-°B
+
+
+La asignacion de profesores a un curso es manual, por ende debe de hacerse manualmente. En terminos simples:
+
+El administrador sube un archivo XML con la base de datos de mineduc.
+El backend normaliza la base de datos, la formatea y la sube a la base de datos de la tabla o coleccion estudiantes.
+Con la informacion de los cursos obtenida por los alumnos dentro de otra coleccion se crea el curso con todos
+sus integrantes, pero unicamente con sus ruts. Esto se hace para tener una primary y foregin. El colegio o en este caso
+el administrador ( o cualquier otro usuario asignado con el permiso de realizar la siguiente accion ) puede hacer lo siguiente:
+
+Asignar los ruts profesores de los profesores a los cursos por materia. Utilizando el mismo formato anterior. 
+
+CREAR UN BOTON DE =>>> 
+        
+        INICIAR AÑO NUEVO: BORRA LA BASE DE DATOS DE estudiantes.
+        SE BORRA LA CACHE.
+
+        SE DESPLIEGA UNA OPCION DE: Subir nuevo XML con los datos del cige.
+        Y SE VA AL BACKEND.
+
