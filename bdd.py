@@ -1,17 +1,19 @@
-from pymongo import MongoClient, UpdateOne
+from pymongo import MongoClient, UpdateOne, UpdateMany
 from xhtml2pdf import pisa
 from bson.objectid import ObjectId # Importar ObjectId
 from datetime import datetime
 from hashlib import blake2b
-import io, os, json, pandas
+from form_validator import formularios_dict
+import io, os, json, unicodedata
+import pandas as pd
+
 
 if "herna" not in os.getcwd():
     HOST = MongoClient(os.environ.get("HOST"))
-    #SECRET_KEY = os.environ.get("SECRET_KEY")
+    SECRET_KEY = os.environ.get("SECRET_KEY")
 else:
     HOST = MongoClient("mongodb://localhost:27017/")
-
-SECRET_KEY = "324535542d953171e82ff39f647e41baeb53ce0b11f127a8da2fce199f5fd8955c368f1db7c7b1cb32abc6e236bb96d5cd85d65812a7506036fb362c47344ddf"
+    SECRET_KEY = "324535542d953171e82ff39f647e41baeb53ce0b11f127a8da2fce199f5fd8955c368f1db7c7b1cb32abc6e236bb96d5cd85d65812a7506036fb362c47344ddf"
     
     
 BDD = HOST["colegio"]
@@ -39,9 +41,21 @@ def verificar_estado_de_peticion(resultado) -> dict:
     
     return resultado
 
-def json_de_mensaje(codigo, resultado_o_mensaje) -> dict:
+def json_de_mensaje(codigo: int, resultado_o_mensaje: str = None) -> dict:
     """Crea un json con el formato: { 'codigo': 000, 'mensaje': 'resultado o mensaje de error' }"""
     
+    errores = {
+        402: "Error formulario incompleto o corrupto.",
+        403: "Acceso denegado. No tienes permisos suficientes.",
+        404: "Recurso no encontrado.",
+        500: "Error interno del servidor.",
+        503: "Servicio no disponible temporalmente."
+    }
+
+
+    if not resultado_o_mensaje:
+        resultado_o_mensaje = errores[codigo]
+
     if codigo == 500:
         print(f"\033[1;30;41m  ERRROR {codigo}: {resultado_o_mensaje}  \033[0m")
 
@@ -171,7 +185,7 @@ class Informes_pdf:
         if plantilla_pase["codigo"] != 200:
             return plantilla_pase
         
-        resultado_seguridad = Security.claves_existentes(["nombre_apoderado", "rut_apoderado", "rut_estudiante", "hora_salida"], formulario)
+        resultado_seguridad = Security.claves_existentes(["nombre_apoderado", "rut_apoderado", "rut_estudiante", "hora_salida", "curso_estudiante"], formulario)
         if not resultado_seguridad:
             return json_de_mensaje(404, "Estas enviando un formulario incompleto.")
 
@@ -199,10 +213,14 @@ class Informes_pdf:
         formulario["nombre_estudiante"] = informacion_rut["mensaje"]["nombres"] + " " + informacion_rut["mensaje"]["apellidos"]
         formulario["fecha_actual"] = obtener_fecha()
         formulario["ano_actual"] = formulario["fecha_actual"].split("-")[2]
+        
+        ###### CURSO ACTUAL AUN EN PRUEBA
+        formulario["curso_estudiante"] = informacion_rut["mensaje"]["desc_grado"] + " " + informacion_rut["mensaje"]["letra_curso"]
+
 
         ############### ESTAS CLAVES DEBEN DE ESTAR SI O SI PARA EL INFORME
         resultado_seguridad = Security.claves_existentes(
-            ["telefono_colegio", "direccion_colegio", "nombre_estudiante", "rut_estudiante", "fecha_actual", "ano_actual"],
+            ["telefono_colegio", "direccion_colegio", "nombre_estudiante", "rut_estudiante", "fecha_actual", "ano_actual", "curso_estudiante"],
             formulario
         )
         if not resultado_seguridad:
@@ -221,7 +239,12 @@ class Informes_pdf:
 class Apoderado:
 
     @staticmethod
-    def buscar_hijos(rut: str) -> dict:
+    def buscar_hijos(rut: str, apoderado_only: bool = False) -> dict:
+        """
+        Debido a posibles errores de cambios, se implemento\n
+        un parametro opcional con False por defecto. Permitinedo\n
+        buscar cargas de cualquier cargo sin excepcion si se mantiene de esa forma.
+        """
 
         resultado_rut = General.obtener_informacion_rut(rut)
         if resultado_rut["codigo"] != 200:
@@ -230,9 +253,16 @@ class Apoderado:
         if "carga_apoderado" not in resultado_rut["mensaje"]:
             return json_de_mensaje(200, resultado_rut)
         
+        match_ = {
+            "rut": rut
+        }
+
+        if apoderado_only:
+            match_.setdefault("cargo", "apoderado")
+
         try:
             resultado_cargas = list(estudiantes.aggregate([
-                {"$match": {"rut": rut}},
+                {"$match": match_},
                 {"$lookup": {
                     "from": "estudiantes",                
                     "localField": "carga_apoderado",
@@ -287,7 +317,10 @@ class Apoderado:
         datos_pase.pop("accion")
         datos_pase["fecha_actual"] = obtener_fecha()
         datos_pase["nombre_estudiante"] = str(informacion_rut["mensaje"]["nombres"] + " " + informacion_rut["mensaje"]["apellidos"]).upper()
-        
+        ###### CURSO ACTUAL AUN EN PRUEBA
+        datos_pase["curso_estudiante"] = informacion_rut["mensaje"]["desc_grado"] + " " + informacion_rut["mensaje"]["letra_curso"]
+
+
         print(datos_pase)
         # EL SPLIT DA COMO RESULTADO DOS VARIABLES QUE MODIFICAN LO FALTANTE
         datos_pase["fecha_retiro"], datos_pase["hora_salida"] = datos_pase["hora_salida"].split("T")
@@ -352,6 +385,31 @@ class Security:
             return False
         
         return True
+
+    @staticmethod
+    def form_validator(formulario_name: str, formulario_validar: dict) -> dict:
+
+        restricciones = formularios_dict.get(formulario_name)
+        if not restricciones:
+            return json_de_mensaje(500, "El programador no sabe cuales son sus propios formularios xd.")
+        
+        for campo, validator in restricciones.items():
+            
+            if campo not in formulario_validar:
+                return json_de_mensaje(402, f"Campo '{campo}' faltante.")
+            
+            valor_validar = str(formulario_validar[campo]).lower()
+            
+            if len(valor_validar) < validator[0]:
+                return json_de_mensaje(402, f"Campo '{campo}' demasiado corto.")
+            
+            if len(valor_validar) > validator[1]:
+                return json_de_mensaje(402, f"Campo '{campo}' demasiado largo.")
+            
+            if any(char_ not in validator[2] for char_ in valor_validar):
+                return json_de_mensaje(402, f"Campo '{campo}' contiene caracteres inválidos.")
+            
+        return json_de_mensaje(200, "Ok.")
 
     @staticmethod
     def leer_copia_seguridad(ruta_archivo: str) -> bytes:
@@ -738,6 +796,39 @@ class General:
         return json_de_mensaje(200, resultado[0])
 
     @staticmethod
+    def profesores_asignados(profesores_existentes: dict, curso_info: dict) -> dict:
+        
+        if profesores_existentes["codigo"] != 200:
+            return profesores_existentes
+
+        if "materias" not in curso_info["mensaje"]:
+            return json_de_mensaje(404, "No se encontraron materias en el curso.")
+        
+        profesores_existentes: list = profesores_existentes["mensaje"]
+        curso_info: dict = curso_info["mensaje"]
+        
+        profesores_asignados = [ x for x in curso_info["materias"] ]
+        profesores_asignados_rt = []
+        
+        for profesor in profesores_existentes:
+
+            if profesor["rut"] not in profesores_asignados:
+                continue
+                        
+            informacion_profesor = {
+
+                "_id": str(profesor["_id"]),
+                "nombres": profesor["nombres"],
+                "apellidos": profesor["apellidos"],
+                "rut": profesor["rut"],
+                "materia": curso_info["materias"][profesor["rut"]]
+            }
+
+            profesores_asignados_rt.append(informacion_profesor)
+        
+        return json_de_mensaje(200, profesores_asignados_rt)
+
+    @staticmethod
     def obtener_informacion_curso(id_curso: str) -> dict:
         
         try:
@@ -837,6 +928,138 @@ class Administrador:
     Clase contenedora de todas las funciones activas que\n
     utiliza y accede el Administrador.
     """
+    @staticmethod
+    def asignar_materias_a_profesores(formulario_json: dict):
+        
+        formulario_json.pop("accion")
+
+        seguridad_ = Security.claves_existentes(["curso_informacion", "curso_id"], formulario_json)
+        if not seguridad_:
+            return json_de_mensaje(402, "Estas enviando un formulario incompleto o corrupto.")
+        
+        curso_id = formulario_json["curso_id"]
+        try:
+            informacion_curso = json.loads(formulario_json["curso_informacion"])
+        
+        except:
+            return json_de_mensaje(500, "No se logro leer adecuadamente el objeto enviado.")
+        
+        ################## Se verifica que los ruts existan
+        try:
+
+            profesores_ruts = list(informacion_curso["materias"].keys())
+            resultado = list(estudiantes.find({"rut": {"$in": profesores_ruts}}, {"_id": 0,"rut": 1}))
+
+        except:
+            return json_de_mensaje(500, "ERROR: No se logro buscar la informacion solicitada.")
+        
+        if not resultado:
+            return json_de_mensaje(404, "No se logro encontrar ninguna informacion asociada a los ruts de profesores y estudiantes.")
+        
+        resultado_tmp = str(resultado)
+        for rut_vf in profesores_ruts:
+            
+            if rut_vf in resultado_tmp:
+                continue
+            
+            return json_de_mensaje(404, f"El rut {rut_vf} no se encuentra en la base de datos.")
+
+
+        ########## SE OBTIENEN LOS ANTIGUOS PROFESORES
+        resultado_curso_info = General.obtener_informacion_curso(curso_id)
+        if resultado_curso_info["codigo"] != 200:
+            return resultado_curso_info
+
+        resultado_curso_info = resultado_curso_info["mensaje"]
+
+        ##################################
+        # Se le da formato a la consulta para mongo db
+        informacion_curso["materias"] = { x:informacion_curso["materias"][x] for x in informacion_curso["materias"] }
+        # PUEDEN HABER ERRORES A FUTURO CON LA LINEA DE ARRIBA
+
+        materias_format = {
+            "materias": informacion_curso["materias"]
+        }
+
+        try:
+            ######### las materias se sobreeescriben ya que en teoria siempre se envian los mismos desde el formulario
+            asignar_materias = cursos.update_one({"_id": ObjectId(curso_id)}, {"$set": materias_format})
+        except:
+            return json_de_mensaje(500, "ERROR: Ocurrio un error al intentar crear el curso.")
+        
+        if not asignar_materias.acknowledged:
+            return json_de_mensaje(404, "No se logro insertar completamente el curso.")
+
+        ###############################
+
+        seguridad_json = Security.claves_existentes(["materias"], informacion_curso)
+        if not seguridad_json:
+            return json_de_mensaje(402, "Estas enviando un formulario incompleto o corrupto.")
+
+        asignar_curso_profesores = profesores_ruts.copy()
+
+        if "materias" in resultado_curso_info:
+
+            profesores_pre_changes = [ x for x in resultado_curso_info["materias"] ]
+
+            eliminar_curso_adm = []
+
+            # Itera la lista de profesores antes de la modificacion (profesores antiguos)
+            for profesor_ in profesores_pre_changes:
+
+                # Si el antiguo profesor ya no esta en la nueva lista se agrega para borrar
+                if profesor_ not in profesores_ruts:
+                    eliminar_curso_adm.append(profesor_)
+                    continue
+                
+                # En caso de que este tanto en antigua como la nueva se borrara de las listas
+                # para evitar duplicados
+                idx = asignar_curso_profesores.index(profesor_)
+                asignar_curso_profesores.pop(idx)
+
+            
+            if len(eliminar_curso_adm) >= 1:
+
+                print(f"Desasignar profesores del curso: {eliminar_curso_adm}.")
+                resultado_desasignar = Administrador.asignar_curso_a_profesor(
+                    id_curso = curso_id,
+                    ruts = eliminar_curso_adm,
+                    unset = True
+                )
+
+                if resultado_desasignar["codigo"] != 200:
+                    return resultado_desasignar
+
+        ########### SE LE ASIGNAN LOS CURSOS A LOS PROFESORES NUEVOS
+
+        if len(asignar_curso_profesores) >= 1:
+
+            resultado_asignar_profesor = Administrador.asignar_curso_a_profesor(
+                id_curso = curso_id,
+                ruts = asignar_curso_profesores
+            )
+
+            if resultado_asignar_profesor["codigo"] != 200:
+                return resultado_asignar_profesor
+            
+        return json_de_mensaje(200, "Profesores asignados al curso correctamente.")
+
+    @staticmethod
+    def asignar_curso_a_profesor(id_curso: str, ruts: list, unset: bool = False) -> dict:
+
+        accion = "$pull" if unset else "$push"
+        word = "elimino" if unset else "asigno"
+
+        try:
+            respuesta = estudiantes.update_many({"rut": {"$in": ruts}}, {accion: {"cursos_asignados": ObjectId(id_curso)}})
+        
+        except:
+            return json_de_mensaje(500, f"No se logro {word} el curso a los profesores.")
+        
+        if not respuesta.acknowledged:
+            return json_de_mensaje(404, f"No se encontraron todos los profesores a {word} el curso.")
+        
+        return json_de_mensaje(200, f"Se {word} el curso correctamente a los profesores.")
 
     @staticmethod
     def crear_curso(formulario_json: dict):
@@ -910,7 +1133,7 @@ class Administrador:
         if resultado_asignar_alumno["codigo"] != 200:
             return resultado_asignar_alumno
         
-        resultado_asignar_profesor = asignar_curso_a_profesor(
+        resultado_asignar_profesor = Administrador.asignar_curso_a_profesor(
             id_curso = curso_creado.inserted_id,
             ruts = profesores_ruts
         )
@@ -1270,41 +1493,170 @@ class Administrador:
         
         return json_de_mensaje(200, resultado)
 
-    def nuevo_ano(exel_form_files: bytes) -> dict:
+    def nuevo_ano(excel_form_files: bytes) -> dict:
 
-        usage_ing = {
-            "xls": "xlrd",
-            "xlsx": "openpyxl"
-        }
-
-        resultado_exel = guardar_imagen("exel", "exel", exel_form_files)
-        if resultado_exel["codigo"] != 200:
-            return resultado_exel
+        guardar_xml = guardar_imagen("nominas", "excel", excel_form_files)
+        if guardar_xml["codigo"] != 200:
+            return guardar_xml
         
-        ruta_exel = resultado_exel["mensaje"]
-        extencion = ruta_exel.split(".")
-        extencion = extencion[len(extencion) - 1]
+        archivo_xls = guardar_xml["mensaje"]
+        print("Archivo usado como base de la base de datos: ", archivo_xls)
+
+        ##################### Se lee el xls o html ya que en la practica el archivo que se sube es un xml
+
+        try:
+            nomina_estudiantes = pd.read_html(archivo_xls)
+            bdd_estudiantes = nomina_estudiantes[0].to_json(
+                indent = 2,
+                orient = "records",
+                force_ascii = False
+            )
+
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: Se a producido un error al intentar leer el archivo. Por favor contacta con soporte tecnico: {err}")
+
+        bdd_estudiantes: dict = json.loads(bdd_estudiantes)
+
+        normalizacion = []
+
+        ######################## Se normaliza la base de datos quitando todos los caracteres especiales 
+        for estudiante in bdd_estudiantes:
+
+            estudiante_tmp = {}
+            for key, value in estudiante.items():
+
+                key_normal = unicodedata.normalize("NFKD", key).lower().replace(" ", "_")
+                key_normal = "".join([c for c in key_normal if not unicodedata.combining(c)])
+                
+                value_normal = value
+
+                if type(value) == str:
+                    value_normal = unicodedata.normalize("NFKD", value)
+                    
+                
+                estudiante_tmp.setdefault(key_normal, value_normal)
+            
+            normalizacion.append(estudiante_tmp)
 
 
+        ######################################## FACE DE NORMALIZACION Y COMPATBILIDAD CON EL PROGRAMA
+        bdd_estudiantes = []
+        bdd_cursos = {}
 
-        xml_data = pandas.read_html(ruta_exel)
-        to_json_data = xml_data[0]
+        for estudiante_nrm in normalizacion:
+
+
+            estudiante_tmp = {}
+            for key, value in estudiante_nrm.items():
+
+                
+                for char_ in key:
+
+                    if char_ not in "qwertyuiopasdfghjklñzxcvbnm_":
+                        key = key.replace(char_, "")
+
+
+                if key in ["run", "digito_ver."]:
+
+                    if "rut" in estudiante_tmp:
+                        continue
+
+                    value = str(estudiante_nrm["run"]) + "-" + str(estudiante_nrm["digito_ver."])
+                    estudiante_tmp.setdefault("rut", value)
+
+                    ############################### Contraseña plataforma
+                    contrasena = value[:4]
+                    contrasena = cifrar_contrasena(contrasena)
+
+                    estudiante_tmp.setdefault("contrasena", contrasena)
+
+                    ############################### Se le asigna el cargo estudiante
+
+                    estudiante_tmp.setdefault("cargo", "estudiante")
+
+                    ############ Se verifica que los campos necesarios para realizar la creacion o agregacion del curso existan
+                    if any(x not in estudiante_nrm for x in ["desc_grado", "letra_curso", "cod_grado"]):
+                        print(f"El rut {value} no tiene todos los parametros para ser incluido en un curso.")
+                        continue
+
+                    curso_str = estudiante_nrm.get("desc_grado")
+                    curso_letra = estudiante_nrm.get("letra_curso")
+
+                    curso = curso_str + " " + curso_letra
+
+                    if curso not in bdd_cursos:
+                        bdd_cursos.setdefault(curso, {"alumnos": []})
+
+                    bdd_cursos[curso]["alumnos"].append(value)
+
+                
+                elif key in ["apellido_materno", "apellido_paterno"]:
+
+                    if "apellidos" in estudiante_tmp:
+                        continue
+                    
+                    apellido_paterno = estudiante_nrm.get("apellido_paterno")
+                    apellido_materno = estudiante_nrm.get("apellido_materno")
+
+                    value = (apellido_paterno or "") + " " + (apellido_materno or "")
+                
+
+                    estudiante_tmp.setdefault("apellidos", value)
+
+                else:
+                    estudiante_tmp.setdefault(key, value)
+
+            bdd_estudiantes.append(estudiante_tmp)
+
+
+        ####################### Se normaliza el objeto de los cursos para su subida correctamente
+
+        cursos_upload = []
+        for curso_ in bdd_cursos:
+
+            json_curso = {
+                "curso": curso_,
+                "alumnos": bdd_cursos[curso_]["alumnos"]
+            }
+
+            cursos_upload.append(json_curso)
+
         
-        json_data = to_json_data.to_json(
-            orient = "records",
-            force_ascii = False,
-            indent = 2
-        )
+        try:
 
-        print(json_data)
-        # Para guardarlo en un archivo:
-        """        with open('salida.json', 'w', encoding='utf-8') as f:
-            f.write(json_data)"""
+            ########## SE BORRAN TODOS LOS CURSOS Y ESTUDIANTES
+            cursos.delete_many({})
+            estudiantes.delete_many({"cargo": "estudiante"})
+            
+            ########## SE LE BORRAN LOS CURSOS ASIGNADOS A LOS PROFESORES
+            estudiantes.update_many({"cursos_asignados": {"$exists": 1}}, {"$unset": {"cursos_asignados": ""}})
 
+            ########## SE INSERTAN LOS NUEVOS CURSOS EN LA PLATAFORMA Y BASE DE DATOS
+            resultado_cursos_id = cursos.insert_many(cursos_upload)
 
+            ########## SE INSERTAN LOS NUEVOS ESTUDIANTES
+            estudiantes.insert_many(bdd_estudiantes)
 
-        print(ruta_exel)
-        return json_de_mensaje(200, "XD")
+            ########## SE USAN LOS IDS RECIEN INSERTADOS de CURSOS PARA OBTENER LA LISTA DE ALIMNOS A SU VEZ INSERTARLES LOS DOCUMENTOS
+            cursos_creados = list(cursos.find({"_id": {"$in": resultado_cursos_id.inserted_ids}}))            
+            operaciones_actualizar_estudiantes = []
+
+            for curso_creado in cursos_creados:
+                
+                operaciones_actualizar_estudiantes.append(
+                    UpdateMany(
+                        {"rut": {"$in": curso_creado["alumnos"]}},
+                        {"$set": {"curso_actual": curso_creado["_id"]}}
+                    )
+                )
+
+            ########## SE EJECUTA EL ACTUALIZAR DOCUMENTOS SOBRE LOS ESTUDIANTES
+            estudiantes.bulk_write(operaciones_actualizar_estudiantes)
+
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: La base de datos no esta siendo procesada. {err}")
+
+        return json_de_mensaje(200, "Nuevo año asignado correctamente. Porfavor asigna los profesores.")
 
 class Profesor:
     """
@@ -1337,12 +1689,23 @@ class Profesor:
             return json_de_mensaje(404, f"No se logro encontrar ningun curso asociado al rut {rut_de_profesor}.")
         
         respuesta = respuesta[0]
-
         for curso in respuesta["cursos_informacion"]:
-            
+
+            if "materias" not in curso:
+                continue
+
+            if rut_de_profesor not in curso["materias"]:
+                continue
+
             idx = respuesta["cursos_informacion"].index(curso)
             respuesta["cursos_informacion"][idx]["_id"] = str(respuesta["cursos_informacion"][idx]["_id"])
-            respuesta["cursos_informacion"][idx]["materias"] = {rut_de_profesor: curso["materias"][rut_de_profesor]}
+
+            try:
+                respuesta["cursos_informacion"][idx]["materias"] = {rut_de_profesor: curso["materias"][rut_de_profesor]}
+
+            except:
+                json_de_mensaje(500, "Borrando curso sin rut")
+            
 
         return json_de_mensaje(200, respuesta)
 
@@ -1780,10 +2143,10 @@ class Public:
 
     def nuevo_mensaje(informacion_del_contacto: dict) -> dict:
 
-        no_sql_st = no_sql(informacion_del_contacto)
+        validacion = Security.form_validator("contactanos", informacion_del_contacto)
 
-        if no_sql_st["codigo"] != 200:
-            return no_sql_st
+        if validacion["codigo"] != 200:
+            return validacion
 
         try:
             resultado = contacto.insert_one(informacion_del_contacto)
@@ -1939,7 +2302,7 @@ def crear_curso_jefe(formulario: dict, profesor_jefe: str, profesor_jefe_rut: st
 
     ######################### Asignar el curso al profesor
 
-    profesor_resultado = asignar_curso_a_profesor(resultado.inserted_id, profesores_rut)
+    profesor_resultado = Administrador.asignar_curso_a_profesor(resultado.inserted_id, profesores_rut)
 
     if profesor_resultado["codigo"] != 200:
         return profesor_resultado
@@ -1959,16 +2322,3 @@ def asignar_curso_a_alumno(id_curso, ruts):
         return json_de_mensaje(404, "No se logro asignar completamente el curso a los alumnos.")
     
     return json_de_mensaje(200, "Se ha asignado el curso correctamente a los alumnos.")
-
-def asignar_curso_a_profesor(id_curso, ruts):
-
-    try:
-        respuesta = estudiantes.update_many({"rut": {"$in": ruts}}, {"$push": {"cursos_asignados": ObjectId(id_curso)}})
-    
-    except:
-        return json_de_mensaje(500, "No se logro asignar el curso a los profesores.")
-    
-    if not respuesta.acknowledged:
-        return json_de_mensaje(404, "No se encontraron todos los profesores a asignar el curso.")
-    
-    return json_de_mensaje(200, "Se asigno el curso correctamente a los profesores.")

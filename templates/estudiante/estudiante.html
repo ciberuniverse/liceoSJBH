@@ -30,7 +30,7 @@
 
     {% if "materias" in perfil %}
     <div class="mt-4">
-        <h6 class="fw-semibold text-secondary mb-3">Informe preliminar - {{ carga.nombres }} {{ carga.apellidos }}</h6>
+        <h6 class="fw-semibold text-secondary mb-3">Informe preliminar - {{ perfil.nombres }} {{ perfil.apellidos }}</h6>
         <div class="table-responsive">
             <table class="table table-striped table-bordered align-middle">
                 <thead class="table-light">
@@ -41,7 +41,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for nombre_materia, datos in carga['materias'].items() %}
+                    {% for nombre_materia, datos in perfil['materias'].items() %}
                     <tr>
                         <td class="fw-semibold">{{ nombre_materia | capitalize }}</td>
 

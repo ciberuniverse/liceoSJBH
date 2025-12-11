@@ -13,7 +13,7 @@
       "administrar_pagina",
       "crear_roles",
       "administrar_usuarios",
-      "crear_curso"
+      "asignar_profesores_a_cursos"
     ],
     "noticiero": [
       "noticiero",
@@ -40,7 +40,7 @@
       "crear_roles",
       "administrar_usuarios",
       "generar_pase",
-      "crear_curso"
+      "asignar_profesores_a_cursos"
     ]
   },
   "public": [
@@ -72,8 +72,7 @@
     "apoderado",
     "retirar_alumno",
     "generar_pase",
-    "crear_curso"
-  
+    "asignar_profesores_a_cursos"
   ],
   "navbar": {
     "estudiante": "Mis Notas",

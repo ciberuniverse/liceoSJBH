@@ -43,17 +43,25 @@
     let routes = [];
 
     function agregar_route(route) {
-        if (routes.includes(route)) {
-            routes.pop(route)
-        } else {
-            routes.push(route); // agrega la ruta
-        }
-        console.log(routes);
+    if (routes.includes(route)) {
+        routes = routes.filter(r => r !== route); // elimina la ruta específica
+    } else {
+        routes.push(route);
+    }
+    console.log(routes);
     }
 
-    document.addEventListener("formdata", (e) => {
-        e.formData.set("routes", routes.join(",")) // Se envia como un str separado por comas
-    })
+    document.getElementById("form-roles").addEventListener("submit", function(e) {
+        if (routes.length === 0) {
+        e.preventDefault(); // cancela el envío
+        alert("Debes seleccionar al menos una ruta antes de enviar.");
+        } else {
+        // setea el hidden con las rutas seleccionadas
+        document.getElementById("routes").value = routes.join(",");
+        }
+    });
+
+    
 </script>
 
 {% endblock %}

@@ -32,7 +32,7 @@
         <input name="nombre_nota" id="nombre_nota" class="form-control mb-2" type="text" minlength="3" maxlength="40">
         <button class="btn btn-warning" onclick="empezar_evaluar()">Empezar a evaluar</button><br>
         <button class="btn btn-danger"
-            onclick="cancelar('asignar_nota_nombre'); cancelar('asignar_nota')">Cancelar</button>
+            onclick="cancelar_evaluar()">Cancelar</button>
     </div>
 
     <!-- Lista de alumnos -->
@@ -196,6 +196,14 @@
         document.querySelectorAll(`.${clase_tag}`).forEach(f => f.hidden = true);
     }
 
+    function cancelar_evaluar() {
+        document.getElementById("nombre_nota").disabled = false;
+        document.getElementById("nombre_nota").value = "";
+
+        cancelar('asignar_nota_nombre');
+        cancelar('asignar_nota')
+    }
+
     function alumno_presente(rut) {
 
         if (ALUMNOS_PRESENTES.includes(rut)) {
@@ -210,6 +218,7 @@
 
     function empezar_evaluar() {
         NOTAS_ALUMNOS["nombre_prueba"] = document.getElementById("nombre_nota").value
+        document.getElementById("nombre_nota").disabled = true
         mostrar_ocultos('asignar_nota')
     }
 
@@ -235,9 +244,27 @@
         console.log(NOTAS_ALUMNOS);
     }
 
-    document.getElementById("form_subir_notas").addEventListener("formdata", (e) => {
+    const form_subir_notas_ = document.getElementById("form_subir_notas");
+    const form_pasar_lista_ = document.getElementById("form_pasar_lista");
+
+
+    form_subir_notas_.addEventListener("submit", (e) => {
+        if (NOTAS_ALUMNOS.notas_alumnos.length <= 0) {
+            alert("Debes guardar las notas de cada alumno primero.");
+            e.preventDefault(); // aquí sí funciona
+            return;
+        }
+    });
+
+    form_subir_notas_.addEventListener("formdata", (e) => {
 
         const fd = e.formData;
+
+        if (NOTAS_ALUMNOS.notas_alumnos.length <= 0) {
+            alert("Debes guardar las notas de cada alumno primero.")
+            e.preventDefault()
+            return
+        }
 
         const payload = {
             materia: `${materia}`,
@@ -249,7 +276,16 @@
         console.log("FormData final:", [...fd.entries()]);
     });
 
-    document.getElementById("form_pasar_lista").addEventListener("formdata", (e) => {
+
+    form_pasar_lista_.addEventListener("submit", (e) => {
+        if (ALUMNOS_PRESENTES.length <= 0) {
+            alert("Debes marcar alumnos presentes primero.");
+            e.preventDefault(); // aquí sí funciona
+            return;
+        }
+    });
+
+    form_pasar_lista_.addEventListener("formdata", (e) => {
 
         const fd = e.formData;
 

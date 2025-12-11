@@ -111,16 +111,30 @@
 
 <hr>
 
-<div id="nuevo_ano" hidden>
-
-  <form method="POST" enctype="multipart/form-data">
-    <h3>Sube la Base De Datos de Estudiantes. EXEL</h3>
-    <input type="file" name="exel">
-    <button type="submit" name="accion" value="nuevo_ano">Subir Exel de Estudiantes</button>
-  </form>
-
+<div id="nuevo_ano" hidden class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3 class="card-title text-primary mb-3">
+        <i class="bi bi-file-earmark-excel"></i> Sube la Base de Datos de Estudiantes (Excel)
+      </h3>
+      <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <input type="file" name="excel" class="form-control" required>
+        </div>
+        <button type="submit" name="accion" value="nuevo_ano" class="btn btn-success">
+          <i class="bi bi-upload"></i> Subir Excel de Estudiantes
+        </button>
+      </form>
+    </div>
+  </div>
 </div>
-<button onclick="mostrar_ano()">Nuevo Año Escolar</button>
+
+<div class="mt-3 d-flex justify-content-center">
+  <button onclick="mostrar_ano()" class="btn btn-danger">
+    <i class="bi bi-calendar-plus"></i> Nuevo Año Escolar
+  </button>
+</div>
+
 
 <!-- Disclaimer -->
 <div id="disclaimer" style="display:none;position:fixed;bottom:20px;right:20px;background:#fff3cd;color:#856404;border:1px solid #ffeeba;padding:15px 20px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);z-index:1000;font-size:14px">

@@ -28,12 +28,16 @@
                 </thead>
                 <tbody>
                     {% for curso in informacion_profesor['cursos_informacion'] %}
+                    {% if 'materias' in curso %}
+
                     <tr>
                         <td class="fw-bold">{{ curso['curso'] | upper }}</td>
                         <td>
+
                             <span class="badge bg-info text-dark">
                                 {{ curso['materias'][informacion_profesor['rut']] | capitalize }}
                             </span>
+
                         </td>
                         <td class="text-center">
                             <form method="POST" class="d-inline">
@@ -45,6 +49,7 @@
                             </form>
                         </td>
                     </tr>
+                    {% endif %}
                     {% endfor %}
                 </tbody>
             </table>

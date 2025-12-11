@@ -93,6 +93,10 @@ def login():
     # {"codigo": 000, "mensaje": "resultados o mensaje de error"}
     if request.method == "POST":
 
+        validar_campos = bdd.Security.form_validator("login", request.form)
+        if validar_campos["codigo"] != 200:
+            return redirect(url_for("login", codigo = validar_campos["codigo"], mensaje = validar_campos["mensaje"]))
+
         ## Cuando empleemos la base de datos corregir esta seccion creando una cookie mas elaborada
         cookies = bdd.Public.iniciar_sesion(request.form["rut"], request.form["contrasena"])
 
@@ -466,9 +470,8 @@ def administrar_pagina():
                 PERSONALIZACION_WEB = bdd.Settings.leer_settings(True)
         
         elif formulario["accion"] == "nuevo_ano":
-
             respuesta_modificar = bdd.Administrador.nuevo_ano(request.files)
-            pass
+            cachear.clear()
 
         return redirect(url_for("administrar_pagina", codigo = respuesta_modificar["codigo"], mensaje = respuesta_modificar["mensaje"]))
 
@@ -573,52 +576,128 @@ def administrar_usuarios():
         rutas_permitidas = rutas_permitidas_usuario
     )
 
-@app.route("/crear_curso", methods = ["POST", "GET"])
-def crear_curso():
+@app.route("/asignar_profesores_a_cursos", methods = ["POST", "GET"])
+def asignar_profesores_a_cursos():
 
     rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
 
     if request.method == "POST":
-        
+    
         formulario_ = request.form.to_dict()
         if "accion" not in formulario_:
-            return redirect(url_for("crear_curso", codigo = 500, mensaje = "ERROR: Formulario incompleto o corrupto."))
+            return redirect(url_for(
+                "asignar_profesores_a_cursos",
+                codigo = 500,
+                mensaje = "ERROR: Formulario incompleto o corrupto."
+            ))
 
-        if formulario_["accion"] == "crear_curso":
-            resultado = bdd.Administrador.crear_curso(formulario_)
+        if formulario_["accion"] == "asignar_materias":
 
-        return redirect(url_for("crear_curso", codigo = resultado["codigo"], mensaje = resultado["mensaje"]))
+            if "curso" not in formulario_:
+                return redirect(url_for("asignar_profesores_a_cursos", codigo = 402, mensaje = "Estas enviando un formulario invalido o corrupto."))
+            
+            curso_id = formulario_["curso"]
 
-    cache_key = "listar_profesores"
+            curso_informacion = bdd.General.obtener_informacion_curso(curso_id)
+            if curso_informacion["codigo"] != 200:
+                return redirect(url_for("asignar_profesores_a_cursos", codigo = curso_informacion["codigo"], mensaje = curso_informacion["mensaje"]))
 
-    # Obtenemos la cache
-    profesores = cachear.get(cache_key)
+            ########### LISTA DE PROFESORES
+            cache_key = "listar_profesores"
 
-    # Si tiene se retornan los daatos con la cache
-    if profesores:
+            # Obtenemos la cache
+            profesores = cachear.get(cache_key)
+        
+            # Si tiene se retornan los daatos con la cache
+            if profesores:
+                
+                ########### Se obtiene la informacion de los profesores y se le adjunta al documento del curso
+                profesores_asig = bdd.General.profesores_asignados(profesores, curso_informacion)
+                if profesores_asig["codigo"] == 200:
+                    curso_informacion["mensaje"]["profesores_asignados"] = profesores_asig["mensaje"]
+
+                return render_template(
+                    "administrador/asignar_profesores_a_cursos.html",
+                    asignar = True,
+
+                    ########## Informacion para el template
+                    profesores = profesores["mensaje"],
+                    curso = curso_informacion["mensaje"],
+                    curso_id = curso_id,
+                    rutas_permitidas = rutas_permitidas_usuario
+                )
+
+            # En caso de no, se actualiza y se retornan con los valores de la BDD externa
+            profesores = bdd.General.listar_profesores()
+            
+            if profesores["codigo"] != 200:
+                return redirect(url_for(
+                    "asignar_profesores_a_cursos",
+                    codigo = profesores["codigo"],
+                    mensaje = profesores["mensaje"]
+                ))
+            
+            cachear.set(cache_key, profesores)
+
+            ########### Se obtiene la informacion de los profesores y se le adjunta al documento del curso
+            profesores_asig = bdd.General.profesores_asignados(profesores, curso_informacion)
+            if profesores_asig["codigo"] == 200:
+                curso_informacion["mensaje"]["profesores_asignados"] = profesores_asig["mensaje"]
+
+            return render_template(
+                "administrador/asignar_profesores_a_cursos.html",
+                asignar = True,
+                
+                ########## Informacion para el template
+                profesores = profesores["mensaje"],
+                curso = curso_informacion["mensaje"],
+                curso_id = curso_id,
+                rutas_permitidas = rutas_permitidas_usuario
+            )
+
+        elif formulario_["accion"] == "asignar_profesores_a_cursos":
+            resultado = bdd.Administrador.asignar_materias_a_profesores(formulario_)
+
+        return redirect(url_for("asignar_profesores_a_cursos", codigo = resultado["codigo"], mensaje = resultado["mensaje"]))
+
+    ########### Se intenta obtener el cache desde los archivos
+    cache_key_cursos = "todos_los_cursos"
+    cursos = cachear.get(cache_key_cursos)
+
+    # Si existe se retorna eso
+    if cursos:
+        print("CACHEEEEEEEEEEEEE")
         return render_template(
-            "administrador/crear_curso.html",
-            profesores = profesores["mensaje"],
+            "administrador/asignar_profesores_a_cursos.html",
+            principal = True,
+            ######## DATA NECESARIA PARA LA SECCION PRINCIPAL
+            cursos = cursos["mensaje"],
             rutas_permitidas = rutas_permitidas_usuario
         )
 
-    # En caso de no, se actualiza y se retornan con los valores de la BDD externa
-    profesores = bdd.General.listar_profesores()
-    
-    if profesores["codigo"] != 200:
+    # De no ser asi se obtiene el valor y se guarda en la cache
+    cursos = bdd.General.todos_los_cursos()
+
+    if cursos["codigo"] != 200:
+
         return render_template(
-            "administrador/crear_curso.html",
-            error = profesores,
+            "administrador/asignar_profesores_a_cursos.html",
+            error = cursos,
             rutas_permitidas = rutas_permitidas_usuario
         )
     
-    cachear.set(cache_key, profesores)
+    # Se guarda en cache
+    cachear.set(cache_key_cursos, cursos, timeout=300)
 
     return render_template(
-        "administrador/crear_curso.html",
-        profesores = profesores["mensaje"],
+        "administrador/asignar_profesores_a_cursos.html",
+        principal = True,
+        ######## DATA NECESARIA PARA LA SECCION PRINCIPAL
+        cursos = cursos["mensaje"],
         rutas_permitidas = rutas_permitidas_usuario
+
     )
+
 
 ############################### Rutas de panel del noticiero
 
@@ -735,6 +814,8 @@ def profesor():
 
     ########## Verificamos la cache
     lista_cursos = cachear.get(cache_key)
+    print(lista_cursos)
+
     if lista_cursos:
         return render_template(
             "profesor/profesor.html",
@@ -1083,7 +1164,8 @@ def generar_pase():
                 return redirect(url_for("generar_pase", codigo = 404, mensaje = "ERROR: Estas enviando un formulario incompleto."))
 
             rut_apoderado = request.form["rut"]
-            informacion_apoderado_cargas = bdd.Apoderado.buscar_hijos(rut_apoderado)
+            informacion_apoderado_cargas = bdd.Apoderado.buscar_hijos(rut_apoderado, apoderado_only=True)
+            print(informacion_apoderado_cargas)
 
             if informacion_apoderado_cargas["codigo"] != 200:
                 return redirect(url_for("generar_pase",
@@ -1116,4 +1198,8 @@ def generar_pase():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )

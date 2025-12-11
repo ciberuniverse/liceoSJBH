@@ -12,8 +12,7 @@
 <div class="container my-4">
 
   <!-- Contenedor con scroll -->
-  <div class="mx-auto border rounded shadow-sm bg-light"
-       style="max-height:300px; overflow-y:auto; width:80%;">
+  <div class="mx-auto border rounded shadow-sm bg-light" style="max-height:300px; overflow-y:auto; width:80%;">
 
     <table class="table table-striped table-bordered table-sm mb-0 text-center align-middle">
       <thead class="table-primary">
@@ -50,7 +49,7 @@
   })
 
   function not_repeat(id) {
-    document.getElementById(id).style.zIndex = 0
+    document.getElementById(id).disabled = true
   }
 </script>
 
@@ -64,7 +63,17 @@
     <form method="POST" class="p-3 border rounded bg-white">
       <div class="mb-3">
         <label for="rut" class="form-label">RUT del Apoderado Solicitante</label>
-        <input type="text" name="rut" id="rut" class="form-control" placeholder="Ej: 21724388-2" required>
+        <input
+          type="text"
+          name="rut"
+          id="rut"
+          class="form-control"
+          placeholder="Ej: 21724388-2"
+          minlength="7"
+          maxlength="12"
+          pattern="^[0-9]+-[0-9kK]{1}$"
+          title="Ingrese el RUT sin puntos, con guion y dígito verificador (Ej: 21724368-0)"
+          required>
         <div class="form-text">Ingrese el RUT con guion y dígito verificador.</div>
       </div>
 
@@ -138,8 +147,7 @@
             </div>
             <input name="accion" value="generar_pase" hidden>
             <div class="d-flex justify-content-end">
-              <button type="submit" id="generar_pase" class="btn btn-primary"
-                onclick="not_repeat('generar_pase')">
+              <button type="submit" id="generar_pase" class="btn btn-primary">
                 Generar Pase Virtual
               </button>
             </div>
@@ -171,8 +179,8 @@
     appId: "1:694774742200:web:50d6054ebdead96d84c84d",
     measurementId: "G-RL3VCLD0T3"
   };
-  
-  
+
+
   // Inicializar Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -185,7 +193,7 @@
   function verificar_rut_generar(rut) {
     // Normalizar a string y minúsculas
     rut = String(rut).toLowerCase();
-    
+
     console.log(NOT_REPEAT_RUT, rut)
     // Si ya está en la lista de repetidos → no se lista
     if (NOT_REPEAT_RUT.includes(rut)) {
@@ -296,16 +304,20 @@
     chatBox.scrollTop = chatBox.scrollHeight;
   });
 
-    document.getElementById("generar_pase").addEventListener("click", async (e) => {
+  document.getElementById("generar_pase").addEventListener("click", async (e) => {
+    e.preventDefault();
 
-    e.preventDefault()
+    const form = document.querySelector("#pase_form");
 
-    await enviarMensaje("-------{{ db_documento }}-------")
-    
+    if (form.checkValidity()) {
+      await enviarMensaje("-------{{ db_documento }}-------");
+      form.submit(); // ahora sí, porque ya validaste
+      not_repeat('generar_pase')
+    } else {
+      form.reportValidity(); // muestra los mensajes de error del navegador
+    }
+  });
 
-    document.querySelector("#pase_form").submit();
-
-    })
   {% endif %}
 
 
