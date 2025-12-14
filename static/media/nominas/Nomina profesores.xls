@@ -1,0 +1,1605 @@
+<table id="ctl00_ContentPlaceHolder1_Table1" style="border:1px solid gray;overflow-x:scroll;" cellpadding="0" cellspacing="0" width="1900px">
+	<tr>
+		<td style="border:1px solid gray;background-color:silver;">RUT</td>
+		<td style="border:1px solid gray;background-color:silver;">DV</td>
+		<td style="border:1px solid gray;background-color:silver;">Paterno</td>
+		<td style="border:1px solid gray;background-color:silver;">Materno</td>
+		<td style="border:1px solid gray;background-color:silver;">Nombre</td>
+		<td style="border:1px solid gray;background-color:silver;">Sexo</td>
+		<td style="border:1px solid gray;background-color:silver;">FechaNac</td>
+		<td style="border:1px solid gray;background-color:silver;">Estado
+Civil</td>
+		<td style="border:1px solid gray;background-color:silver;">Direccion</td>
+		<td style="border:1px solid gray;background-color:silver;">Telefono</td>
+		<td style="border:1px solid gray;background-color:silver;">Celular</td>
+		<td style="border:1px solid gray;background-color:silver;">Email</td>
+		<td style="border:1px solid gray;background-color:silver;">Titulo</td>
+		<td style="border:1px solid gray;background-color:silver;">A&#241;osExp</td>
+		<td style="border:1px solid gray;background-color:silver;">Fecha
+Ingreso</td>
+		<td style="border:1px solid gray;background-color:silver;">Fecha
+Retiro</td>
+		<td style="border:1px solid gray;background-color:silver;">DireccionComuna</td>
+		<td style="border:1px solid gray;background-color:silver;">Estado</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17955474</td>
+		<td style="border:1px solid gray;">7</td>
+		<td style="border:1px solid gray;">AGUAYO</td>
+		<td style="border:1px solid gray;">MU&#209;OZ</td>
+		<td style="border:1px solid gray;">MAGNOLIA ALEJANDRA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">27-06-1993</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">15616498</td>
+		<td style="border:1px solid gray;">4</td>
+		<td style="border:1px solid gray;">&#193;LVAREZ</td>
+		<td style="border:1px solid gray;">ARIAS</td>
+		<td style="border:1px solid gray;">&#218;RSULA SOF&#205;A</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">22-05-1984</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">19814064</td>
+		<td style="border:1px solid gray;">3</td>
+		<td style="border:1px solid gray;">&#193;LVAREZ</td>
+		<td style="border:1px solid gray;">CASTRO</td>
+		<td style="border:1px solid gray;">EDUARDO ALFONSO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">12-09-1997</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">16513812</td>
+		<td style="border:1px solid gray;">0</td>
+		<td style="border:1px solid gray;">BECERRA</td>
+		<td style="border:1px solid gray;">OVIEDO</td>
+		<td style="border:1px solid gray;">CATALINA STEPHANIE</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">01-03-1987</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">19109933</td>
+		<td style="border:1px solid gray;">8</td>
+		<td style="border:1px solid gray;">BELTR&#193;N</td>
+		<td style="border:1px solid gray;">N&#218;&#209;EZ</td>
+		<td style="border:1px solid gray;">CONSTANZA NICOLE</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">12-05-1995</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">18418063</td>
+		<td style="border:1px solid gray;">4</td>
+		<td style="border:1px solid gray;">BENAVIDES</td>
+		<td style="border:1px solid gray;">FLORES</td>
+		<td style="border:1px solid gray;">DANIELA ANDREA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">26-10-1993</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">8279496</td>
+		<td style="border:1px solid gray;">4</td>
+		<td style="border:1px solid gray;">BRAVO</td>
+		<td style="border:1px solid gray;">FAUST</td>
+		<td style="border:1px solid gray;">SERGIO VALENT&#205;N</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">14-02-1959</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">9850559</td>
+		<td style="border:1px solid gray;">8</td>
+		<td style="border:1px solid gray;">BRIONES</td>
+		<td style="border:1px solid gray;">PULGAR</td>
+		<td style="border:1px solid gray;">GUANDALINA NELLY</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">24-03-1965</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">16761122</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">BURGOS</td>
+		<td style="border:1px solid gray;">MU&#209;OZ</td>
+		<td style="border:1px solid gray;">LUIS &#193;LVARO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">05-05-1988</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">16140731</td>
+		<td style="border:1px solid gray;">3</td>
+		<td style="border:1px solid gray;">BUSTOS</td>
+		<td style="border:1px solid gray;">CONTRERAS</td>
+		<td style="border:1px solid gray;">ROMINA DANIELA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">06-04-1986</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">12383645</td>
+		<td style="border:1px solid gray;">6</td>
+		<td style="border:1px solid gray;">CABEZAS</td>
+		<td style="border:1px solid gray;">ESCALONA</td>
+		<td style="border:1px solid gray;">GLORIA CECILIA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">20-05-1973</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">9433021</td>
+		<td style="border:1px solid gray;">1</td>
+		<td style="border:1px solid gray;">C&#193;CERES</td>
+		<td style="border:1px solid gray;">ORELLANA</td>
+		<td style="border:1px solid gray;">ELIZABETH ERCILIA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">11-07-1962</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">9812196</td>
+		<td style="border:1px solid gray;">K</td>
+		<td style="border:1px solid gray;">C&#193;CERES</td>
+		<td style="border:1px solid gray;">VILCHES</td>
+		<td style="border:1px solid gray;">RIGOBERTO ANTONIO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">27-01-1967</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17896790</td>
+		<td style="border:1px solid gray;">8</td>
+		<td style="border:1px solid gray;">CAMPOS</td>
+		<td style="border:1px solid gray;">MORALES</td>
+		<td style="border:1px solid gray;">CONSTANZA ANDREA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">28-02-1991</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17224412</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">CAMPOS</td>
+		<td style="border:1px solid gray;">SEGUEL</td>
+		<td style="border:1px solid gray;">JOHANNA ALEJANDRA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">13-12-1989</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">9425183</td>
+		<td style="border:1px solid gray;">4</td>
+		<td style="border:1px solid gray;">CARRILLO</td>
+		<td style="border:1px solid gray;">ESCALONA</td>
+		<td style="border:1px solid gray;">MYRIAM ROSSANA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">20-10-1963</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17569684</td>
+		<td style="border:1px solid gray;">9</td>
+		<td style="border:1px solid gray;">CARTES</td>
+		<td style="border:1px solid gray;">COLOMA</td>
+		<td style="border:1px solid gray;">KAREN ISMENIA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">16-02-1990</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17569649</td>
+		<td style="border:1px solid gray;">0</td>
+		<td style="border:1px solid gray;">CARTES</td>
+		<td style="border:1px solid gray;">PINO</td>
+		<td style="border:1px solid gray;">M&#211;NICA ROXANA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">03-08-1990</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">15624433</td>
+		<td style="border:1px solid gray;">3</td>
+		<td style="border:1px solid gray;">CARVAJAL</td>
+		<td style="border:1px solid gray;">HORMAZ&#193;BAL</td>
+		<td style="border:1px solid gray;">CARLOS ANDR&#201;S</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">05-12-1983</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">9535106</td>
+		<td style="border:1px solid gray;">9</td>
+		<td style="border:1px solid gray;">CASTILLO</td>
+		<td style="border:1px solid gray;">ROJAS</td>
+		<td style="border:1px solid gray;">PATRICIA ELIZABETH</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">08-10-1963</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">19812454</td>
+		<td style="border:1px solid gray;">0</td>
+		<td style="border:1px solid gray;">CEA</td>
+		<td style="border:1px solid gray;">ZAMBRANO</td>
+		<td style="border:1px solid gray;">JOS&#201; IGNACIO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">09-05-1997</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">16514863</td>
+		<td style="border:1px solid gray;">0</td>
+		<td style="border:1px solid gray;">CONCHA</td>
+		<td style="border:1px solid gray;">ESPINOZA</td>
+		<td style="border:1px solid gray;">SUSAN LEANDRA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">20-05-1987</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">19052065</td>
+		<td style="border:1px solid gray;">K</td>
+		<td style="border:1px solid gray;">CONCHA</td>
+		<td style="border:1px solid gray;">ESTRADA</td>
+		<td style="border:1px solid gray;">MAGDALENA AUDITA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">10-08-1995</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">16154645</td>
+		<td style="border:1px solid gray;">3</td>
+		<td style="border:1px solid gray;">CORDOVEZ</td>
+		<td style="border:1px solid gray;">DUR&#193;N</td>
+		<td style="border:1px solid gray;">KATHERINE YORNA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">22-04-1986</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">11692753</td>
+		<td style="border:1px solid gray;">5</td>
+		<td style="border:1px solid gray;">CORMACK</td>
+		<td style="border:1px solid gray;">KNUDSEN</td>
+		<td style="border:1px solid gray;">CHRISTIAN ERIC</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">14-11-1970</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">7674606</td>
+		<td style="border:1px solid gray;">0</td>
+		<td style="border:1px solid gray;">CORRALES</td>
+		<td style="border:1px solid gray;">HUENUL</td>
+		<td style="border:1px solid gray;">OLGA DE LAS MERCEDES</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">09-08-1956</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">16217937</td>
+		<td style="border:1px solid gray;">3</td>
+		<td style="border:1px solid gray;">CORREA</td>
+		<td style="border:1px solid gray;">CASTRO</td>
+		<td style="border:1px solid gray;">MACARENA ANG&#201;LICA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">02-04-1986</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">14355279</td>
+		<td style="border:1px solid gray;">9</td>
+		<td style="border:1px solid gray;">DOM&#205;NGUEZ</td>
+		<td style="border:1px solid gray;">MOSCIATTI</td>
+		<td style="border:1px solid gray;">FABRIZIO ANTONIO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">17-09-1979</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">8554630</td>
+		<td style="border:1px solid gray;">9</td>
+		<td style="border:1px solid gray;">ESPINOZA</td>
+		<td style="border:1px solid gray;">OLIVARES</td>
+		<td style="border:1px solid gray;">LUIS HERN&#193;N</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">09-05-1963</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">8923487</td>
+		<td style="border:1px solid gray;">5</td>
+		<td style="border:1px solid gray;">FLORES</td>
+		<td style="border:1px solid gray;">GAJARDO</td>
+		<td style="border:1px solid gray;">EUGENIO FRANCISCO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">10-08-1962</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">7584449</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">FUENTEALBA</td>
+		<td style="border:1px solid gray;">MAGRE</td>
+		<td style="border:1px solid gray;">EUGENIA ALEJANDRA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">11-09-1959</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">13604070</td>
+		<td style="border:1px solid gray;">7</td>
+		<td style="border:1px solid gray;">FUENTES</td>
+		<td style="border:1px solid gray;">FIGUEROA</td>
+		<td style="border:1px solid gray;">JULIO C&#201;SAR ALEXIS</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">26-10-1979</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">10040709</td>
+		<td style="border:1px solid gray;">4</td>
+		<td style="border:1px solid gray;">FUENTES</td>
+		<td style="border:1px solid gray;">URRUTIA</td>
+		<td style="border:1px solid gray;">SUSANA ELENA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">27-09-1967</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">8736136</td>
+		<td style="border:1px solid gray;">5</td>
+		<td style="border:1px solid gray;">FUENTES</td>
+		<td style="border:1px solid gray;">VALD&#201;S</td>
+		<td style="border:1px solid gray;">ANA MAR&#205;A</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">10-04-1961</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">10995278</td>
+		<td style="border:1px solid gray;">8</td>
+		<td style="border:1px solid gray;">G&#211;MEZ</td>
+		<td style="border:1px solid gray;">PARADA</td>
+		<td style="border:1px solid gray;">JOHANNA MACARENA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">30-11-1976</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">16760489</td>
+		<td style="border:1px solid gray;">7</td>
+		<td style="border:1px solid gray;">GONZ&#193;LEZ</td>
+		<td style="border:1px solid gray;">SAN MART&#205;N</td>
+		<td style="border:1px solid gray;">MADELEINE GISLAINNE</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">03-05-1988</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">10913640</td>
+		<td style="border:1px solid gray;">9</td>
+		<td style="border:1px solid gray;">GU&#205;&#209;EZ</td>
+		<td style="border:1px solid gray;">HIDALGO</td>
+		<td style="border:1px solid gray;">NORA KETTY</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">25-02-1970</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">7162142</td>
+		<td style="border:1px solid gray;">1</td>
+		<td style="border:1px solid gray;">GUZM&#193;N</td>
+		<td style="border:1px solid gray;">RIVERA</td>
+		<td style="border:1px solid gray;">M&#211;NICA REBECA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">26-11-1966</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">7980607</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">HERRERA</td>
+		<td style="border:1px solid gray;">INOSTROZA</td>
+		<td style="border:1px solid gray;">GEORGINA IVONNE</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">08-02-1958</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">11776110</td>
+		<td style="border:1px solid gray;">K</td>
+		<td style="border:1px solid gray;">IB&#193;&#209;EZ</td>
+		<td style="border:1px solid gray;">CARVAJAL</td>
+		<td style="border:1px solid gray;">REN&#201; ALBERTO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">15-09-1971</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">9176612</td>
+		<td style="border:1px solid gray;">4</td>
+		<td style="border:1px solid gray;">JARA</td>
+		<td style="border:1px solid gray;">GOLDENBERG</td>
+		<td style="border:1px solid gray;">&#205;TALO JORGE</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">08-12-1962</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17346503</td>
+		<td style="border:1px solid gray;">3</td>
+		<td style="border:1px solid gray;">JARA</td>
+		<td style="border:1px solid gray;">HIDALGO</td>
+		<td style="border:1px solid gray;">MAT&#205;AS ANDR&#201;S</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">13-03-1990</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">16035534</td>
+		<td style="border:1px solid gray;">4</td>
+		<td style="border:1px solid gray;">JIM&#201;NEZ</td>
+		<td style="border:1px solid gray;">G&#211;MEZ</td>
+		<td style="border:1px solid gray;">CARLOS EMANUEL ALEJANDRO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">17-11-1984</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17617004</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">LEIVA</td>
+		<td style="border:1px solid gray;">TRONCOSO</td>
+		<td style="border:1px solid gray;">LEYLA GERALDINE</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">27-08-1991</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">10760674</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">MARDONES</td>
+		<td style="border:1px solid gray;">PINO</td>
+		<td style="border:1px solid gray;">FERNANDO EDUARDO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">27-05-1968</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">11570308</td>
+		<td style="border:1px solid gray;">0</td>
+		<td style="border:1px solid gray;">M&#193;RQUEZ</td>
+		<td style="border:1px solid gray;">FILGUEIRA</td>
+		<td style="border:1px solid gray;">ROSSANA DEL CARMEN</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">28-04-1970</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17208574</td>
+		<td style="border:1px solid gray;">1</td>
+		<td style="border:1px solid gray;">MELO</td>
+		<td style="border:1px solid gray;">MELLADO</td>
+		<td style="border:1px solid gray;">FRANCISCO ALEJANDRO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">09-07-1989</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;">San Martin 457 Complejo deportivo </td>
+		<td style="border:1px solid gray;">990035278</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">San Martin 457 Complejo deportivo  HUALQUI</td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">7950121</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">MENA</td>
+		<td style="border:1px solid gray;">CARRASCO</td>
+		<td style="border:1px solid gray;">LUIS OMAR</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">11-07-1955</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">10014914</td>
+		<td style="border:1px solid gray;">1</td>
+		<td style="border:1px solid gray;">MIRANDA</td>
+		<td style="border:1px solid gray;">ORME&#209;O</td>
+		<td style="border:1px solid gray;">RICHARD ALEJANDRO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">26-01-1973</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17558422</td>
+		<td style="border:1px solid gray;">6</td>
+		<td style="border:1px solid gray;">MORA</td>
+		<td style="border:1px solid gray;">HENR&#205;QUEZ</td>
+		<td style="border:1px solid gray;">KATHERINE PAOLA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">02-09-1989</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">12978432</td>
+		<td style="border:1px solid gray;">6</td>
+		<td style="border:1px solid gray;">NEIRA</td>
+		<td style="border:1px solid gray;">NEIRA</td>
+		<td style="border:1px solid gray;">RODRIGO FIDEL</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">06-03-1974</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">979957630</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">20255997</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">NOVOA</td>
+		<td style="border:1px solid gray;">PINO</td>
+		<td style="border:1px solid gray;">SOLANGE ALEJANDRA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">01-09-1999</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;">Maipu poniente 44</td>
+		<td style="border:1px solid gray;">+56941432796</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Maipu poniente 44 CONCEPCI&#211;N</td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">12382379</td>
+		<td style="border:1px solid gray;">6</td>
+		<td style="border:1px solid gray;">PALMA</td>
+		<td style="border:1px solid gray;">MONTERO</td>
+		<td style="border:1px solid gray;">IGOR ALEJANDRO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">31-10-1973</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">12526936</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">PAREDES</td>
+		<td style="border:1px solid gray;">PALMA</td>
+		<td style="border:1px solid gray;">EDUARDO ALEJANDRO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">05-03-1973</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">18110790</td>
+		<td style="border:1px solid gray;">1</td>
+		<td style="border:1px solid gray;">P&#201;REZ</td>
+		<td style="border:1px solid gray;">ORTEGA</td>
+		<td style="border:1px solid gray;">NAVOTH ABRAHAM</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">25-08-1992</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17044779</td>
+		<td style="border:1px solid gray;">4</td>
+		<td style="border:1px solid gray;">REYES</td>
+		<td style="border:1px solid gray;">CABEZAS</td>
+		<td style="border:1px solid gray;">PAULA ANDREA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">01-02-1989</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">16137025</td>
+		<td style="border:1px solid gray;">8</td>
+		<td style="border:1px solid gray;">RIVAS</td>
+		<td style="border:1px solid gray;">MELLADO</td>
+		<td style="border:1px solid gray;">SOLANGE PAULINA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">27-03-1985</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;">BIO BIO 349 SANTA JOSEFINA</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">86162100</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">BIO BIO 349 SANTA JOSEFINA HUALQUI</td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">16377615</td>
+		<td style="border:1px solid gray;">4</td>
+		<td style="border:1px solid gray;">RIVAS</td>
+		<td style="border:1px solid gray;">REYES</td>
+		<td style="border:1px solid gray;">CLAUDIA VALERIA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">02-08-1987</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17165355</td>
+		<td style="border:1px solid gray;">K</td>
+		<td style="border:1px solid gray;">SAAVEDRA</td>
+		<td style="border:1px solid gray;">ALARC&#211;N</td>
+		<td style="border:1px solid gray;">MARICELA YOSSELYN</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">30-12-1988</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">16481561</td>
+		<td style="border:1px solid gray;">7</td>
+		<td style="border:1px solid gray;">SAAVEDRA</td>
+		<td style="border:1px solid gray;">SEP&#218;LVEDA</td>
+		<td style="border:1px solid gray;">VIARLY ARACELI</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">30-04-1986</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">15222703</td>
+		<td style="border:1px solid gray;">5</td>
+		<td style="border:1px solid gray;">SALAS</td>
+		<td style="border:1px solid gray;">MART&#205;NEZ</td>
+		<td style="border:1px solid gray;">JOS&#201; ALFREDO</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">10-08-1982</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">19908761</td>
+		<td style="border:1px solid gray;">4</td>
+		<td style="border:1px solid gray;">SALGADO</td>
+		<td style="border:1px solid gray;">INOSTROZA</td>
+		<td style="border:1px solid gray;">VALENTINA MONSERRAT</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">13-09-1998</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">15197748</td>
+		<td style="border:1px solid gray;">0</td>
+		<td style="border:1px solid gray;">SANHUEZA</td>
+		<td style="border:1px solid gray;">FLORES</td>
+		<td style="border:1px solid gray;">JIMMY HENRY</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">31-05-1982</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">18099123</td>
+		<td style="border:1px solid gray;">9</td>
+		<td style="border:1px solid gray;">SANHUEZA</td>
+		<td style="border:1px solid gray;">RIFFO</td>
+		<td style="border:1px solid gray;">CARMEN GLORIA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">18-10-1991</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">19091096</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">SANTANA</td>
+		<td style="border:1px solid gray;">SEP&#218;LVEDA</td>
+		<td style="border:1px solid gray;">B&#193;RBARA MURIELLE ATENEA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">24-10-1995</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">10743824</td>
+		<td style="border:1px solid gray;">6</td>
+		<td style="border:1px solid gray;">SEP&#218;LVEDA</td>
+		<td style="border:1px solid gray;">HORMAZ&#193;BAL</td>
+		<td style="border:1px solid gray;">ENA ALEJANDRA DE LOURDES</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">08-08-1969</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">20658325</td>
+		<td style="border:1px solid gray;">8</td>
+		<td style="border:1px solid gray;">SOL&#205;S</td>
+		<td style="border:1px solid gray;">SEP&#218;LVEDA</td>
+		<td style="border:1px solid gray;">ANA&#205;S CATALINA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">18-01-2001</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">8102371</td>
+		<td style="border:1px solid gray;">9</td>
+		<td style="border:1px solid gray;">TORRES</td>
+		<td style="border:1px solid gray;">MENA</td>
+		<td style="border:1px solid gray;">NELSON ENRIQUE</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">15-07-1961</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">15174569</td>
+		<td style="border:1px solid gray;">5</td>
+		<td style="border:1px solid gray;">TORRES</td>
+		<td style="border:1px solid gray;">ORTIZ</td>
+		<td style="border:1px solid gray;">DIEGO ESTEBAN</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">26-01-1982</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">8579958</td>
+		<td style="border:1px solid gray;">4</td>
+		<td style="border:1px solid gray;">TORRES</td>
+		<td style="border:1px solid gray;">S&#193;EZ</td>
+		<td style="border:1px solid gray;">NOLVIA DEL CARMEN</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">21-05-1959</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">14064461</td>
+		<td style="border:1px solid gray;">7</td>
+		<td style="border:1px solid gray;">TRONCOSO</td>
+		<td style="border:1px solid gray;">BERO&#205;ZA</td>
+		<td style="border:1px solid gray;">JUDITH ELISA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">15-03-1981</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">9089040</td>
+		<td style="border:1px solid gray;">9</td>
+		<td style="border:1px solid gray;">VACCARO</td>
+		<td style="border:1px solid gray;">MERINO</td>
+		<td style="border:1px solid gray;">ANGELA MAR&#205;A</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">11-09-1962</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">15220019</td>
+		<td style="border:1px solid gray;">6</td>
+		<td style="border:1px solid gray;">VALENZUELA</td>
+		<td style="border:1px solid gray;">CAAMA&#209;O</td>
+		<td style="border:1px solid gray;">PAMELA MARGARITA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">15-02-1982</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;">POBLACI&#211;N 18 DE SEPTIEMBRE N16</td>
+		<td style="border:1px solid gray;">977543474</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">POBLACI&#211;N 18 DE SEPTIEMBRE N16 HUALQUI</td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17844466</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">VALENZUELA</td>
+		<td style="border:1px solid gray;">MEZA</td>
+		<td style="border:1px solid gray;">MICHAEL JEFFRY</td>
+		<td style="border:1px solid gray;">M</td>
+		<td style="border:1px solid gray;">08-12-1991</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">18411504</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">VALLEJOS</td>
+		<td style="border:1px solid gray;">PEREIRA</td>
+		<td style="border:1px solid gray;">NATALIA ANAIN</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">09-01-1993</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">14064852</td>
+		<td style="border:1px solid gray;">3</td>
+		<td style="border:1px solid gray;">VARELA</td>
+		<td style="border:1px solid gray;">JIMENEZ</td>
+		<td style="border:1px solid gray;">LORENA ADRIANA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">08-09-1980</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;">PARCELA 20 CALLE 1 SECTOR CAMPO SANTO</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">991778754</td>
+		<td style="border:1px solid gray;">lorena.varela@andaliensur.cl</td>
+		<td style="border:1px solid gray;">PROFESORA HISTORIA Y GEOGRAF&#205;A</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">PARCELA 20 CALLE 1 SECTOR CAMPO SANTO HUALQUI</td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17510180</td>
+		<td style="border:1px solid gray;">2</td>
+		<td style="border:1px solid gray;">VENEGAS</td>
+		<td style="border:1px solid gray;">GUTI&#201;RREZ</td>
+		<td style="border:1px solid gray;">GABRIELA PILAR</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">01-09-1991</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">9884014</td>
+		<td style="border:1px solid gray;">1</td>
+		<td style="border:1px solid gray;">VERDUGO</td>
+		<td style="border:1px solid gray;">ARAYA</td>
+		<td style="border:1px solid gray;">MAR&#205;A EUGENIA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">05-12-1966</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+	<tr>
+		<td style="border:1px solid gray;">17955415</td>
+		<td style="border:1px solid gray;">1</td>
+		<td style="border:1px solid gray;">ZAMORANO</td>
+		<td style="border:1px solid gray;">CONTRERAS</td>
+		<td style="border:1px solid gray;">CLAUDIA ALEJANDRA</td>
+		<td style="border:1px solid gray;">F</td>
+		<td style="border:1px solid gray;">28-05-1991</td>
+		<td style="border:1px solid gray;">Soltero(a)</td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;"></td>
+		<td style="border:1px solid gray;">Vigente</td>
+	</tr>
+</table>

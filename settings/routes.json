@@ -16,8 +16,7 @@
       "asignar_profesores_a_cursos"
     ],
     "noticiero": [
-      "noticiero",
-      "noticias"
+      "noticiero"
     ],
     "profesor": [
       "profesor",
@@ -36,11 +35,16 @@
       "administrador_mensajes",
       "administrador_crear_taller",
       "administrar_pagina",
-      "noticias",
       "crear_roles",
       "administrar_usuarios",
       "generar_pase",
       "asignar_profesores_a_cursos"
+    ],
+    "nuevo cargo": [
+      "taller_estudiante",
+      "administrador_crear_taller",
+      "apoderado",
+      "generar_pase"
     ]
   },
   "public": [
@@ -52,9 +56,10 @@
     "urgente",
     "profesor_jefe_crear",
     "micuenta",
-    "talleres"
+    "talleres",
+    "nuestra_historia"
   ],
-  "private": [
+  "xd": [
     "estudiante",
     "taller_estudiante",
     "administrador",
@@ -64,7 +69,6 @@
     "administrar_taller_estudiantes",
     "administrar_pagina",
     "noticiero",
-    "noticias",
     "profesor",
     "profesor_taller",
     "crear_roles",
@@ -74,7 +78,7 @@
     "generar_pase",
     "asignar_profesores_a_cursos"
   ],
-  "navbar": {
+  "private": {
     "estudiante": "Mis Notas",
     "taller_estudiante": "Mi Taller",
     "administrador": "Crear Usuarios",
@@ -90,6 +94,7 @@
     "administrar_usuarios": "Administrar Usuarios",
     "apoderado": "Mis Pupilos",
     "retirar_alumno": "Retirar Alumno",
-    "generar_pase": "Generar Pases"
+    "generar_pase": "Asignar Pases",
+    "asignar_profesores_a_cursos": "Asignar Profesores a Cursos"
   }
 }

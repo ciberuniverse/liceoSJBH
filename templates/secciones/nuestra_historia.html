@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<style>
+  .historia-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 3rem;
+  }
+
+  .historia-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .historia-header h1 {
+    font-weight: 800;
+    font-size: 2.4rem;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+  }
+
+  .historia-header p {
+    color: #64748b;
+    font-size: 1rem;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .historia-text {
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: #334155;
+    text-align: justify;
+  }
+
+  .historia-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin: 2.5rem 0;
+  }
+
+  .historia-gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  .historia-gallery img:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
+  }
+
+  .historia-divider {
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #2563eb, #38bdf8);
+    border-radius: 999px;
+    margin: 3rem auto;
+  }
+
+  @media (max-width: 768px) {
+    .historia-header h1 {
+      font-size: 2rem;
+    }
+
+    .historia-text {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<section class="historia-section">
+
+  <header class="historia-header">
+    <h1>Historia del {{ nombre_colegio }}</h1>
+    <p>
+      Más de cuatro décadas formando estudiantes, construyendo comunidad
+      y fortaleciendo la educación pública en la comuna de Hualqui.
+    </p>
+  </header>
+
+  <div class="historia-gallery">
+    <img src="https://static.wixstatic.com/media/0bd562_5ffab264bda34541bce15c581ff0279d.jpg"
+         alt="Historia del liceo">
+    <img src="https://static.wixstatic.com/media/0bd562_a404b704736e4418a1f8a322f255da5d.jpg"
+         alt="Antiguas instalaciones del liceo">
+  </div>
+
+  <p class="historia-text">
+    El <strong>{{ nombre_colegio }}</strong> inicia su trayectoria educativa en el año
+    <strong>1975</strong>, como anexo del Liceo Experimental de Concepción (actual Liceo A-39),
+    comenzando con dos primeros años de enseñanza media. Ese mismo año, mediante la
+    Resolución Nº 18290 del Ministerio de Educación, se constituye como establecimiento autónomo
+    bajo la denominación de <em>Liceo de Hombres de Hualqui</em>.
+  </p>
+
+  <div class="historia-divider"></div>
+
+  <div class="historia-gallery">
+    <img src="https://static.wixstatic.com/media/0bd562_9a4be3a76589472b9a80bd2a98d7d505.jpg"
+         alt="Evolución institucional del liceo">
+    <img src="https://static.wixstatic.com/media/0bd562_f643abbeb63a41ba9721df2c43fd9b2d.jpg"
+         alt="Infraestructura actual del establecimiento">
+  </div>
+
+  <p class="historia-text">
+    En <strong>1978</strong> el establecimiento adopta el nombre de <em>Liceo C-41</em>, y en
+    <strong>1989</strong> recibe oficialmente la denominación
+    <strong>{{ nombre_colegio }}</strong>, en homenaje al nombre histórico
+    y tradicional de la comuna.
+  </p>
+
+  <p class="historia-text">
+    Sus primeras actividades se desarrollaron en un edificio ubicado en calle Errázuriz N° 510.
+    En <strong>mayo de 1982</strong>, el liceo se traslada a sus actuales dependencias,
+    construidas en un terreno cedido por la Ilustre Municipalidad de Hualqui.
+    Hoy, el establecimiento cuenta con más de <strong>3.000 m² de infraestructura</strong>,
+    incluyendo salas de clases, laboratorios, talleres, biblioteca, comedor
+    y dependencias administrativas.
+  </p>
+
+  <p class="historia-text">
+    En el año <strong>2001</strong>, bajo la gestión del actual director,
+    el liceo se incorpora a la <strong>Jornada Escolar Completa (JEC)</strong>,
+    fortaleciendo su proyecto educativo y ampliando las oportunidades de aprendizaje.
+    A lo largo de su historia, la comunidad educativa ha construido normas de convivencia
+    y funcionamiento con la participación activa de todos sus integrantes.
+  </p>
+
+</section>
+{% endblock %}

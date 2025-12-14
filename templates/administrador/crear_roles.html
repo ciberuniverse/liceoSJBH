@@ -11,24 +11,28 @@
                 <input name="routes" id="routes" hidden>
                 <div class="mb-3">
                     <label for="nombre_rol" class="form-label">Nombre del rol:</label>
-                    <input type="text" id="nombre_rol" name="nombre_rol" 
-                           class="form-control" placeholder="Ej: Administrador" required>
+                    <input type="text" id="nombre_rol" name="nombre_rol" class="form-control"
+                        placeholder="Ej: Administrador" required>
                 </div>
 
                 <div class="mb-3">
                     <p class="fw-bold">Selecciona las rutas:</p>
                     <div class="row">
-                        {% for route in routes.mensaje.private %}
-                            <div class="col-12 col-sm-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" 
-                                           onclick="agregar_route('{{ route }}')">
-                                    <label class="form-check-label" >
-                                        {{ route }}
-                                    </label>
-                                </div>
+                        {% for url, verbose in routes.private.items() %}
+                        <div class="col-12 col-sm-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" onclick="agregar_route('{{ url }}')">
+                                <label class="form-check-label">
+                                    <strong>{{ verbose }}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        Ruta: {{ url }}
+                                    </small>
+                                </label>
                             </div>
+                        </div>
                         {% endfor %}
+
                     </div>
                 </div>
 
@@ -43,25 +47,25 @@
     let routes = [];
 
     function agregar_route(route) {
-    if (routes.includes(route)) {
-        routes = routes.filter(r => r !== route); // elimina la ruta específica
-    } else {
-        routes.push(route);
-    }
-    console.log(routes);
+        if (routes.includes(route)) {
+            routes = routes.filter(r => r !== route); // elimina la ruta específica
+        } else {
+            routes.push(route);
+        }
+        console.log(routes);
     }
 
-    document.getElementById("form-roles").addEventListener("submit", function(e) {
+    document.getElementById("form-roles").addEventListener("submit", function (e) {
         if (routes.length === 0) {
-        e.preventDefault(); // cancela el envío
-        alert("Debes seleccionar al menos una ruta antes de enviar.");
+            e.preventDefault(); // cancela el envío
+            alert("Debes seleccionar al menos una ruta antes de enviar.");
         } else {
-        // setea el hidden con las rutas seleccionadas
-        document.getElementById("routes").value = routes.join(",");
+            // setea el hidden con las rutas seleccionadas
+            document.getElementById("routes").value = routes.join(",");
         }
     });
 
-    
+
 </script>
 
 {% endblock %}

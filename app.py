@@ -56,6 +56,11 @@ def home():
     
     return render_template("home.html", noticias = noticias_list["mensaje"])
 
+@cachear.cached(timeout=300)
+@app.route("/nuestra_historia", methods = ["GET"]) ### Pagina estatica
+def nuestra_historia():
+    return render_template("secciones/nuestra_historia.html")
+
 @app.route("/logout", methods = ["GET"])
 def logout():
     session.clear()
@@ -118,7 +123,7 @@ def login():
         session["informacion"] = cookies["mensaje"]
 
         ##### Se obtienen las rutas del cargo asignado en routes.json y se redirige a la primera.
-        return redirect(url_for(bdd.obtener_navbar(session, RUTAS["rol"], True)))
+        return redirect(url_for(bdd.obtener_navbar(session, RUTAS, True)))
 
     ################# Seccion de metodo GET
 
@@ -128,11 +133,11 @@ def login():
     if not session:
         return render_template("login.html")
 
-    return redirect(url_for(bdd.obtener_navbar(session, RUTAS["rol"], True)))
+    return redirect(url_for(bdd.obtener_navbar(session, RUTAS, True)))
 
 @app.route("/micuenta", methods = ["POST", "GET"]) ########### GENERAL PARA T0DO AQUEL LOGEADO
 def micuenta():
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     if not session or "informacion" not in session:
         return redirect(url_for("login", codigo = 402, mensaje="Acceso denegado: necesitas iniciar sesión para continuar"))
@@ -149,6 +154,14 @@ def micuenta():
             # Verificamos que todos los campos necesarios para utilizar el api sean correctos
             resultado_contrasena = bdd.Security.claves_existentes(["rut", "contrasena"], formulario)
             if not resultado_contrasena:
+                return redirect(url_for("micuenta",
+                    codigo = resultado_contrasena["codigo"],
+                    mensaje = resultado_contrasena["mensaje"]
+                ))
+
+            # Se utiliza la validacion del formulario de login para verificar que no esten inyectando caracteres rancios
+            resultado_contrasena = bdd.Security.form_validator("login", formulario)
+            if resultado_contrasena["codigo"] != 200:
                 return redirect(url_for("micuenta",
                     codigo = resultado_contrasena["codigo"],
                     mensaje = resultado_contrasena["mensaje"]
@@ -201,7 +214,7 @@ def talleres():
 @app.route("/administrador", methods = ["POST", "GET"])
 def administrador():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     if request.method == "POST":
 
@@ -230,7 +243,7 @@ def administrador():
 @app.route("/administrador_mensajes", methods = ["POST", "GET"])
 def administrador_mensajes():
     # Obtener listado de mensajes (se usa tanto en GET como en POST)
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
     resultado = bdd.Administrador.listar_mensajes(0)
 
     if resultado["codigo"] != 200:
@@ -273,7 +286,7 @@ def administrador_mensajes():
 @app.route("/administrador_mensajes_vistos", methods = ["POST", "GET"])
 def administrador_mensajes_vistos():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
     resultado_lista_mensajes = bdd.Administrador.listar_mensajes(1) # Si en el futuro hay queja por repeticion de mensajes es por esto
     
     if resultado_lista_mensajes["codigo"] != 200:
@@ -320,7 +333,7 @@ def administrador_mensajes_vistos():
 @app.route("/administrador_crear_taller", methods = ["POST", "GET"])
 def administrador_crear_taller():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     if request.method == "POST":
 
@@ -351,7 +364,7 @@ def administrador_crear_taller():
 @app.route("/administrar_taller_estudiantes", methods = ["POST", "GET"])
 def administrar_taller_estudiantes():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
     cache_key = "talleres_lista"
     
     if request.method == "POST":
@@ -454,7 +467,7 @@ def administrar_taller_estudiantes():
 def administrar_pagina():
     global PERSONALIZACION_WEB
     
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     if request.method == "POST":
 
@@ -472,6 +485,13 @@ def administrar_pagina():
         elif formulario["accion"] == "nuevo_ano":
             respuesta_modificar = bdd.Administrador.nuevo_ano(request.files)
             cachear.clear()
+        
+        elif formulario["accion"] == "subir_profesores":
+            respuesta_modificar = bdd.Administrador.subir_profesores(request.files)
+
+            if respuesta_modificar["codigo"] == 200:
+                print(respuesta_modificar["mensaje"])
+            cachear.clear()
 
         return redirect(url_for("administrar_pagina", codigo = respuesta_modificar["codigo"], mensaje = respuesta_modificar["mensaje"]))
 
@@ -485,7 +505,7 @@ def administrar_pagina():
 @app.route("/crear_roles", methods = ["GET", "POST"]) ######### USA RUTAS EN GLOBAL
 def crear_roles():
     global RUTAS
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     if request.method == "POST":
         
@@ -511,14 +531,14 @@ def crear_roles():
 
     return render_template(
         "administrador/crear_roles.html",
-        routes = routes_get,
+        routes = routes_get["mensaje"],
         rutas_permitidas = rutas_permitidas_usuario
     )
 
 @app.route("/administrar_usuarios", methods = ["POST", "GET"])
 def administrar_usuarios():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
 
     if request.method == "POST":
@@ -579,7 +599,7 @@ def administrar_usuarios():
 @app.route("/asignar_profesores_a_cursos", methods = ["POST", "GET"])
 def asignar_profesores_a_cursos():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     if request.method == "POST":
     
@@ -704,7 +724,7 @@ def asignar_profesores_a_cursos():
 @app.route("/noticiero", methods = ["POST", "GET"])
 def noticiero():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     if request.method == "POST":
 
@@ -775,7 +795,7 @@ def urgente():
 @app.route("/profesor", methods = ["POST", "GET"])
 def profesor():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     if request.method == "POST":
         
@@ -840,7 +860,7 @@ def profesor():
 @app.route("/profesor_taller", methods = ["POST", "GET"])
 def profesor_taller():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     # Se obtiene el taller asignado al profesor usando su RUT desde la sesión
     profesor_taller = bdd.Profesor.listar_taller_de_profesor(session["informacion"]["rut"])
@@ -912,7 +932,7 @@ def profesor_jefe_crear():
 @app.route("/estudiante", methods = ["POST", "GET"])
 def estudiante():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     ############### ZONA GET
 
@@ -950,7 +970,7 @@ def estudiante():
 @app.route("/taller_estudiante", methods = ["POST", "GET"])
 def taller_estudiante():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     # Si el estudiante se quiere unir a un taller
     if request.method == "POST":
@@ -1022,7 +1042,7 @@ def taller_estudiante():
 @app.route("/apoderado", methods = ["GET", "POST"])
 def apoderado():
     
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     if request.method == "POST":
 
@@ -1091,7 +1111,7 @@ def apoderado():
 @app.route("/retirar_alumno", methods = ["GET", "POST"])
 def retirar_alumno():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     apoderado_informacion = {
         "nombre": session["informacion"]["nombres"] + " " + session["informacion"]["apellidos"],
@@ -1144,7 +1164,7 @@ def retirar_alumno():
 @app.route("/generar_pase", methods = ["GET", "POST"])
 def generar_pase():
 
-    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS["rol"])
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     informacion_encargado = {
         "nombre": session["informacion"]["nombres"] + " " + session["informacion"]["apellidos"] + "Cargo: " + session["informacion"]["cargo"].capitalize(),

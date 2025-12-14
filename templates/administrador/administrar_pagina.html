@@ -129,8 +129,28 @@
   </div>
 </div>
 
+<!-- Aun no se integra porque no se como lo hacen en el colegio -->
+<div id="subir_profesores"  class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3 class="card-title text-primary mb-3">
+        <i class="bi bi-file-earmark-excel"></i> Sube la Base de Datos de EROFESORES (Excel)
+      </h3>
+      <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <input type="file" name="excel" class="form-control" required>
+        </div>
+        <button type="submit" name="accion" value="subir_profesores" class="btn btn-success">
+          <i class="bi bi-upload"></i> Subir Excel de Profesores
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- ............................................................... -->
+
 <div class="mt-3 d-flex justify-content-center">
-  <button onclick="mostrar_ano()" class="btn btn-danger">
+  <button onclick="mostrar_seccion('nuevo_ano')" class="btn btn-danger">
     <i class="bi bi-calendar-plus"></i> Nuevo Año Escolar
   </button>
 </div>
@@ -144,8 +164,8 @@
 
 <script>
 
-  function mostrar_ano() {
-    document.getElementById("nuevo_ano").hidden = false
+  function mostrar_seccion(id_mostrar) {
+    document.getElementById(id_mostrar).hidden = false
   }
 
   window.addEventListener('load', function() {

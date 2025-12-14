@@ -120,7 +120,7 @@ def guardar_imagen(seccion: str, name_frontend: str, formulario_file) -> dict:
 def cifrar_contrasena(str_contrasena: str) -> str:
     return blake2b(str_contrasena.encode("utf-8")).hexdigest()
 
-def obtener_navbar(session_cookie: dict, rutas_rol: dict, redirect: bool = False) -> list | str:
+def obtener_navbar(session_cookie: dict, rutas_rol: dict, redirect: bool = False, verbose: bool = True) -> list | str:
     """
     Obtiene las rutas del usuario en base al cargo almacenado en su cookie:\n
     "informacion": {"cargo": "estudiante"}
@@ -131,14 +131,20 @@ def obtener_navbar(session_cookie: dict, rutas_rol: dict, redirect: bool = False
     Si redirect es True, se le redireccionara a la primera ruta\n
     del rol asignado. Es decir, rutas[0].
     """
-
     cargo = session_cookie["informacion"]["cargo"]
-    rutas_rol = rutas_rol[cargo]
+    rutas_rol_user = rutas_rol["rol"][cargo]
 
     if redirect:
-        return rutas_rol[0]
+        return rutas_rol_user[0]
     
-    return rutas_rol
+    elif verbose:
+        
+        #descrip = {x: rutas_rol["navbar"][x] for x in rutas_rol_user}
+        descrip = {x: rutas_rol["private"][x] for x in rutas_rol_user}
+        
+        return descrip
+
+    return rutas_rol_user
 
 ###############################################
 ######## CLASES DE SEPARACION DE LOGICA
@@ -463,6 +469,83 @@ class Security:
         
         return numero_retorno
 
+    @staticmethod
+    def leer_normalizar_base_datos(excel_form_files: bytes, campo_form_frontend: str = "excel", nombres_keys: list = None) -> list[dict]:
+
+        guardar_xml = guardar_imagen("nominas", campo_form_frontend, excel_form_files)
+        if guardar_xml["codigo"] != 200:
+            return guardar_xml
+        
+        archivo_xls = guardar_xml["mensaje"]
+        print("Archivo usado como base de la base de datos: ", archivo_xls)
+
+        ##################### Se lee el xls o html ya que en la practica el archivo que se sube es un xml
+
+
+
+        try:
+            tablas = pd.read_html(archivo_xls)
+            
+            if not tablas:
+                raise ValueError("No se encontraron tablas")
+
+            df = tablas[0]
+
+            if nombres_keys:
+                df.columns = nombres_keys
+
+            df = df.dropna(how="all") ### Se borran las tablas vacias
+
+            bdd_json = df.to_json(
+                orient="records",
+                indent=2,
+                force_ascii=False
+            )
+
+            """
+            excel_leyendo = pd.read_html(archivo_xls)
+            bdd_json = excel_leyendo[0].to_json(
+                indent = 2,
+                orient = "records",
+                force_ascii = False
+            )"""
+
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: Se a producido un error al intentar leer el archivo. Por favor contacta con soporte tecnico: {err}")
+
+        bdd_json: dict = json.loads(bdd_json)
+        normalizacion = []
+
+        ######################## Se normaliza la base de datos quitando todos los caracteres especiales 
+        for obj_ in bdd_json:
+
+            try:
+                obj_tmp = {}
+                for key, value in obj_.items():
+
+                    key_normal = unicodedata.normalize("NFKD", key).lower().replace(" ", "_")
+                    key_normal = "".join([c for c in key_normal if not unicodedata.combining(c)])
+
+                    for char_ in key_normal:
+
+                        if char_ not in "qwertyuiopasdfghjklñzxcvbnm_":
+                            key_normal = key_normal.replace(char_, "")
+
+                    value_normal = value
+
+                    if type(value) == str:
+                        value_normal = unicodedata.normalize("NFKD", value)
+                        
+                    
+                    obj_tmp.setdefault(key_normal, value_normal)
+            
+            except Exception as err:
+                return json_de_mensaje(500, f"ERROR: No se logro normalizar la base de datos: {err}")
+            
+            normalizacion.append(obj_tmp)
+        print(normalizacion)
+        return json_de_mensaje(200, normalizacion)
+
 class Users:
     """
     Clase encargada de almacenar las acciones a realizar para designar, leer, y modificar\n
@@ -524,7 +607,8 @@ class Users:
             return routes_now
 
         routes_now = routes_now["mensaje"]
-        all_private_routes = routes_now["private"]
+        all_private_routes = routes_now["private"].keys()
+
 
         # Se verifica que contenga rutas validas para asociar
         if any(route not in all_private_routes for route in routes):
@@ -1493,75 +1577,107 @@ class Administrador:
         
         return json_de_mensaje(200, resultado)
 
-    def nuevo_ano(excel_form_files: bytes) -> dict:
+    def subir_profesores(excel_form_files: bytes) -> dict:
 
-        guardar_xml = guardar_imagen("nominas", "excel", excel_form_files)
-        if guardar_xml["codigo"] != 200:
-            return guardar_xml
+        profesores_columnas = [
+            "rut",
+            "dv",
+            "apellido_paterno",
+            "apellido_materno",
+            "nombres",
+            "sexo",
+            "fecha_nacimiento",
+            "estado_civil",
+            "direccion",
+            "telefono",
+            "celular",
+            "email",
+            "cargo",
+            "col_14",
+            "col_15",
+            "col_16",
+            "direccion_completa",
+            "estado"
+        ]
+
+        normalizado = Security.leer_normalizar_base_datos(
+            excel_form_files = excel_form_files,
+            nombres_keys = profesores_columnas
+        )
+
+        if normalizado["codigo"] != 200:
+            return normalizado
         
-        archivo_xls = guardar_xml["mensaje"]
-        print("Archivo usado como base de la base de datos: ", archivo_xls)
-
-        ##################### Se lee el xls o html ya que en la practica el archivo que se sube es un xml
+        normalizado: list = normalizado["mensaje"]
+        normalizado.pop(0) ######### Se borra la plantilla 0 es decir los nombres mal hechos del XLS
 
         try:
-            nomina_estudiantes = pd.read_html(archivo_xls)
-            bdd_estudiantes = nomina_estudiantes[0].to_json(
-                indent = 2,
-                orient = "records",
-                force_ascii = False
-            )
+            profesores = []
+            for profesor in normalizado:
+                profesor: dict
+
+                profesor_tmp = {}
+
+                profesor_tmp["rut"] = profesor["rut"] + "-" + profesor["dv"]
+                profesor_tmp["contrasena"] = cifrar_contrasena(profesor_tmp["rut"][:4])
+                profesor_tmp["nombres"] = profesor["nombres"]
+                profesor_tmp["apellidos"] = (profesor["apellido_paterno"] or "") + " " + (profesor["apellido_materno"] or "")
+                profesor_tmp["cargo"] = "profesor"
+
+                profesores.append(profesor_tmp)
 
         except Exception as err:
-            return json_de_mensaje(500, f"ERROR: Se a producido un error al intentar leer el archivo. Por favor contacta con soporte tecnico: {err}")
-
-        bdd_estudiantes: dict = json.loads(bdd_estudiantes)
-
-        normalizacion = []
-
-        ######################## Se normaliza la base de datos quitando todos los caracteres especiales 
-        for estudiante in bdd_estudiantes:
-
-            estudiante_tmp = {}
-            for key, value in estudiante.items():
-
-                key_normal = unicodedata.normalize("NFKD", key).lower().replace(" ", "_")
-                key_normal = "".join([c for c in key_normal if not unicodedata.combining(c)])
-                
-                value_normal = value
-
-                if type(value) == str:
-                    value_normal = unicodedata.normalize("NFKD", value)
-                    
-                
-                estudiante_tmp.setdefault(key_normal, value_normal)
+            return json_de_mensaje(500, f"ERROR: No se esta normalizando correctamente la integracion del excel a JSON: {err}")
+        
+        try:
+            result_del = estudiantes.delete_many({"cargo": "profesor"})
+            if not result_del.acknowledged:
+                return json_de_mensaje(500, "No se estan borrando los profesores antiguos de la base de datos.")
             
-            normalizacion.append(estudiante_tmp)
+            result_add = estudiantes.insert_many(profesores)
+            if not result_add.acknowledged:
+                return json_de_mensaje(500, "No se estan insertando los nuevos profesores en la base de datos.")
+        
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: El codigo no se esta comportando de la manera adecuada: {err}")
+    
+        return json_de_mensaje(200, f"La base de datos de profesores a sido renovada.")
 
+        ########################## LOGICA DE COMPATIBILIDAD CON PROFESORES XD
 
-        ######################################## FACE DE NORMALIZACION Y COMPATBILIDAD CON EL PROGRAMA
+    def nuevo_ano(excel_form_files: bytes) -> dict:
+
+        ############## Se lee y se retorna la base de datos ya limpia -- en keys -- y sanitizada
+        normalizacion = Security.leer_normalizar_base_datos(excel_form_files)
+        if normalizacion["codigo"] != 200:
+            return normalizacion
+        
+        normalizacion = normalizacion["mensaje"]
+
+        ######################################## COMPATIBILIZA LA BDD PARA LAS COLECCIONES DE ALUMNOS
         bdd_estudiantes = []
         bdd_cursos = {}
 
         for estudiante_nrm in normalizacion:
 
-
             estudiante_tmp = {}
             for key, value in estudiante_nrm.items():
 
                 
+                """
+                ESTA SECCION SE MOVIO HACIA Security.normalizar_base_datos()
                 for char_ in key:
 
                     if char_ not in "qwertyuiopasdfghjklñzxcvbnm_":
-                        key = key.replace(char_, "")
+                        key = key.replace(char_, "")"""
 
 
-                if key in ["run", "digito_ver."]:
+                if key in ["run", "digito_ver"]:
 
                     if "rut" in estudiante_tmp:
                         continue
 
-                    value = str(estudiante_nrm["run"]) + "-" + str(estudiante_nrm["digito_ver."])
+                    value = str(estudiante_nrm["run"]) + "-" + str(estudiante_nrm["digito_ver"])
                     estudiante_tmp.setdefault("rut", value)
 
                     ############################### Contraseña plataforma

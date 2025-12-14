@@ -55,8 +55,13 @@
 
             {% if rutas_permitidas %}
 
+            <!--
             {% for ruta in rutas_permitidas %}
             <li><a class="nav-link color" href="{{ ruta }}">{{ ruta | capitalize | replace("_", " ") }}</a></li>
+            {% endfor %}
+            -->
+            {% for url, verbose in rutas_permitidas.items() %}
+              <li><a class="nav-link color" href="{{ url }}">{{ verbose | capitalize }}</a></li>
             {% endfor %}
             <li><a class="nav-link text-warning" href="micuenta">Mi Cuenta</a></li>
             <li><a class="nav-link" href="logout">Cerrar Sesion</a></li>

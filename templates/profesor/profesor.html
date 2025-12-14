@@ -12,6 +12,7 @@
 
     <hr>
 
+    {% if "cursos_informacion" in informacion_profesor %}
     <!-- Tabla de cursos del docente -->
     <div class="card shadow-sm">
         <div class="card-header bg-success text-white">
@@ -42,8 +43,7 @@
                         <td class="text-center">
                             <form method="POST" class="d-inline">
                                 <input type="hidden" name="id_curso" value="{{ curso['_id'] }}">
-                                <button name="accion" value="administrar_curso" 
-                                        class="btn btn-sm btn-outline-primary">
+                                <button name="accion" value="administrar_curso" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-gear"></i> Administrar
                                 </button>
                             </form>
@@ -55,6 +55,23 @@
             </table>
         </div>
     </div>
+
+    {% else %}
+    <div class="card shadow-sm border-warning">
+        <div class="card-header bg-warning text-dark">
+            <i class="bi bi-info-circle"></i> Sin cursos asignados
+        </div>
+        <div class="card-body text-center py-4">
+            <p class="mb-2 fw-semibold">
+                Usted actualmente no se encuentra asignado a ningún curso.
+            </p>
+            <small class="text-muted">
+                Una vez que se le asignen cursos, estos aparecerán automáticamente en esta sección.
+            </small>
+        </div>
+    </div>
+
+    {% endif %}
 
 </div>
 

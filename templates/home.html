@@ -7,14 +7,15 @@
     <div>
         <div class="card">
             <a href="seccion_de_noticias" style="text-decoration: none;">
-            <h3 style="margin-top:0">Nuestras noticias</h3>
-            <div class="news-list" id="news-list">
+                <h3 style="margin-top:0">Nuestras noticias</h3>
+                <div class="news-list" id="news-list">
 
-                {% if noticias %}
+                    {% if noticias %}
                     {% for noticia in noticias %}
 
                     <article class="news-item">
-                        <img class="news-thumb" src="{{ noticia.imagen }}" style="background:linear-gradient(135deg,#e6f0ff,#fff)">
+                        <img class="news-thumb" src="{{ noticia.imagen }}"
+                            style="background:linear-gradient(135deg,#e6f0ff,#fff)">
                         <div class="news-body">
                             <h4>{{ noticia.titulo }}</h4>
                             <p class="meta">Publicado el {{ noticia.fecha_publicacion }} — {{ noticia.descripcion }}</p>
@@ -22,11 +23,11 @@
                     </article>
 
                     {% endfor %}
-                {% else %}
+                    {% else %}
                     <p class="meta">Aun no hay noticias por aqui ...</p>
 
-                {% endif %}
-            </div>
+                    {% endif %}
+                </div>
             </a>
         </div>
 
@@ -38,7 +39,7 @@
                 <li>Arte y manualidades (martes 15:30)</li>
                 <li>Teatro (viernes 17:00)</li>
             </ul>
-        <a href="talleres"><button class="btn btn-primary">Consultar Aqui</button></a>
+            <a href="talleres"><button class="btn btn-primary">Consultar Aqui</button></a>
 
         </div>
     </div>
@@ -52,30 +53,53 @@
             <a href="contactanos"><button class="btn btn-primary">Contactanos</button></a>
         </div>
 
-        <div class="card" style="margin-top:12px">
-            <h4 style="margin-top:0">Newsletter</h4>
-            <p class="meta">Suscríbete para recibir noticias y circulares.</p>
-            <form onsubmit="event.preventDefault();alert('Gracias por suscribirte')">
-                <input type="email" placeholder="Tu correo" required
-                    style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6edf3;margin-bottom:8px">
-                <button class="btn" style="width:100%">Suscribirme</button>
-            </form>
+        <div class="card card-explora" style="margin-top:12px">
+            <h5 class="card-title">Explora el Liceo</h5>
+            <p class="card-subtitle">
+                Conoce nuestra identidad, comunidad y espacios educativos.
+            </p>
+
+            <nav class="explora-links">
+                <a href="/nuestra_historia">
+                    <i class="fas fa-landmark"></i>
+                    Nuestra Historia
+                </a>
+
+                <a href="/equipo_directivo">
+                    <i class="fas fa-user-tie"></i>
+                    Equipo Directivo
+                </a>
+
+                <a href="/proyecto_educativo">
+                    <i class="fas fa-book-open"></i>
+                    Proyecto Educativo
+                </a>
+
+                <a href="/infraestructura">
+                    <i class="fas fa-school"></i>
+                    Infraestructura
+                </a>
+
+                <a href="/convivencia_escolar">
+                    <i class="fas fa-handshake"></i>
+                    Convivencia Escolar
+                </a>
+            </nav>
         </div>
+
     </aside>
 </section>
 
 <section id="calendario" style="max-width:1100px;margin:18px auto;padding:0 20px">
-  <div class="card">
-    <h3 style="margin-top:0">Calendario de Actividades</h3>
-    <p class="meta">Consulta los próximos eventos, talleres y actividades destacadas.</p>
-    <div style="overflow-x:auto;text-align:center">
-      <iframe
-        src="{{ calendario_colegio }}"
-        style="border:1px solid #e6edf3;border-radius:8px"
-        width="100%" height="400" frameborder="0" scrolling="no">
-      </iframe>
+    <div class="card">
+        <h3 style="margin-top:0">Calendario de Actividades</h3>
+        <p class="meta">Consulta los próximos eventos, talleres y actividades destacadas.</p>
+        <div style="overflow-x:auto;text-align:center">
+            <iframe src="{{ calendario_colegio }}" style="border:1px solid #e6edf3;border-radius:8px" width="100%"
+                height="400" frameborder="0" scrolling="no">
+            </iframe>
+        </div>
     </div>
-  </div>
 </section>
 
 {% endblock %}
