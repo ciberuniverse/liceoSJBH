@@ -4,17 +4,6 @@
       "estudiante",
       "taller_estudiante"
     ],
-    "administrador": [
-      "administrador",
-      "administrador_mensajes",
-      "administrador_mensajes_vistos",
-      "administrador_crear_taller",
-      "administrar_taller_estudiantes",
-      "administrar_pagina",
-      "crear_roles",
-      "administrar_usuarios",
-      "asignar_profesores_a_cursos"
-    ],
     "noticiero": [
       "noticiero"
     ],
@@ -38,12 +27,21 @@
       "crear_roles",
       "administrar_usuarios",
       "generar_pase",
-      "asignar_profesores_a_cursos"
+      "asignar_profesores_a_cursos",
+      "crear_evento"
     ],
-    "nuevo cargo": [
-      "taller_estudiante",
+    "administrativo": [
+      "administrador",
+      "administrar_pagina",
       "administrador_crear_taller",
-      "apoderado",
+      "administrar_usuarios",
+      "asignar_profesores_a_cursos",
+      "generar_pase",
+      "crear_roles",
+      "noticiero",
+      "administrar_taller_estudiantes"
+    ],
+    "inspectoria": [
       "generar_pase"
     ]
   },
@@ -58,25 +56,6 @@
     "micuenta",
     "talleres",
     "nuestra_historia"
-  ],
-  "xd": [
-    "estudiante",
-    "taller_estudiante",
-    "administrador",
-    "administrador_mensajes",
-    "administrador_mensajes_vistos",
-    "administrador_crear_taller",
-    "administrar_taller_estudiantes",
-    "administrar_pagina",
-    "noticiero",
-    "profesor",
-    "profesor_taller",
-    "crear_roles",
-    "administrar_usuarios",
-    "apoderado",
-    "retirar_alumno",
-    "generar_pase",
-    "asignar_profesores_a_cursos"
   ],
   "private": {
     "estudiante": "Mis Notas",
@@ -95,6 +74,7 @@
     "apoderado": "Mis Pupilos",
     "retirar_alumno": "Retirar Alumno",
     "generar_pase": "Asignar Pases",
-    "asignar_profesores_a_cursos": "Asignar Profesores a Cursos"
+    "asignar_profesores_a_cursos": "Asignar Profesores a Cursos",
+    "crear_evento": "Crear Eventos (Calendario)"
   }
 }

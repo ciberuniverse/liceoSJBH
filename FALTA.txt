@@ -44,3 +44,19 @@ CREAR UN BOTON DE =>>>
         SE DESPLIEGA UNA OPCION DE: Subir nuevo XML con los datos del cige.
         Y SE VA AL BACKEND.
 
+CARGOS:
+
+        Los estudiantes se pueden subir en la seccion de "nuevo ano" en la seccion de administrar web
+        al igual que los profesores.
+
+        El personal administrativo debe de subirse manualmente desde la plataforma en la seccion de 
+        crear usuarios.
+
+        Los cargos para el inspector es:
+                - Asignar Pase
+        
+        Los cargos de los administrativos es:
+                - Crear cargos
+                - Asignar pases
+                - Administrar usuarios
+                - Administrar Pagina

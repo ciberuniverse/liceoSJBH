@@ -1,6 +1,18 @@
 {% extends 'base.html' %}
 
 {% block contenido %}
+
+<header class="historia-header">
+  <h1>Creación de Talleres</h1>
+  <p>
+    En esta sección podrás crear nuevos talleres extracurriculares del
+    {{ nombre_colegio }}, definiendo sus cupos, horarios y asignando al
+    profesor o tallerista responsable para una correcta organización
+    académica.
+  </p>
+</header>
+
+
 <div class="container bg-white p-4 rounded shadow">
 <form method="POST">
 
@@ -46,6 +58,7 @@
     <label for="profesor_rut" class="form-label">Profesor o Tallerista encargado</label>
     <div class="input-group">
       <select id="profesor_rut" name="profesor_rut" class="form-select" required>
+        <option value="" selected disabled>-- Asigne un profesor o tallerista --</option>
         {% for profesor in profesores %}
         <option value="{{ profesor.rut }}">{{ profesor.nombres }} {{ profesor.apellidos }}</option>
         {% endfor %}

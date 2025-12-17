@@ -2,6 +2,10 @@
 
 {% block contenido %}
 
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/calendario.css') }}">
+</head>
+
 <!-- NEWS + SIDEBAR -->
 <section class="grid">
     <div>
@@ -89,17 +93,22 @@
 
     </aside>
 </section>
+<!--------------------------- Nuevo calendario local  -->
+<section id="calendario" class="container my-3">
+  <div class="card shadow-sm border-0">
+    <div class="card-body py-3">
 
-<section id="calendario" style="max-width:1100px;margin:18px auto;padding:0 20px">
-    <div class="card">
-        <h3 style="margin-top:0">Calendario de Actividades</h3>
-        <p class="meta">Consulta los próximos eventos, talleres y actividades destacadas.</p>
-        <div style="overflow-x:auto;text-align:center">
-            <iframe src="{{ calendario_colegio }}" style="border:1px solid #e6edf3;border-radius:8px" width="100%"
-                height="400" frameborder="0" scrolling="no">
-            </iframe>
-        </div>
+      <h4 class="card-title mb-2 text-secondary">Calendario de Actividades</h4>
+      <p class="text-muted small mb-3">
+        Próximos eventos, talleres y actividades.
+      </p>
+
+      <div class="calendar-wrapper position-relative border rounded p-2 bg-white">
+        {{ codigo_calendario | safe }}
+      </div>
+
     </div>
+  </div>
 </section>
 
 {% endblock %}

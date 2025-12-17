@@ -1,5 +1,6 @@
 import bdd
 from flask_caching import Cache
+import api_.calendario as calendario_api
 from flask import Flask, render_template, session, request, redirect, url_for, Response
 
 app = Flask(__name__)
@@ -44,20 +45,29 @@ def limitar_acceso():
 
 ########################################### SECCION PUBLICA
 
-
 @app.route("/home", methods = ["GET"])
-@cachear.cached(timeout=300)
+@cachear.cached(timeout=300) # Se estipula none puesto que asi controlamos la cache desde el backend
 def home():
 
     noticias_list = bdd.Public.listar_noticias_home()
 
+    todos_los_eventos = bdd.General.todos_los_eventos()
+
+    if todos_los_eventos["codigo"] != 200:
+        todos_los_eventos = [{"fecha_evento": "12-12-2025", "titulo": "Ejemplo de Evento", "descripcion": "Esta descripcion es de ejemplo."}]
+        pass
+
+    todos_los_eventos = todos_los_eventos["mensaje"]
+
+    calendario_codigo = calendario_api.actualizar_calendario(todos_los_eventos)
+
     if noticias_list["codigo"] != 200:
         return render_template("home.html")
     
-    return render_template("home.html", noticias = noticias_list["mensaje"])
+    return render_template("home.html", noticias = noticias_list["mensaje"], codigo_calendario = calendario_codigo)
 
-@cachear.cached(timeout=300)
 @app.route("/nuestra_historia", methods = ["GET"]) ### Pagina estatica
+@cachear.cached(timeout=300)
 def nuestra_historia():
     return render_template("secciones/nuestra_historia.html")
 
@@ -718,6 +728,30 @@ def asignar_profesores_a_cursos():
 
     )
 
+@app.route("/crear_evento", methods = ["POST", "GET"])
+def crear_evento():
+
+    if request.method == "POST":
+        
+        formulario_ = request.form.to_dict()
+        acciones = [
+            "crear_evento"
+        ]
+
+        accion = bdd.Security.validar_accion_form(formulario_, acciones)
+        if accion["codigo"] != 200:
+            return redirect(url_for("crear_evento", codigo = accion["codigo"], mensaje = accion["codigo"]))
+        
+        accion = accion["mensaje"]
+
+        if accion == "crear_evento":
+            resultado = bdd.Administrador.crear_evento(formulario_)
+
+        return redirect(url_for("crear_evento", codigo = resultado["codigo"], mensaje = resultado["mensaje"]))
+
+    ############### ZONA GET
+
+    return render_template("administrador/crear_evento.html")
 
 ############################### Rutas de panel del noticiero
 
@@ -740,7 +774,6 @@ def noticiero():
                 request.form["descripcion"],
                 request.files
             )
-            # Agregar imagen
 
         ########################################
         # TALLARIN CODIGO: LO AGREGE TIEMPO DESPUES

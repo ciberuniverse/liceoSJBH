@@ -1,6 +1,18 @@
 {% extends 'base.html' %}
 
 {% block contenido %}
+
+<header class="historia-header">
+  <h1>Perfil de Usuario</h1>
+  <p>
+    En esta sección podrás visualizar la información personal
+    asociada a tu cuenta, incluyendo tus datos de contacto, cargo dentro del
+    establecimiento y opciones de seguridad como la modificación de contraseña,
+    permitiendo mantener tu perfil protegido.
+  </p>
+</header>
+
+
 {% set usuario = informacion["mensaje"] %}
 
 <div class="container py-4">
@@ -78,7 +90,7 @@
                         maxlength="20" required aria-describedby="contrasenaHelp">
                       <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('contrasena_1')"
                         aria-label="Mostrar u ocultar contraseña">
-                        <i class="bi bi-eye"></i>
+                        <i class="fa-solid fa-eye"></i>
                       </button>
                     </div>
                     <div id="contrasenaHelp" class="form-text text-muted">Debe tener entre 4 y 20 caracteres.</div>
@@ -91,7 +103,8 @@
                         maxlength="20" required>
                       <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('contrasena_2')"
                         aria-label="Mostrar u ocultar contraseña">
-                        <i class="bi bi-eye"></i>
+                        <i class="fa-solid fa-eye"></i>
+
                       </button>
                     </div>
                   </div>

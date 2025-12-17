@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<header class="historia-header text-center my-4">
+  <h1 class="display-5">Creación de Eventos en Calendario</h1>
+  <p class="lead">
+    En esta sección podrás crear eventos los cuales se mostrarán en el
+    calendario del menú principal de actividades. La creacion de un evento
+    se vera reflejado en calendario dentro de los siguientes 5 minutos luego
+    de haber sido creado.
+  </p>
+</header>
+
+<div class="container">
+  <form method="POST" class="card p-4 shadow-sm">
+    <div class="mb-3">
+      <label for="fecha_evento" class="form-label">Fecha y Hora del Evento</label>
+      <input type="date" id="fecha_evento" name="fecha_evento" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="titulo" class="form-label">Título del Evento</label>
+      <input type="text" id="titulo" name="titulo" class="form-control" placeholder="Título del evento" minlength="3" maxlength="40" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="descripcion" class="form-label">Descripción</label>
+      <textarea id="descripcion" name="descripcion" class="form-control" placeholder="Descripción del evento" rows="4" minlength="3" maxlength="500" required></textarea>
+    </div>
+
+    <button type="submit" name="accion" value="crear_evento" class="btn btn-primary w-100">
+      Nuevo Evento en Calendario
+    </button>
+  </form>
+</div>
+
+{% endblock %}

@@ -4,6 +4,14 @@
 
 {% block contenido %}
 
+<header class="historia-header mb-5">
+  <h1>Solicitudes de Retiro Online</h1>
+  <p>
+    Gestión y seguimiento en tiempo real de solicitudes de pase virtual
+    realizadas por apoderados.
+  </p>
+</header>
+
 
 <!-- HTML del chat -->
 
@@ -185,7 +193,9 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const chatBox = document.getElementById("chat");
-  var NOT_REPEAT_RUT = []
+  var NOT_REPEAT_RUT = [];
+    const audio_notificar = new Audio("{{ url_for('static', filename='media/peticion.mp3') }}")
+
 
   {% if not db_documento %}
 
@@ -258,7 +268,9 @@
       const msg = doc.data();
 
       if (!verificar_rut_generar(msg.rut)) {
+        audio_notificar.play()
         chatBox.innerHTML += `
+        
 <tr>
   <td>
     <form method="POST" class="mb-0 d-flex justify-content-between align-items-center">

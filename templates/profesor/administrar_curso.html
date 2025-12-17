@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 
 {% block contenido %}
+
+<header class="historia-header">
+  <h1>Gestión Académica del Curso</h1>
+  <p>
+    En este espacio podrás administrar tu asignatura dentro del curso
+    {{ informacion_curso.curso | upper }}, registrar evaluaciones, asignar
+    notas, pasar lista de asistencia y realizar anotaciones pedagógicas,
+    permitiendo un seguimiento ordenado y continuo del progreso de tus alumnos.
+  </p>
+</header>
+
+
 <div class="container mt-4">
 
     <!-- Información del curso -->

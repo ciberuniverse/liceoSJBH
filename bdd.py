@@ -28,6 +28,7 @@ noticias = BDD["noticias"]
 contacto = BDD["contacto"]
 cursos = BDD["cursos"]
 notas = BDD["notas"]
+eventos = BDD["eventos"]
 
 NOT_ALLOWED = r";$&|{}[]<>\"'\\`"
 
@@ -546,6 +547,19 @@ class Security:
         print(normalizacion)
         return json_de_mensaje(200, normalizacion)
 
+    @staticmethod
+    def validar_accion_form(formulario_validar: dict, posibles_acciones: list[str] = ["nuevo_ano", "crear_usuario"]) -> str:
+        if "accion" not in formulario_validar:
+            return json_de_mensaje(402)
+        
+        accion = formulario_validar["accion"]
+        for x in posibles_acciones:
+
+            if x == accion:
+                return json_de_mensaje(200, accion)
+
+        return json_de_mensaje(402)
+
 class Users:
     """
     Clase encargada de almacenar las acciones a realizar para designar, leer, y modificar\n
@@ -866,6 +880,19 @@ class General:
 
         return json_de_mensaje(200, res_return)
     
+    def todos_los_eventos() -> dict:
+        
+        try:
+            resultado = list(eventos.find({}))
+        
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: No se logro listar los eventos existentes.")
+
+        if not resultado:
+            return json_de_mensaje(404)
+        
+        return json_de_mensaje(200, resultado)
+
     def obtener_informacion_rut(rut: str) -> dict:
 
         try:
@@ -1060,6 +1087,19 @@ class Administrador:
         # Se le da formato a la consulta para mongo db
         informacion_curso["materias"] = { x:informacion_curso["materias"][x] for x in informacion_curso["materias"] }
         # PUEDEN HABER ERRORES A FUTURO CON LA LINEA DE ARRIBA
+
+        ########################## VALIDACION PARA EVITAR SOBRECARGA DE DATOS O CRASHEOS INESPERADOS
+        key_check: str; value_check: str
+        for key_check, value_check in informacion_curso["materias"].items():
+            
+            # VERIFICA QUE EL NOMBBRE DE LA MATERIA CONTENGA UNICAMENTE CARCTERES ALFABETICOS
+            if all(palabra.isalpha() for palabra in value_check.split(" ")):
+                continue
+
+            return json_de_mensaje(402, f"Estas enviando una materia con caracteres que no son alfabeticos: {value_check}.")
+
+        #######################
+
 
         materias_format = {
             "materias": informacion_curso["materias"]
@@ -1512,6 +1552,10 @@ class Administrador:
         if no_sql_st["codigo"] != 200:
             return no_sql_st
         
+        respuesta_validacion = Security.form_validator("crear_taller", informacion_taller)
+        if respuesta_validacion["codigo"] != 200:
+            return respuesta_validacion
+
         # El dict trae los cupos como numeros en str por eso se tienen que transformar
         informacion_taller["cupos"] = int(informacion_taller["cupos"])
 
@@ -1740,6 +1784,9 @@ class Administrador:
         
         try:
 
+            ########## SE BORRAN TODOS LOS EVENTOS
+            eventos.delete_many({})
+
             ########## SE BORRAN TODOS LOS CURSOS Y ESTUDIANTES
             cursos.delete_many({})
             estudiantes.delete_many({"cargo": "estudiante"})
@@ -1773,6 +1820,37 @@ class Administrador:
             return json_de_mensaje(500, f"ERROR: La base de datos no esta siendo procesada. {err}")
 
         return json_de_mensaje(200, "Nuevo año asignado correctamente. Porfavor asigna los profesores.")
+
+    def crear_evento(formulario_crear_evento: dict) -> dict:
+
+        valido_ = Security.form_validator("crear_evento", formulario_crear_evento)
+        if valido_["codigo"] != 200:
+            return valido_
+        
+
+        fecha_evento = formulario_crear_evento["fecha_evento"]
+        titulo = formulario_crear_evento["titulo"]
+        descripcion = formulario_crear_evento["descripcion"]        
+
+        fecha_evento = datetime.strptime(fecha_evento, "%Y-%m-%d")
+        fecha_evento = fecha_evento.strftime("%d-%m-%Y")
+
+        creacion_evento_format: dict = {
+            "fecha_evento": fecha_evento,
+            "titulo": titulo,
+            "descripcion": descripcion
+        }
+
+        try:
+            resultado = eventos.insert_one(creacion_evento_format)
+        
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: No se logro insertar el evento de manera adecuada: {err}")
+
+        if not resultado.acknowledged:
+            return json_de_mensaje(404, "ERROR: No se logro insertar el nuevo evento en la base de datos.")
+        
+        return json_de_mensaje(200, "Evento creado e insertado en la base de datos correctamente.")
 
 class Profesor:
     """

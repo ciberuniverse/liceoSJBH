@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 
 {% block contenido %}
+
+<header class="historia-header">
+  <h1>Administración del Sitio</h1>
+  <p>
+    Área destinada a la configuración y mantenimiento de la información oficial
+    del establecimiento, permitiendo modificar datos, cargar archivos
+    institucionales y gestionar procesos académicos anuales.
+  </p>
+</header>
+
 <form method="POST" style="max-width:600px;margin:0 auto;padding:20px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9">
 
   <h2 style="margin-bottom:20px;color:#333">Configuración del Colegio</h2>
@@ -111,6 +121,26 @@
 
 <hr>
 
+<!-- Aun no se integra porque no se como lo hacen en el colegio -->
+<div id="subir_profesores" class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3 class="card-title text-primary mb-3">
+        <i class="bi bi-file-earmark-excel"></i> Sube la Base de Datos de Profesores (Excel)
+      </h3>
+      <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <input type="file" name="excel" class="form-control" required>
+        </div>
+        <button type="submit" name="accion" value="subir_profesores" class="btn btn-success">
+          <i class="bi bi-upload"></i> Subir Excel de Profesores
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- ............................................................... -->
+
 <div id="nuevo_ano" hidden class="container mt-4">
   <div class="card shadow-sm">
     <div class="card-body">
@@ -128,26 +158,6 @@
     </div>
   </div>
 </div>
-
-<!-- Aun no se integra porque no se como lo hacen en el colegio -->
-<div id="subir_profesores"  class="container mt-4">
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <h3 class="card-title text-primary mb-3">
-        <i class="bi bi-file-earmark-excel"></i> Sube la Base de Datos de EROFESORES (Excel)
-      </h3>
-      <form method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-          <input type="file" name="excel" class="form-control" required>
-        </div>
-        <button type="submit" name="accion" value="subir_profesores" class="btn btn-success">
-          <i class="bi bi-upload"></i> Subir Excel de Profesores
-        </button>
-      </form>
-    </div>
-  </div>
-</div>
-<!-- ............................................................... -->
 
 <div class="mt-3 d-flex justify-content-center">
   <button onclick="mostrar_seccion('nuevo_ano')" class="btn btn-danger">

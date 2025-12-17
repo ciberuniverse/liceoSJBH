@@ -2,6 +2,16 @@
 
 {% block contenido %}
 
+<header class="historia-header">
+  <h1>Talleres Extraprogramáticos</h1>
+  <p>
+    En esta sección podrás conocer los talleres disponibles en el
+    {{ nombre_colegio }}, revisar sus horarios, cupos y docentes a cargo,
+    y postular a aquellas actividades que complementan tu formación
+    académica y personal.
+  </p>
+</header>
+
 {% if not_in_taller %}
 
 {% for taller in talleres %}

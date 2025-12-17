@@ -1,76 +1,95 @@
 {% extends 'base.html' %}
 
 {% block contenido %}
+
 <div class="container my-5">
-  <div class="card border-0 shadow">
-    <div class="card-header bg-dark text-white">
-      <h4 class="mb-0">Contáctanos</h4>
-    </div>
-    <div class="card-body">
-<form method="POST">
-  <div class="mb-4">
-    <label for="asunto" class="form-label">Asunto</label>
-    <input type="text" class="form-control" name="asunto" id="asunto"
-           maxlength="100" minlength="5" required
-           pattern="^[^;$&|{}
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+      <!-- Encabezado -->
+      <div class="text-center mb-4">
+        <h2 class="fw-bold">Contáctanos</h2>
+        <p class="lead text-muted">
+          Nuestro establecimiento valora profundamente la voz de su comunidad.  
+          Nos gusta mantenernos al día con sus opiniones, dudas, reclamos y sugerencias,  
+          porque creemos que cada aporte nos ayuda a crecer y mejorar.  
+          Complete el siguiente formulario y estaremos encantados de atenderle.
+        </p>
+      </div>
+
+      <!-- Tarjeta del formulario -->
+      <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-header bg-gradient bg-dark text-white rounded-top-4">
+          <h4 class="mb-0 text-center">Formulario de contacto</h4>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST">
+            <div class="mb-3">
+              <label for="asunto" class="form-label fw-semibold">Asunto</label>
+              <input type="text" class="form-control" name="asunto" id="asunto"
+                     maxlength="100" minlength="5" required
+                     pattern="^[^;$&|{}
 
 \[\]
 
-<>\"'\\`]{1,100}$">
-  </div>
+<>\"'\\`]{1,100}$"
+                     placeholder="Ej: Consulta sobre matrícula">
+            </div>
 
-  <div class="mb-4">
-    <label for="motivo" class="form-label">Motivo</label>
-    <select class="form-select" id="motivo" name="motivo" required>
-      <option value="" disabled selected>Selecciona un motivo</option>
-      <option value="matricula">Matrícula</option>
-      <option value="duda">Duda</option>
-      <option value="reclamo">Reclamo</option>
-      <option value="sugerencia">Sugerencia</option>
-    </select>
-  </div>
+            <div class="mb-3">
+              <label for="motivo" class="form-label fw-semibold">Motivo</label>
+              <select class="form-select" id="motivo" name="motivo" required>
+                <option value="" disabled selected>Selecciona un motivo</option>
+                <option value="matricula">Matrícula</option>
+                <option value="duda">Duda</option>
+                <option value="reclamo">Reclamo</option>
+                <option value="sugerencia">Sugerencia</option>
+              </select>
+            </div>
 
-  <div class="mb-4">
-    <label for="medio_de_contacto" class="form-label">Medio de contacto</label>
-    <select class="form-select" id="medio_de_contacto" name="medio_de_contacto" required>
-      <option value="" disabled selected>Selecciona un medio</option>
-      <option value="email">E-mail</option>
-      <option value="numero">Número de Teléfono</option>
-    </select>
-  </div>
+            <div class="mb-3">
+              <label for="medio_de_contacto" class="form-label fw-semibold">Medio de contacto</label>
+              <select class="form-select" id="medio_de_contacto" name="medio_de_contacto" required>
+                <option value="" disabled selected>Selecciona un medio</option>
+                <option value="email">E-mail</option>
+                <option value="numero">Número de Teléfono</option>
+              </select>
+            </div>
 
-  <div class="mb-4">
-    <label for="contacto" class="form-label">Teléfono o E-mail</label>
-    <input type="text" class="form-control" id="contacto" name="contacto"
-           maxlength="100" required
-           pattern="^[^;$&|{}
-
-\[\]
-
-<>\"'\\`]{1,100}$">
-  </div>
-
-  <div class="mb-4">
-    <label for="mensaje" class="form-label">Mensaje</label>
-    <textarea class="form-control" name="mensaje" id="mensaje"
-              maxlength="1000" rows="5" required
-              pattern="^[^;$&|{}
+            <div class="mb-3">
+              <label for="contacto" class="form-label fw-semibold">Teléfono o E-mail</label>
+              <input type="text" class="form-control" id="contacto" name="contacto"
+                     maxlength="100" required
+                     pattern="^[^;$&|{}
 
 \[\]
 
-<>\"'\\`]{1,1000}$"></textarea>
-  </div>
+<>\"'\\`]{1,100}$"
+                     placeholder="Ej: usuario@correo.com">
+            </div>
 
-  <div class="text-end">
-    <button type="submit" name="accion" id="accion" value="contactar" class="btn btn-dark px-4">
-      Enviar mensaje
-    </button>
-  </div>
-</form>
+            <div class="mb-3">
+              <label for="mensaje" class="form-label fw-semibold">Mensaje</label>
+              <textarea class="form-control" name="mensaje" id="mensaje"
+                        maxlength="1000" rows="5" required
+                        pattern="^[^;$&|{}
 
+\[\]
+
+<>\"'\\`]{1,1000}$"
+                        placeholder="Escribe tu mensaje aquí..."></textarea>
+            </div>
+
+            <div class="text-center">
+              <button type="submit" name="accion" id="accion" value="contactar" 
+                      class="btn btn-dark px-4 rounded-pill shadow-sm">
+                Enviar mensaje
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
 {% endblock %}
-
-

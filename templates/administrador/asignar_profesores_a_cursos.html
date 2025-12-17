@@ -2,6 +2,16 @@
 
 {% block contenido %}
 
+<header class="historia-header">
+  <h1>Asignación de Materias por Curso</h1>
+  <p>
+    En esta sección podrás organizar la estructura académica del
+    {{ nombre_colegio }}, asignando docentes a cada curso con sus respectivas
+    materias, además de visualizar a los estudiantes inscritos para mantener
+    una gestión clara y ordenada.
+  </p>
+</header>
+
 
 {% if asignar %}
 <form class="container mt-4 p-4 border rounded shadow-sm bg-light" method="POST">
@@ -205,8 +215,10 @@
         if (!materia) {
             alert("Debe ingresar una materia.");
             return;
+        } else if (!/^[A-Za-z\s]+$/.test(materia)) {
+            alert("El nombre de la meteria debe contener unicamente caracteres alfabeticos.");
+            return;
         }
-
         CURSO_INFO.materias[docenteSeleccionadoRut] = materia;
 
         document.getElementById("docentes_info").innerHTML += `

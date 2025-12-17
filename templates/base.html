@@ -10,8 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Calendario -->
-  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
 
   <!-- Iconos de Redes Sociales Footer -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -36,11 +34,12 @@
       <!-- No borrar MOVIL ADAPTER -->
 
       <nav class="menu" aria-label="Principal">
-        <a href="home">Inicio</a>
-        <a href="seccion_de_noticias">Noticias</a>
-        <a href="talleres">Talleres</a>
-        <a href="contactanos">Contáctanos</a>
+        <a class="no_decoration" href="home">Inicio</a>
+        <a class="no_decoration" href="seccion_de_noticias">Noticias</a>
+        <a class="no_decoration" href="talleres">Talleres</a>
+        <a class="no_decoration" href="contactanos">Contáctanos</a>
         <a class="cta" href="login">Mi Espacio</a>
+        
 
         <!-- Mis acciones (desplegable que muestra el contenido dinámico del bloque) -->
         <div class="actions-dropdown" style="position:relative">
@@ -61,13 +60,13 @@
             {% endfor %}
             -->
             {% for url, verbose in rutas_permitidas.items() %}
-              <li><a class="nav-link color" href="{{ url }}">{{ verbose | capitalize }}</a></li>
+              <li><a class="nav-link color no_decoration" href="{{ url }}">{{ verbose | capitalize }}</a></li>
             {% endfor %}
-            <li><a class="nav-link text-warning" href="micuenta">Mi Cuenta</a></li>
-            <li><a class="nav-link" href="logout">Cerrar Sesion</a></li>
+            <li><a class="nav-link text-warning no_decoration" href="micuenta">Mi Cuenta</a></li>
+            <li><a class="nav-link no_decoration" href="logout">Cerrar Sesion</a></li>
 
             {% else %}
-            <li><a class="nav-link color" href="login">Inicia Sesion</a></li>
+            <li><a class="nav-link color no_decoration" href="login">Inicia Sesion</a></li>
 
             {% endif %}
 

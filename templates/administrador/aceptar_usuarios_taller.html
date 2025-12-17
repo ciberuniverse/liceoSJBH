@@ -2,6 +2,16 @@
 
 {% block contenido %}
 
+<header class="historia-header">
+  <h1>Administración de Talleres</h1>
+  <p>
+    Desde esta sección podrás gestionar los talleres extracurriculares del
+    {{ nombre_colegio }}, habilitar o deshabilitar su inscripción, administrar
+    listas de espera y controlar los cupos de estudiantes de manera ordenada
+    y segura.
+  </p>
+</header>
+
 {% if get %}
 <div class="container my-5">
   <form method="POST" class="card p-4 shadow-sm">
