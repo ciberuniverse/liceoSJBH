@@ -9,7 +9,6 @@
     </p>
 </header>
 
-{% if get %}
 <div class="container mt-4">
     <form method="POST" class="row g-3 p-4 border rounded bg-light shadow-sm">
         <div class="col-md-6">
@@ -70,64 +69,158 @@
     });
 </script>
 
-{% endif %}
 
 {% if plantilla == "resultado_buscar" %}
-<div class="container mt-5">
-    <h3 class="mb-4 text-center text-primary fw-bold">Resultados de la búsqueda</h3>
-    <div class="row gy-4">
-        {% for usuario in usuarios %}
-        <div class="col-sm-12 col-md-6 col-lg-4">
-            <form method="POST">
-                <div class="card h-100 shadow-lg border-0 rounded-3">
-                    <!-- Encabezado con color primary -->
-                    <div class="card-header bg-primary text-white fw-semibold">
-                        {{ usuario.get('nombre', 'Usuario') | capitalize }}
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group list-group-flush">
-                            {% for key, value in usuario.items() %}
-                            {% if key == "rut" %}
-                            <li class="list-group-item">
-                                <strong>{{ key | capitalize }}:</strong> {{ value }}
-                            </li>
-                            <input type="hidden" name="rut" value="{{ value }}">
-                            {% elif key == "contrasena" %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>
-                                    <strong>Contraseña:</strong> Restablecer a
-                                    <span class="badge bg-secondary">liceohualqui2025</span>
-                                </span>
-                                <button type="submit" name="accion" value="reestablecer_contrasena"
-                                    class="btn btn-sm btn-warning">
-                                    Restablecer
-                                </button>
-                            </li>
-                            {% else %}
-                            <li class="list-group-item">
-                                <strong>{{ key | capitalize }}:</strong> {{ value }}
-                            </li>
-                            {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    <div class="card-footer text-end bg-light">
-                        <button type="submit" name="accion" value="deshabilitar_usuario"
-                            class="btn btn-outline-danger btn-sm">
-                            Deshabilitar
-                        </button>
-                        <button type="submit" name="accion" value="habilitar_usuario"
-                            class="btn btn-outline-success btn-sm">
-                            Habilitar
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        {% endfor %}
-    </div>
-</div>
+<style>
+  /* Pequeños ajustes complementarios (no afectan lógica) */
+  .user-card { transition: transform .12s ease, box-shadow .12s ease; }
+  .user-card:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(22, 38, 75, .08); }
+  .avatar-sm { width:44px; height:44px; border-radius:50%; font-weight:600; }
+  .badge-pass { font-weight:700; letter-spacing: .2px; }
+  .list-group-item { border: 0; padding-top:.6rem; padding-bottom:.6rem; }
+</style>
 
+<div class="container mt-5">
+  <h3 class="mb-4 text-center text-primary fw-bold">Resultados de la búsqueda</h3>
+
+  <div class="row gy-4">
+    {% for usuario in usuarios %}
+
+    {% set rut_usuario = usuario.get("rut", "No Asigando") %}
+    {% set cargo_usuario = usuario.get("cargo", "No Asigando") %}
+    {% set deshabilitado = usuario.get("deshabilitado", False) %}
+
+    {% set telefono = usuario.get("telefono", "No Asigando") %}
+    {% set celular = usuario.get("celular", "No Asigando") %}
+    {% set email = usuario.get("email", "No Asigando") %}
+
+    {% set direccion = usuario.get("direccion", "No Especificada") %}
+    {% set comuna = usuario.get("comuna_residencia", "No Especificada") %}
+    {% set direccion_completa = usuario.get("direccion_completa", "No Especificada") %}
+
+    <div class="col-sm-12 col-md-6 col-lg-4">
+      <form method="POST">
+        <div class="card user-card h-100 shadow-sm border-0 rounded-3">
+          <!-- header -->
+          <div class="card-header d-flex align-items-center gap-3 bg-primary text-white border-0 rounded-top">
+            <div class="avatar-sm d-flex align-items-center justify-content-center bg-white-10 text-white">
+              <!-- iniciales -->
+              {{ (usuario.get('nombres','Usuario')[:1] if usuario.get('nombres') else 'U') | upper }}
+            </div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold">{{ usuario.get('nombres', 'Usuario') | capitalize }}</div>
+              <div class="small text-white-50">{{ cargo_usuario | capitalize }}</div>
+            </div>
+            <div>
+              <!-- pequeño estado visual (no cambia lógica) -->
+              <span class="badge bg-light text-primary rounded-pill small">Ver</span>
+            </div>
+          </div>
+
+          <div class="card-body p-3">
+            <ul class="list-group list-group-flush">
+
+              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <div>
+                  <div class="small text-muted">Contraseña</div>
+                  <div class="fw-semibold">Restablecer a <span class="badge badge-pass bg-warning text-dark">liceohualqui2025</span></div>
+                </div>
+
+                <button type="submit" name="accion" value="reestablecer_contrasena" class="btn btn-sm btn-warning">
+                  Restablecer
+                </button>
+              </li>
+
+              <li class="list-group-item px-0">
+                <div class="small text-muted">RUT</div>
+                <div class="fw-semibold">{{ rut_usuario }}</div>
+              </li>
+
+              <li class="list-group-item px-0">
+                <div class="small text-muted">Estado</div>
+              {% if not deshabilitado %}
+                <div class="fw-semibold">Activo</div>
+
+              {% else %}
+                <div class="fw-semibold">Deshabilitado</div>
+              {% endif %}
+
+              </li>
+
+              <input type="hidden" name="rut" value="{{ rut_usuario }}">
+
+              {% if cargo_usuario == "estudiante" %}
+              <li class="list-group-item px-0">
+                <div class="small text-muted">Apoderado</div>
+                <div class="fw-semibold">{{ usuario.get("apoderado", "No Asigando") }}</div>
+              </li>
+
+              {% elif cargo_usuario == "apoderado" %}
+              
+                {% if "carga_apoderado" in usuario %}
+                <li class="list-group-item px-0">
+                    <div class="small text-muted">Hijos</div>
+                    <div class="fw-semibold">{{ usuario.get("carga_apoderado") | join(", ") }}</div>
+
+                </li>
+                {% endif %}
+
+              {% endif %}
+
+              <hr class="my-2">
+
+              <li class="list-group-item px-0">
+                <div class="small text-muted">Teléfono</div>
+                <div class="fw-semibold">{{ telefono }}</div>
+              </li>
+
+              <li class="list-group-item px-0">
+                <div class="small text-muted">Celular</div>
+                <div class="fw-semibold">{{ celular }}</div>
+              </li>
+
+              <li class="list-group-item px-0">
+                <div class="small text-muted">Email</div>
+                <div class="fw-semibold text-truncate" style="max-width:100%;">{{ email }}</div>
+              </li>
+
+              <hr class="my-2">
+
+              <li class="list-group-item px-0">
+                <div class="small text-muted">Dirección</div>
+                <div class="fw-semibold small">{{ direccion }}, {{ comuna_residencia }}</div>
+              </li>
+
+              <li class="list-group-item px-0">
+                <div class="small text-muted">Dirección completa</div>
+                <div class="fw-semibold small text-truncate" style="max-width:100%;">{{ direccion_completa }}</div>
+              </li>
+
+            </ul>
+          </div>
+
+          <div class="card-footer bg-light border-0">
+            <div class="d-flex justify-content-end gap-2">
+              <button type="submit" name="accion" value="deshabilitar_usuario" class="btn btn-outline-danger btn-sm">
+                Deshabilitar
+              </button>
+
+              <button type="submit" name="accion" value="habilitar_usuario" class="btn btn-outline-success btn-sm">
+                Habilitar
+              </button>
+
+              <button name="accion" value="eliminar_usuario" class="btn btn-outline-secondary btn-sm">
+                Eliminar Usuario
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    {% endfor %}
+  </div>
+</div>
 
 {% endif %}
 {% endblock %}

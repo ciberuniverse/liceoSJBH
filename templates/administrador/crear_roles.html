@@ -46,7 +46,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Crear</button>
+                <button type="submit" id="boton" class="btn btn-primary w-100">Crear</button>
             </form>
 
         </div>
@@ -72,6 +72,7 @@
         } else {
             // setea el hidden con las rutas seleccionadas
             document.getElementById("routes").value = routes.join(",");
+            document.getElementById("boton").hidden = true
         }
     });
 

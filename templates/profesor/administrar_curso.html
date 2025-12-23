@@ -3,13 +3,13 @@
 {% block contenido %}
 
 <header class="historia-header">
-  <h1>Gestión Académica del Curso</h1>
-  <p>
-    En este espacio podrás administrar tu asignatura dentro del curso
-    {{ informacion_curso.curso | upper }}, registrar evaluaciones, asignar
-    notas, pasar lista de asistencia y realizar anotaciones pedagógicas,
-    permitiendo un seguimiento ordenado y continuo del progreso de tus alumnos.
-  </p>
+    <h1>Gestión Académica del Curso</h1>
+    <p>
+        En este espacio podrás administrar tu asignatura dentro del curso
+        {{ informacion_curso.curso | upper }}, registrar evaluaciones, asignar
+        notas, pasar lista de asistencia y realizar anotaciones pedagógicas,
+        permitiendo un seguimiento ordenado y continuo del progreso de tus alumnos.
+    </p>
 </header>
 
 
@@ -26,6 +26,7 @@
         </div>
     </div>
     {% if informacion_curso['alumnos_curso'] %}
+    {% set asignatura = informacion_curso.materias[rut_profesor] %}
 
     <!-- Botones de acciones -->
     <div class="mb-3 d-flex gap-2">
@@ -43,8 +44,7 @@
         <label class="form-label fw-bold">Nombre de la evaluación</label>
         <input name="nombre_nota" id="nombre_nota" class="form-control mb-2" type="text" minlength="3" maxlength="40">
         <button class="btn btn-warning" onclick="empezar_evaluar()">Empezar a evaluar</button><br>
-        <button class="btn btn-danger"
-            onclick="cancelar_evaluar()">Cancelar</button>
+        <button class="btn btn-danger" onclick="cancelar_evaluar()">Cancelar</button>
     </div>
 
     <!-- Lista de alumnos -->
@@ -56,107 +56,182 @@
         <ul class="list-group list-group-flush">
 
             {% for alumno in informacion_curso['alumnos_curso'] %}
-            <li class="list-group-item py-3">
-                <div class="d-flex justify-content-between align-items-center">
+<li class="list-group-item py-3">
+  <div class="row align-items-start gy-3">
 
-                    <!-- Datos del alumno -->
-                    <div class="mb-2">
-                        <strong>{{ alumno.nombres }} {{ alumno.apellidos }}</strong><br>
-                        <small class="text-muted">{{ alumno.rut }}</small>
-                        <small onclick="mostrar_ocultos('anotaciones_alumno_{{ alumno.rut }}')" class="text-warning fw-bold"
-                            style="cursor:pointer;">
-                            <i class="bi bi-journal-text me-1"></i>Anotación
-                        </small>
-                    </div>
+    <!-- COLUMNA 1: Datos del alumno -->
+    <div class="col-md-4">
+      <strong>{{ alumno.nombres }} {{ alumno.apellidos }}</strong><br>
+      <small class="text-muted">{{ alumno.rut }}</small><br>
 
-                    <!-- Pasar lista -->
-                    <div class="pasar_lista" id="lista_{{ alumno.rut }}" onclick="alumno_presente('{{ alumno.rut }}')"
-                        hidden style="cursor:pointer;">
-                        <span class="badge bg-danger p-2">Marcar Presente</span>
-                    </div>
+      <small onclick="mostrar_ocultos('anotaciones_alumno_{{ alumno.rut }}')"
+        class="text-warning fw-bold d-inline-flex align-items-center mt-1"
+        style="cursor:pointer;">
+        <i class="bi bi-journal-text me-1"></i>Anotación
+      </small>
+    </div>
 
-                    <!-- Asignar nota -->
-                    <div class="asignar_nota" hidden>
-                        <div class="d-flex align-items-center gap-2">
-                            <input id="nota_{{ alumno.rut }}" type="number" inputmode="numeric"
-                                class="form-control form-control-sm text-center" style="max-width:80px;">
+    <!-- COLUMNA 2: Acciones (simétricas) -->
+    <div class="col-md-4">
 
-                            <button class="btn btn-sm btn-success d-flex align-items-center"
-                                onclick="asignar_nota('{{ alumno.rut }}')" id="boton_{{ alumno.rut }}">
-                                <i class="bi bi-check-circle me-1"></i> Guardar
-                            </button>
-                        </div>
-                    </div>
+      <!-- Pasar lista -->
+      <div class="pasar_lista mb-2"
+           id="lista_{{ alumno.rut }}"
+           onclick="alumno_presente('{{ alumno.rut }}')"
+           hidden style="cursor:pointer;">
+        <span class="badge bg-danger w-100 text-center py-2">
+          Marcar Presente
+        </span>
+      </div>
 
-                    <div class="anotaciones_alumno_{{ alumno.rut }}" hidden>
-                        <div class="card shadow-sm mt-3">
-                            <div class="card-body">
-                                <!-- Rut oculto -->
-                                <input name="rut_alumno" value="{{ alumno.rut }}" hidden>
+      <!-- Asignar nota -->
+      <div class="asignar_nota" hidden>
+        <div class="input-group input-group-sm">
+          <input id="nota_{{ alumno.rut }}" type="number" inputmode="numeric"
+            class="form-control text-center">
+          <button class="btn btn-success"
+            onclick="asignar_nota('{{ alumno.rut }}')"
+            id="boton_{{ alumno.rut }}">
+            <i class="bi bi-check-circle"></i>Asignar
+          </button>
+        </div>
+      </div>
 
-                                <!-- Asunto -->
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Asunto</label>
-                                    <input name="asunto" type="text" minlength="4" maxlength="100" class="form-control"
-                                        placeholder="Título breve de la anotación">
-                                </div>
+      <!-- Anotaciones inline -->
+      <div class="anotaciones_alumno_{{ alumno.rut }} mt-3" hidden>
+        <div class="card shadow-sm">
+          <form method="POST">
+            <div class="card-body p-3">
 
-                                <!-- Descripción -->
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Descripción</label>
-                                    <textarea name="descripcion" rows="3" class="form-control"
-                                        placeholder="Ingrese la descripción de la anotación."></textarea>
-                                </div>
+              <input name="rut_alumno" value="{{ alumno.rut }}" hidden>
+              <input name="materia_alumno" value="{{ asignatura }}" hidden>
 
-                                <!-- Botón -->
-                                <div class="d-flex justify-content-end">
-                                    <button type="submit" name="accion" value="anotacion_alumno"
-                                        class="btn btn-primary">
-                                        <i class="bi bi-pencil-square me-1"></i> Guardar Anotación
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+              <div class="mb-2">
+                <label class="form-label fw-bold small">Asunto</label>
+                <input name="asunto" type="text" minlength="4" maxlength="100"
+                  class="form-control form-control-sm" required>
+              </div>
 
-                    <!-- Notas existentes -->
-                    <div class="ms-3">
+              <div class="mb-2">
+                <label class="form-label fw-bold small">Descripción</label>
+                <textarea name="descripcion" rows="2"
+                  class="form-control form-control-sm"
+                  minlength="5" maxlength="500" required></textarea>
+              </div>
 
-                        {% if alumno.materias %}
-                        {% set asignatura = informacion_curso.materias[rut_profesor] %}
-                        {% set notas = alumno.materias[asignatura].notas %}
+              <div class="text-end">
+                <button type="submit" id="anotacion_{{ alumno.rut }}" name="accion" onclick="ocultar('anotacion_{{ alumno.rut }}')"
+                  value="anotacion_alumno"
+                  class="btn btn-primary btn-sm">
+                  <i class="bi bi-save me-1"></i>Guardar
+                </button>
+              </div>
 
-                        {% if notas %}
-                        <div class="d-flex flex-column gap-1">
+            </div>
+          </form>
+        </div>
+      </div>
 
-                            {% for evaluacion in notas %}
-                            <div class="d-flex justify-content-between align-items-center small text-muted">
+    </div>
 
-                                <span class="fw-semibold text-dark">
-                                    {{ evaluacion.nombre_evaluacion }}
-                                </span>
+    <!-- COLUMNA 3: Resumen académico -->
+    <div class="col-md-4">
+      {% if alumno.materias and asignatura in alumno.materias %}
+        {% set notas = alumno.materias[asignatura].notas %}
+        {% set anotaciones = alumno.materias[asignatura].anotaciones %}
+        {% set asistencia = alumno.materias[asignatura].asistencia %}
 
-                                <span class="badge rounded-pill bg-light text-dark border">
-                                    {{ evaluacion.nota }}
-                                </span>
+        <div class="mb-2">
+          <strong>Asistencia:</strong>
+          {% if asistencia %}
+            <span class="badge bg-success ms-1">
+              {{ asistencia | length }} Clases
+            </span>
+            <div class="small text-muted">
+              Última: {{ asistencia[-1:] | join(", ") }}
+            </div>
+          {% else %}
+            <span class="badge bg-danger ms-1">Sin clases</span>
+          {% endif %}
+        </div>
 
-                            </div>
-                            {% endfor %}
+        {% if notas %}
+          <div class="d-flex flex-column gap-1">
+            {% for evaluacion in notas %}
+              <div class="d-flex justify-content-between small">
+                <span class="fw-semibold">{{ evaluacion.nombre_evaluacion }}</span>
+                <span class="badge bg-light text-dark border">
+                  {{ evaluacion.nota }}
+                </span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <span class="badge bg-light text-dark border">Sin notas</span>
+        {% endif %}
+    {% else %}
+            <span class="badge bg-danger ms-1">Sin clases</span>
 
-                        </div>
+      {% endif %}
+    </div>
 
-                        {% else %}
-                        <span class="badge bg-light text-dark border">Sin notas registradas</span>
-                        {% endif %}
+  </div>
 
-                        {% else %}
-                        <span class="badge bg-light text-dark border">Sin notas</span>
-                        {% endif %}
+{% if anotaciones %}
+<div class="mt-3">
 
-                    </div>
+  <span onclick="mostrar('anotaciones_{{ alumno.rut }}')"
+        class="badge bg-warning text-dark"
+        style="cursor:pointer;">
+    <i class="bi bi-eye me-1"></i> Ver Anotaciones
+  </span>
 
-                </div>
-            </li>
+  <div id="anotaciones_{{ alumno.rut }}" hidden class="mt-3">
+
+    <div class="card shadow-sm">
+      <div class="card-body p-3">
+
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th style="width:30%">Asunto</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for anotacion in anotaciones %}
+              <tr>
+                <td class="fw-semibold text-primary">
+                  {{ anotacion.asunto }}
+                </td>
+                <td class="text-muted">
+                  {{ anotacion.descripcion }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="text-end mt-3">
+          <button type="button"
+                  class="btn btn-secondary btn-sm"
+                  onclick="ocultar('anotaciones_{{ alumno.rut }}')">
+            Cerrar
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endif %}
+
+</li>
+
+
 
             {% endfor %}
 
@@ -193,6 +268,9 @@
 <script>
 
     let materia = "{{ informacion_curso.materias[rut_profesor] }}"
+
+    const form_subir_notas_ = document.getElementById("form_subir_notas");
+    const form_pasar_lista_ = document.getElementById("form_pasar_lista");
 
     let ALUMNOS_PRESENTES = []
     let NOTAS_ALUMNOS = {
@@ -256,9 +334,14 @@
         console.log(NOTAS_ALUMNOS);
     }
 
-    const form_subir_notas_ = document.getElementById("form_subir_notas");
-    const form_pasar_lista_ = document.getElementById("form_pasar_lista");
+    // Funciones anotaciones estudiante
+    function mostrar(id) {
+        document.getElementById(id).hidden = false
+    }
 
+    function ocultar(id) {
+        document.getElementById(id).hidden = true
+    }
 
     form_subir_notas_.addEventListener("submit", (e) => {
         if (NOTAS_ALUMNOS.notas_alumnos.length <= 0) {
@@ -266,6 +349,21 @@
             e.preventDefault(); // aquí sí funciona
             return;
         }
+
+        const form = e.target;
+        if (!(form instanceof HTMLFormElement)) return;
+
+        // event.submitter es el botón que disparó el submit (soportado en navegadores modernos)
+        const submitter = e.submitter || form.querySelector('button[type="submit"], input[type="submit"]');
+
+        if (!submitter) return;
+
+        // Si ya está deshabilitado, prevenir envío adicional
+        if (submitter.hidden) {
+            e.preventDefault();
+            return;
+        }
+
     });
 
     form_subir_notas_.addEventListener("formdata", (e) => {
@@ -288,13 +386,27 @@
         console.log("FormData final:", [...fd.entries()]);
     });
 
-
     form_pasar_lista_.addEventListener("submit", (e) => {
         if (ALUMNOS_PRESENTES.length <= 0) {
             alert("Debes marcar alumnos presentes primero.");
             e.preventDefault(); // aquí sí funciona
             return;
         }
+
+        const form = e.target;
+        if (!(form instanceof HTMLFormElement)) return;
+
+        // event.submitter es el botón que disparó el submit (soportado en navegadores modernos)
+        const submitter = e.submitter || form.querySelector('button[type="submit"], input[type="submit"]');
+
+        if (!submitter) return;
+
+        // Si ya está deshabilitado, prevenir envío adicional
+        if (submitter.hidden) {
+            e.preventDefault();
+            return;
+        }
+
     });
 
     form_pasar_lista_.addEventListener("formdata", (e) => {
@@ -312,6 +424,10 @@
         console.log("FormData final:", [...fd.entries()]);
     });
 
+
+
 </script>
+
+
 
 {% endblock %}

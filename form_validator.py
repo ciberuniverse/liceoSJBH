@@ -4,10 +4,11 @@ _acen = "áéíóúÁÉÍÓÚüÜ"
 _poin = ":;,.!?¡¿()%"
 _email = "@_."
 
+rut_allowed = [7, 14, _numb + "-k"]
 
 formularios_dict = {
     "login": {
-        "rut": [7, 12, _numb + "-k"],
+        "rut": rut_allowed,
         "contrasena": [4, 20, _alph + _numb + "_@"]
     },
     "contactanos": {
@@ -22,12 +23,24 @@ formularios_dict = {
         "descripcion": [5, 1000, _alph + _numb + _acen + _poin + _email],
         "cupos": [1, 4, _numb],
         "horarios": [3, 100, _alph + _numb + _poin + _acen],
-        "profesor_rut": [7, 14, _numb + "-k"]
+        "profesor_rut": rut_allowed
     },
     "crear_evento": {
         "fecha_evento": [1, 12, _numb + "-" ],
         "titulo": [3, 40, _alph + _numb + _acen + _poin],
         "descripcion": [3, 500, _alph + _numb + _acen + _poin + _email],
+    },
+    "anotacion_alumno": {
+        "rut_alumno": rut_allowed,
+        "materia_alumno": [3, 50, _alph],
+        "asunto": [4, 100, _alph + _numb],
+        "descripcion": [5, 500, _alph + _numb + _acen + _poin + _email],
+    },
+    "crear_usuario": {
+        "nombres": [5, 100, _alph + _acen],
+        "apellidos": [5, 100, _alph + _acen],
+        "rut": rut_allowed,
+        "cargo": [5, 30, _alph],
     }
 }
 """

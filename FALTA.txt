@@ -60,3 +60,7 @@ CARGOS:
                 - Asignar pases
                 - Administrar usuarios
                 - Administrar Pagina
+
+
+EL PROFESOR PUEDE VISUALIZAR ANOTACIONES, Y ASISTENCIA DE SUS ALUMNOS y agregar informacion que aparece en cige
+leer correo boris don

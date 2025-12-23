@@ -7,15 +7,14 @@ from form_validator import formularios_dict
 import io, os, json, unicodedata
 import pandas as pd
 
+URL_HOST = "mongodb://localhost:27017/"
+SECRET_KEY = "324535542d953171e82ff39f647e41baeb53ce0b11f127a8da2fce199f5fd8955c368f1db7c7b1cb32abc6e236bb96d5cd85d65812a7506036fb362c47344ddf"
 
 if "herna" not in os.getcwd():
-    HOST = MongoClient(os.environ.get("HOST"))
+    URL_HOST = os.environ.get("HOST")
     SECRET_KEY = os.environ.get("SECRET_KEY")
-else:
-    HOST = MongoClient("mongodb://localhost:27017/")
-    SECRET_KEY = "324535542d953171e82ff39f647e41baeb53ce0b11f127a8da2fce199f5fd8955c368f1db7c7b1cb32abc6e236bb96d5cd85d65812a7506036fb362c47344ddf"
-    
-    
+
+HOST = MongoClient(URL_HOST)
 BDD = HOST["colegio"]
 
 ROOT_DIR = os.getcwd()
@@ -32,7 +31,6 @@ eventos = BDD["eventos"]
 
 NOT_ALLOWED = r";$&|{}[]<>\"'\\`"
 
-
 ##################### Funciones auxiliares
 
 def verificar_estado_de_peticion(resultado) -> dict:
@@ -46,6 +44,7 @@ def json_de_mensaje(codigo: int, resultado_o_mensaje: str = None) -> dict:
     """Crea un json con el formato: { 'codigo': 000, 'mensaje': 'resultado o mensaje de error' }"""
     
     errores = {
+        200: "Operacion realizada exitosamente.",
         402: "Error formulario incompleto o corrupto.",
         403: "Acceso denegado. No tienes permisos suficientes.",
         404: "Recurso no encontrado.",
@@ -623,6 +622,8 @@ class Users:
         routes_now = routes_now["mensaje"]
         all_private_routes = routes_now["private"].keys()
 
+        if nombre_rol in routes_now["rol"]:
+            return json_de_mensaje(400, "Estas creando un rol que ya existe.")
 
         # Se verifica que contenga rutas validas para asociar
         if any(route not in all_private_routes for route in routes):
@@ -961,6 +962,7 @@ class General:
         if not resultado_curso:
             return json_de_mensaje(404, "No se logro encontrar ningun curso asociado al id.")
 
+        print(resultado_curso)
 
         return json_de_mensaje(200, resultado_curso[0])
 
@@ -1309,13 +1311,22 @@ class Administrador:
     def crear_usuario(informacion_json: dict) -> dict:
         
         informacion_json.pop("accion") # Se borra del diccionario la accion a realizar que envia el formulario
-        no_sql_st = no_sql(informacion_json)
 
-        if no_sql_st["codigo"] != 200:
-            return no_sql_st
+        formulario_valido = Security.form_validator("crear_usuario", informacion_json)
+        if formulario_valido["codigo"] != 200:
+            return formulario_valido
 
-        if "contrasena" in informacion_json:
-            informacion_json["contrasena"] = cifrar_contrasena(informacion_json["contrasena"])
+        rut_usuario: str = informacion_json["rut"].lower()
+        informacion_json["rut"] = rut_usuario
+
+        ########## SE VERIFICA SI EL RUT EXISTE O NO EN LA BDD 
+        disponible = General.obtener_informacion_rut(rut_usuario)
+        if disponible["codigo"] == 200:
+            return json_de_mensaje(400, "Ya existe un usuario con ese RUT. Porfavor evitemos duplicados.")    
+        
+        ########## La contraseña no es necesaria ya que se creara automaticamente con los primeros
+        # 4 digitos asociados al rut
+        informacion_json["contrasena"] = cifrar_contrasena(rut_usuario[:4])
 
         #### Si es que tiene alguna carga se le agregara
         if "carga_apoderado" in informacion_json and informacion_json["carga_apoderado"]:
@@ -1335,14 +1346,17 @@ class Administrador:
             ########### Asignacion de apoderado a estudiantes
 
             try:
-                asignar_apoderado_a_estudiante = estudiantes.update_many({"rut": {"$in": informacion_json["carga_apoderado"]}, "cargo": "estudiante"}, {"$set": {"apoderado": informacion_json["rut"]}})
+                asignar_apoderado_a_estudiante = estudiantes.update_many({
+                    "rut": {"$in": informacion_json["carga_apoderado"]},
+                    "cargo": "estudiante"},
+                    
+                    {"$set": {"apoderado": rut_usuario}})
             
             except:
                 return json_de_mensaje(500, "ERROR: No se logro asignar el apoderado a los estudiantes.")
             
             if not asignar_apoderado_a_estudiante.acknowledged:
                 return json_de_mensaje(404, "No se lograron asignar el apoderado a uno o mas estudiantes.")
-            
 
         #################
 
@@ -1363,7 +1377,7 @@ class Administrador:
         if informacion_json["cargo"] == "estudiante":
 
             estudiante_curso = Administrador.asignar_estudiante_a_curso(
-                rut_estudiante = informacion_json["rut"],
+                rut_estudiante = rut_usuario,
                 id_curso = curso
             )
 
@@ -1374,6 +1388,20 @@ class Administrador:
             return json_de_mensaje(400, "La base de datos no completo el registro.")
         
         return json_de_mensaje(200, f"Se ha agregado al usuario {informacion_json['rut']} con cargo {informacion_json['cargo']} exitosamente.")
+
+    def eliminar_usuario(usuario_rut: str, recursivo: bool = False, recursivo_campos: list[str] = None) -> dict:
+
+    
+        try:
+            resultado = estudiantes.delete_one({"rut": usuario_rut})
+
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: No se logro eliminar al usuario por un error interno: {err}")
+
+        if not resultado.acknowledged:
+            return json_de_mensaje(404, "No se logro eliminar la cuenta del usuario, por favor verifica que exista.")
+        
+        return json_de_mensaje(200)
 
     @staticmethod
     def asignar_estudiante_a_curso(rut_estudiante: str, id_curso: str) -> dict:
@@ -1663,6 +1691,8 @@ class Administrador:
                 profesor_tmp = {}
 
                 profesor_tmp["rut"] = profesor["rut"] + "-" + profesor["dv"]
+                profesor_tmp["rut"] = profesor_tmp["rut"].lower() ######### NUEVA LINEA
+                
                 profesor_tmp["contrasena"] = cifrar_contrasena(profesor_tmp["rut"][:4])
                 profesor_tmp["nombres"] = profesor["nombres"]
                 profesor_tmp["apellidos"] = (profesor["apellido_paterno"] or "") + " " + (profesor["apellido_materno"] or "")
@@ -1722,6 +1752,7 @@ class Administrador:
                         continue
 
                     value = str(estudiante_nrm["run"]) + "-" + str(estudiante_nrm["digito_ver"])
+                    value = value.lower() ########## Nueva Linea
                     estudiante_tmp.setdefault("rut", value)
 
                     ############################### Contraseña plataforma
@@ -2099,6 +2130,43 @@ class Profesor:
 
         return json_de_mensaje(200, f"Se ha dejado presentes a un total de {len(alumnos_presentes)} en {materia}.")
 
+    def anotacion_alumno(data_form: dict) -> dict:
+        data_form.pop("accion")
+
+        print(data_form)
+        valid_ = Security.form_validator("anotacion_alumno", data_form)
+        if valid_["codigo"] != 200:
+            return valid_
+
+        materia = data_form["materia_alumno"]
+
+        query_format = {
+            "rut": data_form["rut_alumno"]
+        }
+
+        query_format_push = {
+            "$push": {
+                f"materias.{materia}.anotaciones": {
+                    "asunto": data_form["asunto"],
+                    "descripcion": data_form["descripcion"] 
+                }
+            }
+        }
+        
+        try:
+            respuesta = estudiantes.update_one(
+                query_format,
+                query_format_push
+            )
+        
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: No se logro actualizar el documento del estudiante adecuadamente: {err}")
+
+        if not respuesta.acknowledged:
+            return json_de_mensaje(404, "No se le asigno la anotacion correctamente.")
+
+        return json_de_mensaje(200, "Se le asigno la anotacion correctamente al estudiante.")
+
 class Noticiero:
     """Funciones que corresponden al uso del Noticiero."""
 
@@ -2402,7 +2470,7 @@ class Public:
 
         return json_de_mensaje(200, resultado)
 
-    def iniciar_sesion(usuario, contrasena) -> dict:
+    def iniciar_sesion(usuario: str, contrasena: str) -> dict:
         """Se busca una coincidencia entre contraseñas en la base de datos"""
 
         # Esta linea es unicamente de DEBUG y developer. Una vez en la nuve se debera
@@ -2428,6 +2496,8 @@ class Public:
 
         if no_sql_str["codigo"] != 200:
             return no_sql_str
+
+        usuario = usuario.lower()
 
         try:
             resultado = list(estudiantes.find(

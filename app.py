@@ -6,6 +6,12 @@ from flask import Flask, render_template, session, request, redirect, url_for, R
 app = Flask(__name__)
 app.secret_key = bdd.SECRET_KEY
 
+app.config.update(
+    SESSION_COOKIE_HTTPONLY = True, # Anti xss para evitar inject de js
+    SESSION_COOKIE_SECURE = True, # Solo https
+    SESSION_COOKIE_SAMESITE = "Lax" # Solo desde mi dominio xd
+)
+
 # Configuración para usar FileSystemCache
 app.config['CACHE_TYPE'] = 'FileSystemCache'
 app.config['CACHE_DIR'] = 'flask_cache'   # carpeta donde se guardan los archivos
@@ -43,6 +49,16 @@ def limitar_acceso():
 
         print("TODO BIEN")
 
+@app.after_request
+def safe_headers(response):
+    """Funcion encargada de responder con headers seguros"""
+
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+
+    return response
+
 ########################################### SECCION PUBLICA
 
 @app.route("/home", methods = ["GET"])
@@ -50,19 +66,19 @@ def limitar_acceso():
 def home():
 
     noticias_list = bdd.Public.listar_noticias_home()
-
+    print(noticias_list)
+    
+    if noticias_list["codigo"] != 200:
+        noticias_list["mensaje"] = ""
+    
     todos_los_eventos = bdd.General.todos_los_eventos()
 
     if todos_los_eventos["codigo"] != 200:
-        todos_los_eventos = [{"fecha_evento": "12-12-2025", "titulo": "Ejemplo de Evento", "descripcion": "Esta descripcion es de ejemplo."}]
-        pass
-
-    todos_los_eventos = todos_los_eventos["mensaje"]
+        todos_los_eventos = [{"fecha_evento": "12-12-2025", "titulo": "Ejemplo de Evento", "descripcion": "Esta descripcion es de ejemplo."}]    
+    else:
+        todos_los_eventos = todos_los_eventos["mensaje"]
 
     calendario_codigo = calendario_api.actualizar_calendario(todos_los_eventos)
-
-    if noticias_list["codigo"] != 200:
-        return render_template("home.html")
     
     return render_template("home.html", noticias = noticias_list["mensaje"], codigo_calendario = calendario_codigo)
 
@@ -82,8 +98,9 @@ def contactanos():
     if request.method == "POST":
 
         if "accion" not in request.form:
-            return "error"
-
+            error = bdd.json_de_mensaje(402)
+            return redirect(url_for("contactanos", codigo = error["codigo"], mensaje = error["mensaje"]))
+    
         if request.form["accion"] == "contactar":
             
             mensaje = request.form.to_dict()
@@ -227,7 +244,12 @@ def administrador():
     rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
 
     if request.method == "POST":
+        formulario_dict = request.form.to_dict()
 
+        accion_in = bdd.Security.validar_accion_form(formulario_dict, ["crear"])
+        if accion_in["codigo"] != 200:
+            return redirect(url_for("administrador", codigo = accion_in["codigo"], mensaje = accion_in["mensaje"]))
+    
         if request.form["accion"] == "crear":
             resultado = bdd.Administrador.crear_usuario(request.form.to_dict())
 
@@ -570,6 +592,7 @@ def administrar_usuarios():
                     usuarios = resultado["mensaje"],
                     plantilla = "resultado_buscar",
 
+                    cargos = RUTAS["rol"],
                     rutas_permitidas = rutas_permitidas_usuario
                 )
 
@@ -594,6 +617,13 @@ def administrar_usuarios():
             
             resultado = bdd.Users.usuario_habilitado(formulario["rut"], False)
 
+        if formulario["accion"] == "eliminar_usuario":
+            
+            if "rut" not in formulario:
+                return redirect(url_for("administrar_usuarios", codigo = 500, mensaje = "ERROR: Formulario incompleto o corrupto."))
+            
+            resultado = bdd.Administrador.eliminar_usuario(formulario["rut"])
+
         return redirect(url_for("administrar_usuarios", codigo = resultado["codigo"], mensaje = resultado["mensaje"]))
 
 
@@ -601,7 +631,7 @@ def administrar_usuarios():
 
     return render_template(
         "administrador/administrar_usuarios.html",
-        get = True,
+        
         cargos = RUTAS["rol"],
         rutas_permitidas = rutas_permitidas_usuario
     )
@@ -731,6 +761,8 @@ def asignar_profesores_a_cursos():
 @app.route("/crear_evento", methods = ["POST", "GET"])
 def crear_evento():
 
+    rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
+
     if request.method == "POST":
         
         formulario_ = request.form.to_dict()
@@ -751,7 +783,7 @@ def crear_evento():
 
     ############### ZONA GET
 
-    return render_template("administrador/crear_evento.html")
+    return render_template("administrador/crear_evento.html", rutas_permitidas = rutas_permitidas_usuario)
 
 ############################### Rutas de panel del noticiero
 
@@ -859,6 +891,9 @@ def profesor():
         elif formulario["accion"] == "pasar_lista":
             respuesta = bdd.Profesor.pasar_lista(formulario)
         
+        elif formulario["accion"] == "anotacion_alumno":
+            respuesta = bdd.Profesor.anotacion_alumno(formulario)
+
         return redirect(url_for("profesor", codigo = respuesta["codigo"], mensaje = respuesta["mensaje"]))
 
     #################### Seccion GET
@@ -958,7 +993,6 @@ def profesor_jefe_crear():
         return render_template("profesor/jefe/crear.html", error = resultado_profesores, rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
 
     return render_template("profesor/jefe/crear.html", profesores = resultado_profesores["mensaje"], rutas_permitidas = RUTAS["rol"][session["informacion"]["cargo"]])
-
 
 ############################### Rutas de panel del estudiante
 

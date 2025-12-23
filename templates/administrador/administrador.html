@@ -17,7 +17,7 @@
       Crear nuevo usuario
     </div>
     <div class="card-body">
-      <form method="POST">
+      <form method="POST" id="crear_usuario_form">
 
         <div class="mb-3">
           <label for="nombres" class="form-label">Nombres</label>
@@ -51,12 +51,8 @@
   <div class="mb-3">
     <label for="contrasena" class="form-label">Contraseña</label>
     <input type="password" class="form-control" name="contrasena" id="contrasena"
-           maxlength="20" required
-           pattern="^[^;$&|{}
-
-\[\]
-
-<>\"' \\`]{1,20}$">
+           maxlength="20"
+           placeholder="Asignada automáticamente (primeros 4 dígitos del RUT)" disabled>
         </div>
 
         <div class="mb-3">
@@ -65,7 +61,7 @@
             <option value="" selected disabled>Seleccione un cargo</option>
 
             {% for rol in roles %}
-              <option value="{{ rol }}">{{ rol | capitalize }}</option>
+            <option value="{{ rol }}">{{ rol | capitalize }}</option>
             {% endfor %}
           </select>
         </div>
@@ -82,7 +78,8 @@
 
 <script>
 
-let CARGAS = [];
+  let CARGAS = [];
+  const CARGO_USUARIO = document.getElementById("cargo");
 
   function agregar_cargas() {
     const input = document.getElementById("rut_carga");
@@ -160,7 +157,7 @@ let CARGAS = [];
     }
   });
   document.getElementById("rut").addEventListener("input", () => {
-    
+
     let input_rut = document.getElementById("rut").value.toLowerCase()
     let allowed = "1234567890k-"
 
@@ -171,6 +168,22 @@ let CARGAS = [];
     }
 
   })
+
+  // Valida que el usuario agrege al menos un apoderado cuando quiera crear uno
+  document.getElementById("crear_usuario_form").addEventListener("submit", (e) => {
+
+    if (CARGO_USUARIO.value === "apoderado" && CARGAS.length < 1) {
+      e.preventDefault(); // cancela el envío
+      alert("Debes de asignar al menos un estudiante al apoderado.");
+      return;
+
+    } else {
+      document.getElementById("accion").hidden = true
+      console.log("Enviando formulario.")
+    }
+
+  })
+
 </script>
 
 {% endblock %}
