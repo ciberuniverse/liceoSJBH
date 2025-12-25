@@ -64,3 +64,31 @@ CARGOS:
 
 EL PROFESOR PUEDE VISUALIZAR ANOTACIONES, Y ASISTENCIA DE SUS ALUMNOS y agregar informacion que aparece en cige
 leer correo boris don
+
+
+
+ Cambiar cache a Redis y sessions a server-side Redis. 
+app
+
+
+ Desacoplar generación de PDF/lectura Excel -> Celery workers.
+
+ Poner Gunicorn + Nginx (o usar contenedores + LB).
+
+ Migrar Mongo a replica set/servicio gestionado y ajustar MongoClient options. 
+bdd
+
+
+ Offload estáticos a CDN/S3.
+
+ Añadir índices y revisar queries pesadas (usar proyecciones). 
+bdd
+
+
+ Monitorización (Sentry + Prometheus/Grafana), logging centralizado.
+
+ Rate limiting, MAX_CONTENT_LENGTH y validación de uploads.
+
+ Backups automáticos y runbooks.
+
+Si querés, te armo un plan de implementación con comandos/archivos (Dockerfile + docker-compose con Redis, RabbitMQ/Celery, Gunicorn, ejemplo de M

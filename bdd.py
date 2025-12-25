@@ -4,22 +4,21 @@ from bson.objectid import ObjectId # Importar ObjectId
 from datetime import datetime
 from hashlib import blake2b
 from form_validator import formularios_dict
-import io, os, json, unicodedata
+import io, os, json, unicodedata, server_settings
 import pandas as pd
 
-URL_HOST = "mongodb://localhost:27017/"
-SECRET_KEY = "324535542d953171e82ff39f647e41baeb53ce0b11f127a8da2fce199f5fd8955c368f1db7c7b1cb32abc6e236bb96d5cd85d65812a7506036fb362c47344ddf"
 
-if "herna" not in os.getcwd():
-    URL_HOST = os.environ.get("HOST")
-    SECRET_KEY = os.environ.get("SECRET_KEY")
+HOST = MongoClient(
+    server_settings.URL_HOST,
+    maxPoolSize=50,
+    minPoolSize=10
+)
 
-HOST = MongoClient(URL_HOST)
 BDD = HOST["colegio"]
 
-ROOT_DIR = os.getcwd()
-TEMPLATES_DIR = os.path.join(ROOT_DIR, "static", "informes_templates")
-MEDIA_DIR = os.path.join(ROOT_DIR, "static", "media")
+ROOT_DIR = server_settings.ROOT_DIR
+TEMPLATES_DIR = server_settings.TEMPLATES_DIR
+MEDIA_DIR = server_settings.MEDIA_DIR
 
 estudiantes = BDD["estudiantes"] ######### ES DONDE ESTAN LOS USUARIOS
 talleres = BDD["talleres"]
@@ -161,26 +160,41 @@ class Informes_pdf:
         
         except:
             return json_de_mensaje(500, f"ERROR: No se logro leer la plantilla {nombre_plantilla}.")
-        
+    
     @staticmethod
-    def generar_pdf(plantilla_html: str, nombre_archivo: str) -> dict:
+    def generar_pdf(plantilla_html: str, nombre_archivo: str = None) -> dict:
         
+        if nombre_archivo:
+            try:
+                nombre_archivo = "static/informes/" + nombre_archivo + ".pdf"
+
+                with open(nombre_archivo, "wb") as save_html:
+                    pisa.CreatePDF(
+                        #io.StringIO(plantilla_html),
+                        plantilla_html,
+                        dest = save_html,
+                        encoding="UTF-8"
+                    )
+
+            except Exception as err:
+                return json_de_mensaje(500, f"ERROR: No se logro generar el informe correctamente: {err}")
+            
+            return json_de_mensaje(200, nombre_archivo)
+
         buffer_en_memoria = io.BytesIO()
 
         try:
-            nombre_archivo = "static/informes/" + nombre_archivo + ".pdf"
-
-            with open(nombre_archivo, "wb") as archivo_pdf:
-                
-                pisa.CreatePDF(
-                    io.StringIO(plantilla_html),
-                    dest = buffer_en_memoria
-                )
+            pisa.CreatePDF(
+                #io.StringIO(plantilla_html),
+                plantilla_html,
+                dest = buffer_en_memoria,
+                encoding="UTF-8"
+            )
 
             buffer_en_memoria.seek(0)
 
-        except:
-            return json_de_mensaje(500, "ERROR: No se logro generar el informe correctamente.")
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: No se logro generar el informe correctamente: {err}")
 
         return json_de_mensaje(200, buffer_en_memoria)
 
@@ -202,7 +216,7 @@ class Informes_pdf:
         for key in formulario:
             plantilla = plantilla.replace(key, formulario[key])
 
-        return Informes_pdf.generar_pdf(plantilla, "xd")
+        return Informes_pdf.generar_pdf(plantilla)
         ######## GENERAR UNA PLANTILLA
 
     @staticmethod
@@ -217,6 +231,7 @@ class Informes_pdf:
             return informacion_rut
         
         formulario["nombre_estudiante"] = informacion_rut["mensaje"]["nombres"] + " " + informacion_rut["mensaje"]["apellidos"]
+
         formulario["fecha_actual"] = obtener_fecha()
         formulario["ano_actual"] = formulario["fecha_actual"].split("-")[2]
         
@@ -236,7 +251,7 @@ class Informes_pdf:
         for key in formulario:
             plantilla = plantilla.replace(key, formulario[key])
 
-        resultado_certificado = Informes_pdf.generar_pdf(plantilla, "xd")
+        resultado_certificado = Informes_pdf.generar_pdf(plantilla, f"alumno_regular_{formulario['rut_estudiante']}")
         if resultado_certificado["codigo"] != 200:
             return resultado_certificado
         
@@ -502,14 +517,6 @@ class Security:
                 force_ascii=False
             )
 
-            """
-            excel_leyendo = pd.read_html(archivo_xls)
-            bdd_json = excel_leyendo[0].to_json(
-                indent = 2,
-                orient = "records",
-                force_ascii = False
-            )"""
-
         except Exception as err:
             return json_de_mensaje(500, f"ERROR: Se a producido un error al intentar leer el archivo. Por favor contacta con soporte tecnico: {err}")
 
@@ -558,7 +565,7 @@ class Security:
                 return json_de_mensaje(200, accion)
 
         return json_de_mensaje(402)
-
+        
 class Users:
     """
     Clase encargada de almacenar las acciones a realizar para designar, leer, y modificar\n
@@ -1737,15 +1744,6 @@ class Administrador:
             estudiante_tmp = {}
             for key, value in estudiante_nrm.items():
 
-                
-                """
-                ESTA SECCION SE MOVIO HACIA Security.normalizar_base_datos()
-                for char_ in key:
-
-                    if char_ not in "qwertyuiopasdfghjklñzxcvbnm_":
-                        key = key.replace(char_, "")"""
-
-
                 if key in ["run", "digito_ver"]:
 
                     if "rut" in estudiante_tmp:
@@ -1789,10 +1787,14 @@ class Administrador:
                     apellido_paterno = estudiante_nrm.get("apellido_paterno")
                     apellido_materno = estudiante_nrm.get("apellido_materno")
 
-                    value = (apellido_paterno or "") + " " + (apellido_materno or "")
-                
+                    value = (apellido_paterno or "") + " " + (apellido_materno or "")                
+                    value = unicodedata.normalize("NFC", value)
 
                     estudiante_tmp.setdefault("apellidos", value)
+
+                elif key == "nombres":
+                    value = unicodedata.normalize("NFC", value)
+                    estudiante_tmp.setdefault(key, value)
 
                 else:
                     estudiante_tmp.setdefault(key, value)

@@ -42,10 +42,17 @@
 <body>
   <div class="container">
     <img class="emoji" src="static/img/error.gif">
-    <h1>404</h1>
-    <p><strong>¡No tienes acceso a la intranet!</strong></p>
-    <p>¿Será que estás deshabilitado para hacerlo?</p>
-    <p>Tranquilo... no eres tú, es la página.<br>Contacta a un administrador antes de que esto se vuelva más incómodo.</p>
+    {% if not codigo %}
+      <h1>404</h1>
+      <p><strong>¡No tienes acceso a la intranet!</strong></p>
+      <p>¿Será que estás deshabilitado para hacerlo?</p>
+      <p>Tranquilo... no eres tú, es la página.<br>Contacta a un administrador antes de que esto se vuelva más incómodo.</p>
+    {% else %}
+      <h1>{{ codigo }}</h1>
+      <p><strong>¡Algo esta ocurriendo aqui!</strong></p>
+      <p>Todo indica a que estas {{ mensaje }}</p>
+      <p>{{ excepcion }}</p>
+    {% endif %}
   </div>
 </body>
 </html>

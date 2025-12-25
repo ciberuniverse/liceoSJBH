@@ -1,10 +1,12 @@
-import bdd
+import bdd, server_settings
 from flask_caching import Cache
 import api_.calendario as calendario_api
-from flask import Flask, render_template, session, request, redirect, url_for, Response
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask import Flask, render_template, session, request, redirect, url_for, send_file, Response
 
 app = Flask(__name__)
-app.secret_key = bdd.SECRET_KEY
+app.secret_key = server_settings.SECRET_KEY
 
 app.config.update(
     SESSION_COOKIE_HTTPONLY = True, # Anti xss para evitar inject de js
@@ -12,15 +14,60 @@ app.config.update(
     SESSION_COOKIE_SAMESITE = "Lax" # Solo desde mi dominio xd
 )
 
-# Configuración para usar FileSystemCache
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
+
 app.config['CACHE_TYPE'] = 'FileSystemCache'
 app.config['CACHE_DIR'] = 'flask_cache'   # carpeta donde se guardan los archivos
-app.config['CACHE_DEFAULT_TIMEOUT'] = 300 # tiempo en segundos
+app.config['CACHE_TYPE'] = 'RedisCache'
+
+app.config['CACHE_REDIS_HOST'] = server_settings.REDIS_HOST
+app.config['CACHE_REDIS_PORT'] = server_settings.REDIS_PORT
+app.config['CACHE_REDIS_PASSWORD'] = server_settings.REDIS_PASSWORD
+app.config['CACHE_REDIS_DB'] = server_settings.REDIS_DB
+
+app.config['CACHE_DEFAULT_TIMEOUT'] = server_settings.CACHE_TIMEOUT
+
+def limiter_funcion():
+
+    if "informacion" not in session:
+        return get_remote_address()
+    
+    if "rut" not in session:
+        return get_remote_address()
+
+    return session["informacion"]["rut"]
 
 cachear = Cache(app)
+limitador = Limiter(
+    app=app,
+    key_func=limiter_funcion,
+    storage_uri=server_settings.REDIS_URI
+)
 
 RUTAS = bdd.Users.leer_routes(True)
 PERSONALIZACION_WEB = bdd.Settings.leer_settings(True)
+
+#########################
+
+@app.errorhandler(429)
+def ratelimit_handler(e): # Aquí rediriges a otra ruta cuando se excede el límite
+    return render_template(
+        "error.html",
+        codigo = 429,
+        mensaje = "excediendo en el numero de consultas a este sitio por minuto. Espera un momento antes de continuar.",
+        excepcion = e
+    )
+
+@app.errorhandler(413)
+def too_large(e):
+    return render_template(
+        "error.html",
+        codigo = 413,
+        mensaje = "excediendo en el peso del archivo que deseas subir. Intenta con otro mas liviano.",
+        excepcion = e
+    )
+
+#########################
 
 @app.context_processor
 def context():
@@ -62,7 +109,8 @@ def safe_headers(response):
 ########################################### SECCION PUBLICA
 
 @app.route("/home", methods = ["GET"])
-@cachear.cached(timeout=300) # Se estipula none puesto que asi controlamos la cache desde el backend
+@limitador.limit("30/minute")
+@cachear.cached(timeout=300)
 def home():
 
     noticias_list = bdd.Public.listar_noticias_home()
@@ -115,6 +163,7 @@ def contactanos():
     return render_template("contacto/contacto.html")
 
 @app.route("/login", methods = ["POST", "GET"])
+@limitador.limit("5/minute")
 def login():
     
     # Si es que el metodo de acceso es port se realiza una comprobacion del usuario y contraseña
@@ -1107,9 +1156,11 @@ def taller_estudiante():
 ############################### Ruta plataforma Apoderado
 
 @app.route("/apoderado", methods = ["GET", "POST"])
+@limitador.limit("5/minute")
 def apoderado():
     
     rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
+    rut_apoderado = session["informacion"]["rut"]
 
     if request.method == "POST":
 
@@ -1122,6 +1173,34 @@ def apoderado():
             if "rut_estudiante" not in formulario:
                 return redirect(url_for("apoderado", codigo = 404, mensaje = "ERROR: Estas enviando formularios incompletos."))
 
+            cache_key = f"{rut_apoderado}_regular_{formulario['rut_estudiante']}"
+            existe_cache = cachear.get(cache_key)
+
+            # Si existe el pdf almacenado en disco se retorna la descarga
+            if existe_cache:
+
+                return send_file(
+                    path_or_file = existe_cache,
+                    mimetype = "application/pdf",
+                    as_attachment = True,
+                    download_name=f"certificado_alumno_regular_{formulario['rut_estudiante']}.pdf"
+
+                )
+
+            ######## Se obtiene el estado del uso de nuestro generador de pases
+            # si esta disponible se usa si no esperar hasta que termine el otro usuario.
+            key_cache_cola = "pdf_cola"
+            lock = cachear.get(key_cache_cola)
+            
+            if lock:
+                return redirect(
+                    url_for(
+                        "retirar_alumno",
+                        codigo=400,
+                        mensaje="Hay demasiados usuarios generando informes. Por favor, espere."
+                    )
+                )
+
             ########## Le pasamos informacion actualizada directamente desde la variable global para evitar malos formatos
             formulario_certificado = {
                 "telefono_colegio": PERSONALIZACION_WEB["telefono_colegio"],
@@ -1130,22 +1209,36 @@ def apoderado():
                 "rut_estudiante": formulario["rut_estudiante"]
             }
 
-            resultado_alumno_reg = bdd.Informes_pdf.generar_certificado_alumno_regular("tmp_alumno_regular", formulario_certificado)
+
+            ############## Se agrego una cola para evitar cuellos de botella en la app
+            cachear.set(key_cache_cola, True, timeout=20)
+            try:
+                # generar el PDF
+                resultado_alumno_reg = bdd.Informes_pdf.generar_certificado_alumno_regular("tmp_alumno_regular", formulario_certificado)
+
+            finally:
+                # liberar el lock SIEMPRE
+                cachear.delete(key_cache_cola)
+
+            ############## 
 
             if resultado_alumno_reg["codigo"] != 200:
                 return redirect(url_for("apoderado", codigo = resultado_alumno_reg["codigo"], mensaje = resultado_alumno_reg["mensaje"]))
 
-            return Response(
-                resultado_alumno_reg["mensaje"],
-                mimetype="application/pdf",
-                headers={
-                    "Content-Disposition": f"inline; filename=certificado_alumno_regular_{formulario['rut_estudiante']}.pdf"
-                }
+            resultado_alumno_reg = resultado_alumno_reg["mensaje"]
+
+            # Si es que retorna la url de descarga redirigir a la descarga
+            cachear.set(cache_key, resultado_alumno_reg, timeout=0) # Se cachea indefinidamente hasta que se ejecute "nuevo ano"
+            return send_file(
+                path_or_file = resultado_alumno_reg,
+                mimetype = "application/pdf",
+                as_attachment = True,
+                download_name=f"certificado_alumno_regular_{formulario['rut_estudiante']}.pdf"
             )
+
     ############### ZONA GET
 
 
-    rut_apoderado = session["informacion"]["rut"]
     cache_key = rut_apoderado + "_perfil"
 
     ########## Cache de apoderado para su perfil
@@ -1176,6 +1269,7 @@ def apoderado():
     )
 
 @app.route("/retirar_alumno", methods = ["GET", "POST"])
+@limitador.limit("3/minute")
 def retirar_alumno():
 
     rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
@@ -1194,8 +1288,25 @@ def retirar_alumno():
         
         if formulario["accion"] == "descargar_pase":
             
-            # Envia el formulario que ya esta hecho por el inspector lo envia a la seccion de generar pase. Y genera el informe.
-            resultado = bdd.Informes_pdf.generar_pase_de_salida("tmp_pase", formulario)
+            lock = cachear.get("pdf_cola")
+            
+            if lock:
+                return redirect(
+                    url_for(
+                        "retirar_alumno",
+                        codigo=400,
+                        mensaje="Hay demasiados usuarios generando informes. Por favor, espere."
+                    )
+                )
+            
+            cachear.set("pdf_cola", True, timeout=20)
+            try:
+                # generar el PDF
+                resultado = bdd.Informes_pdf.generar_pase_de_salida("tmp_pase", formulario)
+
+            finally:
+                # liberar el lock SIEMPRE
+                cachear.delete("pdf_cola")
 
             if resultado["codigo"] == 200:
                 return Response(
