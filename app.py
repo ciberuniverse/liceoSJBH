@@ -16,15 +16,8 @@ app.config.update(
 
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
 
-app.config['CACHE_TYPE'] = 'FileSystemCache'
-app.config['CACHE_DIR'] = 'flask_cache'   # carpeta donde se guardan los archivos
 app.config['CACHE_TYPE'] = 'RedisCache'
-
-app.config['CACHE_REDIS_HOST'] = server_settings.REDIS_HOST
-app.config['CACHE_REDIS_PORT'] = server_settings.REDIS_PORT
-app.config['CACHE_REDIS_PASSWORD'] = server_settings.REDIS_PASSWORD
-app.config['CACHE_REDIS_DB'] = server_settings.REDIS_DB
-
+app.config['CACHE_REDIS_URL'] = server_settings.REDIS_URI
 app.config['CACHE_DEFAULT_TIMEOUT'] = server_settings.CACHE_TIMEOUT
 
 def limiter_funcion():
