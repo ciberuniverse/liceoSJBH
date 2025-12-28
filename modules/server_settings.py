@@ -19,3 +19,4 @@ ROOT_DIR = os.getcwd()
 TEMPLATES_DIR = os.path.join(ROOT_DIR, "static", "informes_templates")
 MEDIA_DIR = os.path.join(ROOT_DIR, "static", "media")
 
+IS_PRODUCTION = False if "herna" in ROOT_DIR else True

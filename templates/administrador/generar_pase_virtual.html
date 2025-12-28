@@ -43,7 +43,7 @@
   <div id="chat" style="border:1px solid #ccc; padding:10px; height:200px; overflow-y:auto;"></div>
   <form id="chatForm" class="mt-2">
     <input type="text" id="mensaje" placeholder="Escribe tu mensaje" class="form-control mb-2" required>
-    <button type="submit" class="btn btn-primary">Enviar</button>
+    <button type="submit" class="btn btn-primary" id="mensaje_enviar_boton">Enviar</button>
   </form>
 </div>
 
@@ -127,7 +127,7 @@
           </ul>
 
           <!-- Formulario para generar pase -->
-          <h6 class="mt-4">Generar Pase Virtual</h6>
+          <h6 class="mt-4" id="generar_pase_h6">Generar Pase Virtual</h6>
           <form method="POST" class="border rounded-3 p-3 bg-light" id="pase_form">
             <input name="nombre_apoderado" value="{{ informacion_rut.nombres }} {{ informacion_rut.apellidos }}" hidden>
             <input name="rut_apoderado" value="{{ informacion_rut.rut }}" hidden>
@@ -149,10 +149,12 @@
               <input id="hora_salida" name="hora_salida" type="datetime-local" class="form-control" required>
             </div>
 
+            <!-- HORA DE LLEGADA SECCION AUN NO SE OCUPA
             <div class="mb-3">
               <label for="hora_llegada" class="form-label">Hora de llegada (opcional)</label>
               <input id="hora_llegada" type="datetime-local" class="form-control">
             </div>
+            -->
             <input name="accion" value="generar_pase" hidden>
             <div class="d-flex justify-content-end">
               <button type="submit" id="generar_pase" class="btn btn-primary">
@@ -311,7 +313,24 @@
     chatBox.innerHTML = "";
     snapshot.forEach(doc => {
       const msg = doc.data();
-      chatBox.innerHTML += `<p><strong>${msg.autor}:</strong> ${msg.texto}</p>`;
+
+      if (msg.texto.includes("-------{{ db_documento }}-------")) {
+
+        for (let id_dis of ["pase_form", "mensaje_enviar_boton", "mensaje", "generar_pase_h6"]) {
+          document.getElementById(id_dis).hidden = true
+        }
+
+        chatBox.innerHTML += `
+          <div class="alert alert-warning" role="alert">
+            <strong>Server:</strong> Ya se administró esa solicitud de retiro. Este bloqueo desaparece automaticamente.
+          </div>
+        `;
+
+
+      } else {
+        chatBox.innerHTML += `<p><strong>${msg.autor}:</strong> ${msg.texto}</p>`;
+      }
+
     });
     chatBox.scrollTop = chatBox.scrollHeight;
   });

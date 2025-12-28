@@ -3,10 +3,10 @@ from xhtml2pdf import pisa
 from bson.objectid import ObjectId # Importar ObjectId
 from datetime import datetime
 from hashlib import blake2b
-from form_validator import formularios_dict
-import io, os, json, unicodedata, server_settings
+from modules.form_validator import formularios_dict
+import io, os, json, unicodedata
+import modules.server_settings as server_settings
 import pandas as pd
-
 
 HOST = MongoClient(
     server_settings.URL_HOST,
@@ -328,7 +328,13 @@ class Apoderado:
         return json_de_mensaje(200, resultado_cargas)
 
     @staticmethod
-    def asignar_pase(rut_apoderado: str, datos_pase: dict) -> dict:
+    def asignar_pase(datos_pase: dict) -> dict:
+
+        formulario_valido = Security.form_validator("asignar_pase", datos_pase)
+        if formulario_valido["codigo"] != 200:
+            return formulario_valido
+
+        rut_apoderado = datos_pase["rut_apoderado"]
 
         informacion_rut = General.obtener_informacion_rut(datos_pase["rut_estudiante"])   
         if informacion_rut["codigo"] != 200:
@@ -342,7 +348,7 @@ class Apoderado:
         datos_pase["curso_estudiante"] = informacion_rut["mensaje"]["desc_grado"] + " " + informacion_rut["mensaje"]["letra_curso"]
 
 
-        print(datos_pase)
+        #print(datos_pase)
         # EL SPLIT DA COMO RESULTADO DOS VARIABLES QUE MODIFICAN LO FALTANTE
         datos_pase["fecha_retiro"], datos_pase["hora_salida"] = datos_pase["hora_salida"].split("T")
         try:
@@ -2196,7 +2202,7 @@ class Noticiero:
         
         return json_de_mensaje(200, resultados)
 
-    def crear_noticia(titulo, descripcion, request_file_form) -> dict:
+    def crear_noticia(titulo, descripcion, request_file_form: str | dict) -> dict:
 
         fecha = obtener_fecha()
         query_insert = {
@@ -2211,11 +2217,15 @@ class Noticiero:
 
         if no_sql_st["codigo"] != 200:
             return no_sql_st
+        
+        if type(request_file_form) != str:
+            resultado_imagen = guardar_imagen("noticias", "imagen", request_file_form)
 
-        resultado_imagen = guardar_imagen("noticias", "imagen", request_file_form)
+            if resultado_imagen["codigo"] == 200:
+                query_insert["imagen"] = obtener_path_normalizado(resultado_imagen["mensaje"])
 
-        if resultado_imagen["codigo"] == 200:
-            query_insert["imagen"] = obtener_path_normalizado(resultado_imagen["mensaje"])
+        else:
+            query_insert["imagen"] = request_file_form
 
         try:
             resultado = noticias.insert_one(query_insert)
@@ -2588,3 +2598,14 @@ def asignar_curso_a_alumno(id_curso, ruts):
         return json_de_mensaje(404, "No se logro asignar completamente el curso a los alumnos.")
     
     return json_de_mensaje(200, "Se ha asignado el curso correctamente a los alumnos.")
+
+##################### FUNCION DE PRODUCCION AUTOMATIZACION DE CREACION DE NOTICIAS FALSAS
+
+if server_settings.IS_PRODUCTION:
+
+    noticias.delete_many({})
+    Noticiero.crear_noticia(
+        "Liceo San Juan Bautista de Hualqui inaugura nuevo laboratorio de ciencias",
+        "En una ceremonia realizada este lunes, el Liceo San Juan Bautista de Hualqui presentó oficialmente su nuevo laboratorio de ciencias, equipado con tecnología moderna para apoyar a los estudiantes en sus investigaciones y experimentos. La comunidad educativa celebró este avance que busca fortalecer la enseñanza práctica en biología, química y física, fomentando el interés por la ciencia en los jóvenes de la comuna.",
+        "https://i0.wp.com/www.timeline.cl/wp-content/uploads/2022/01/laboratorio-escolar.jpg"
+    )

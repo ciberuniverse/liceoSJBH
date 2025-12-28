@@ -12,7 +12,7 @@
 
     <hr>
 
-    {% if "cursos_informacion" in informacion_profesor %}
+    {% if "cursos_informacion" in informacion_profesor and informacion_profesor['cursos_informacion']%}
     <!-- Tabla de cursos del docente -->
     <div class="card shadow-sm">
         <div class="card-header bg-success text-white">

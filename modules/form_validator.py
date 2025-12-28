@@ -41,6 +41,12 @@ formularios_dict = {
         "apellidos": [5, 100, _alph + _acen],
         "rut": rut_allowed,
         "cargo": [5, 30, _alph],
+    },
+    "asignar_pase": {
+        "nombre_apoderado": [10, 200, _alph + _acen],
+        "rut_apoderado": rut_allowed,
+        "rut_estudiante": rut_allowed,
+        "hora_salida": [10, 20, _numb + "-:t"]
     }
 }
 """

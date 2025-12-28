@@ -1,6 +1,7 @@
-import bdd, server_settings
+import bdd
+import modules.server_settings as server_settings
+import modules.calendario as calendario_api
 from flask_caching import Cache
-import api_.calendario as calendario_api
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask import Flask, render_template, session, request, redirect, url_for, send_file, Response
@@ -25,7 +26,7 @@ def limiter_funcion():
     if "informacion" not in session:
         return get_remote_address()
     
-    if "rut" not in session:
+    if "rut" not in session["informacion"]:
         return get_remote_address()
 
     return session["informacion"]["rut"]
@@ -156,7 +157,7 @@ def contactanos():
     return render_template("contacto/contacto.html")
 
 @app.route("/login", methods = ["POST", "GET"])
-@limitador.limit("5/minute")
+@limitador.limit("10/minute")
 def login():
     
     # Si es que el metodo de acceso es port se realiza una comprobacion del usuario y contraseña
@@ -887,7 +888,7 @@ def noticiero():
 
 ################### API NOTICIAS OBTENER LA ULTIMA NOTICIA URGENTE
 @app.route("/urgente")
-@cachear.cached(timeout=300)
+@cachear.cached(timeout=3600)
 def urgente():
 
     resultado = bdd.Public.obtener_ultima_alerta()
@@ -956,10 +957,16 @@ def profesor():
     lista_cursos = bdd.Profesor.listar_cursos_de_profesor(rut_profesor)
 
     if lista_cursos["codigo"] != 200:
-        return redirect(url_for("administrar_taller_estudiantes", codigo = lista_cursos["codigo"], mensaje = lista_cursos["mensaje"]))
+    
+        return render_template(
+            "profesor/profesor.html",
+            codigo = lista_cursos["codigo"],
+            mensaje = lista_cursos["mensaje"],
+            rutas_permitidas = rutas_permitidas_usuario
+        )
 
     ########## Si no existe la cache se setea o actualiza pasado el tiempo
-    cachear.set(cache_key, lista_cursos, timeout=300)
+    cachear.set(cache_key, lista_cursos, timeout=3600)
 
     return render_template(
         "profesor/profesor.html",
@@ -1262,7 +1269,7 @@ def apoderado():
     )
 
 @app.route("/retirar_alumno", methods = ["GET", "POST"])
-@limitador.limit("3/minute")
+@limitador.limit("5/minute")
 def retirar_alumno():
 
     rutas_permitidas_usuario = bdd.obtener_navbar(session, RUTAS)
@@ -1376,7 +1383,7 @@ def generar_pase():
             
         if formulario["accion"] == "generar_pase":
 
-            resultado_pase = bdd.Apoderado.asignar_pase(formulario["rut_apoderado"], formulario)            
+            resultado_pase = bdd.Apoderado.asignar_pase(formulario)            
             return redirect(url_for("generar_pase", codigo = resultado_pase["codigo"], mensaje = resultado_pase["mensaje"]))
 
         

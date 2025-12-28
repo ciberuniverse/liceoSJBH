@@ -152,12 +152,13 @@
     chatBox.innerHTML = "";
     snapshot.forEach(doc => {
       const msg = doc.data();
-      chatBox.innerHTML += `<p><strong>${msg.autor}:</strong> ${msg.texto}</p>`;
-
+      
       if (msg.texto.includes("-------{{ informacion_apoderado['rut'] }}-------")) {
         borrarMensajeConSubcolecciones()
+      } else {
+        chatBox.innerHTML += `<p><strong>${msg.autor}:</strong> ${msg.texto}</p>`;
       }
-
+      
     });
   });
 
