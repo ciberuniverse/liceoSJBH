@@ -23,6 +23,7 @@ app.config['CACHE_DEFAULT_TIMEOUT'] = server_settings.CACHE_TIMEOUT
 
 def limiter_funcion():
 
+    print(str(bdd.json_de_mensaje(500, get_remote_address())))
     if "informacion" not in session:
         return get_remote_address()
     
@@ -687,11 +688,14 @@ def asignar_profesores_a_cursos():
     if request.method == "POST":
     
         formulario_ = request.form.to_dict()
-        if "accion" not in formulario_:
+
+        is_valid = bdd.Security.validar_accion_form(formulario_, ["asignar_materias", "asignar_profesores_a_cursos", "eliminar_alumno"])
+        
+        if is_valid["codigo"] != 200:
             return redirect(url_for(
                 "asignar_profesores_a_cursos",
-                codigo = 500,
-                mensaje = "ERROR: Formulario incompleto o corrupto."
+                codigo = is_valid["codigo"],
+                mensaje = is_valid["mensaje"]
             ))
 
         if formulario_["accion"] == "asignar_materias":
@@ -761,6 +765,9 @@ def asignar_profesores_a_cursos():
         elif formulario_["accion"] == "asignar_profesores_a_cursos":
             resultado = bdd.Administrador.asignar_materias_a_profesores(formulario_)
 
+        elif formulario_["accion"] == "eliminar_alumno":
+            resultado = bdd.Administrador.eliminar_alumno_curso(formulario_)
+
         return redirect(url_for("asignar_profesores_a_cursos", codigo = resultado["codigo"], mensaje = resultado["mensaje"]))
 
     ########### Se intenta obtener el cache desde los archivos
@@ -769,7 +776,6 @@ def asignar_profesores_a_cursos():
 
     # Si existe se retorna eso
     if cursos:
-        print("CACHEEEEEEEEEEEEE")
         return render_template(
             "administrador/asignar_profesores_a_cursos.html",
             principal = True,
@@ -919,13 +925,15 @@ def profesor():
             respuesta = bdd.General.obtener_informacion_curso(formulario["id_curso"])
             if respuesta["codigo"] != 200:
                 return redirect(url_for("profesor", codigo = respuesta["codigo"], mensaje = respuesta["mensaje"]))
-            
+            print(respuesta)
             #print(respuesta)
             return render_template(
                 "profesor/administrar_curso.html",
                 informacion_curso = respuesta["mensaje"],
                 rut_profesor = session["informacion"]["rut"],
-                rutas_permitidas = rutas_permitidas_usuario
+                rutas_permitidas = rutas_permitidas_usuario,
+
+                curso_id = formulario["id_curso"]
             )
 
         elif formulario["accion"] == "subir_notas":
@@ -936,6 +944,11 @@ def profesor():
         
         elif formulario["accion"] == "anotacion_alumno":
             respuesta = bdd.Profesor.anotacion_alumno(formulario)
+        
+        elif formulario["accion"] == "modificar_notas":
+
+            return render_template("profesor/modificar_notas.html", )
+            respuesta = bdd.Profesor.modificar_notas(formulario)
 
         return redirect(url_for("profesor", codigo = respuesta["codigo"], mensaje = respuesta["mensaje"]))
 

@@ -59,30 +59,41 @@
             <i class="bi bi-plus-circle"></i> Asignar Materias
         </button>
     </div>
-
-    <hr class="my-4">
-
-    <!-- Lista de alumnos -->
-    <h4 class="mb-3 text-primary">
-        <i class="bi bi-people"></i> Alumnos en el Curso
-    </h4>
-    <div id="alumnos_mostrar" class="mb-3">
-        <ul class="list-group list-group-flush shadow-sm">
-        <!-- Aquí se mostrarán los alumnos -->
-            {% for alumno in curso['alumnos_curso'] %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span class="fw-semibold">
-                    {{ alumno['nombres'] }} {{ alumno['apellidos'] }}
-                </span>
-                <span class="badge bg-primary rounded-pill">
-                    {{ alumno['rut'] }}
-                </span>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-
 </form>
+
+<!-- Lista de alumnos -->
+<div class="container mt-4 p-4 border rounded shadow-sm bg-light">
+<h4 class="mb-3 text-primary">
+    <i class="bi bi-people"></i> Alumnos en el Curso
+</h4>
+
+<div id="alumnos_mostrar" class="mb-3">
+    <div class="list-group shadow-sm">
+        {% for alumno in curso['alumnos_curso'] %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+            
+            <!-- Información del alumno -->
+            <div>
+                <span class="fw-semibold">{{ alumno['nombres'] }} {{ alumno['apellidos'] }}</span>
+                <span class="text-muted ms-2">| RUT: {{ alumno['rut'] }}</span>
+            </div>
+
+            <!-- Botón de acción -->
+            <form method="POST" class="mb-0">
+                <input name="rut_alumno" value="{{ alumno['rut'] }}" hidden>
+                <input name="curso_id" value="{{ curso_id }}" hidden>
+                
+                <button class="btn btn-sm btn-outline-danger" name="accion" value="eliminar_alumno">
+                    <i class="bi bi-trash"></i> Eliminar
+                </button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+
+
 
 
 <!-- Modal artesanal con estilo Bootstrap -->

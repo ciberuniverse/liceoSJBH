@@ -13,6 +13,7 @@
 </header>
 
 
+
 <div class="container mt-4">
 
     <!-- Información del curso -->
@@ -27,6 +28,7 @@
     </div>
     {% if informacion_curso['alumnos_curso'] %}
     {% set asignatura = informacion_curso.materias[rut_profesor] %}
+    {% set alumnos_total = informacion_curso.alumnos | length %}
 
     <!-- Botones de acciones -->
     <div class="mb-3 d-flex gap-2">
@@ -37,7 +39,38 @@
         <button class="btn btn-success" onclick="mostrar_ocultos('pasar_lista')">
             Pasar lista
         </button>
+
+        <button class="btn btn-warning text-white" onclick="mostrar('evaluacion_modificar_form')">
+            Modificar Notas
+        </button>
+
     </div>
+
+    <!-- Bloque de selección de evaluación -->
+    <div class="card p-3 shadow-sm" id="evaluacion_modificar_form" hidden>
+      <form method="POST" class="d-grid gap-3">
+        {% if "evaluaciones" in informacion_curso and asignatura in informacion_curso['evaluaciones'] %}
+          <div class="mb-3">
+            <label for="evaluacion_modificar" class="form-label fw-bold text-secondary">
+              <i class="bi bi-journal-text"></i> Seleccionar Evaluación
+            </label>
+            <select id="evaluacion_modificar" name="evaluacion_modificar" class="form-select shadow-sm" required>
+              <option value="" disabled selected>Seleccione una evaluación</option>
+              {% for evaluacion in informacion_curso['evaluaciones'][asignatura] %}
+                <option value="{{ evaluacion['_id'] }}">{{ evaluacion["nombre_evaluacion"] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+        <button name="accion" value="modificar_notas" class="btn btn-warning">
+          <i class="bi bi-pencil"></i> Modificar Notas
+        </button>
+      </form>
+      <br>
+      <button class="btn btn-danger" onclick="ocultar('evaluacion_modificar_form')">Cancelar</button>
+
+    </div>
+
 
     <!-- Nombre de evaluación -->
     <div class="card p-3 mb-3 asignar_nota_nombre" hidden>
@@ -245,6 +278,7 @@
         <div class="asignar_nota" hidden>
             <br>
             <form method="POST" id="form_subir_notas">
+              <input name="curso_id" value="{{ curso_id }}" hidden>
                 <button type="submit" id="subir_notas" name="accion" value="subir_notas" class="btn btn-primary px-4">
                     <i class="bi bi-upload me-2"></i>Subir Notas
                 </button>
@@ -268,6 +302,7 @@
 <script>
 
     let materia = "{{ informacion_curso.materias[rut_profesor] }}"
+    let alumnos_totales = parseInt("{{ alumnos_total }}")
 
     const form_subir_notas_ = document.getElementById("form_subir_notas");
     const form_pasar_lista_ = document.getElementById("form_pasar_lista");
@@ -344,8 +379,14 @@
     }
 
     form_subir_notas_.addEventListener("submit", (e) => {
+
         if (NOTAS_ALUMNOS.notas_alumnos.length <= 0) {
             alert("Debes guardar las notas de cada alumno primero.");
+            e.preventDefault(); // aquí sí funciona
+            return;
+
+        } else if (NOTAS_ALUMNOS.notas_alumnos.length != alumnos_totales) {
+            alert("Debes asignarle las notas a todos los alumnos para continuar.")
             e.preventDefault(); // aquí sí funciona
             return;
         }

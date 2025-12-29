@@ -92,3 +92,9 @@ bdd
  Backups automáticos y runbooks.
 
 Si querés, te armo un plan de implementación con comandos/archivos (Dockerfile + docker-compose con Redis, RabbitMQ/Celery, Gunicorn, ejemplo de M
+
+============================
+PROFESOR JEFE PUEDE GENERER UN INFORME DE NOTAS: Anotaciones positivas, negativas, promedios.
+
+Profesor puede ir viendo el promedio
+Alertas rojas cuando alumno va en promedios rojos

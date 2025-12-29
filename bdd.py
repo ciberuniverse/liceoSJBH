@@ -560,7 +560,7 @@ class Security:
         return json_de_mensaje(200, normalizacion)
 
     @staticmethod
-    def validar_accion_form(formulario_validar: dict, posibles_acciones: list[str] = ["nuevo_ano", "crear_usuario"]) -> str:
+    def validar_accion_form(formulario_validar: dict, posibles_acciones: list[str] = ["nuevo_ano", "crear_usuario"]) -> dict:
         if "accion" not in formulario_validar:
             return json_de_mensaje(402)
         
@@ -1403,7 +1403,6 @@ class Administrador:
         return json_de_mensaje(200, f"Se ha agregado al usuario {informacion_json['rut']} con cargo {informacion_json['cargo']} exitosamente.")
 
     def eliminar_usuario(usuario_rut: str, recursivo: bool = False, recursivo_campos: list[str] = None) -> dict:
-
     
         try:
             resultado = estudiantes.delete_one({"rut": usuario_rut})
@@ -1890,6 +1889,37 @@ class Administrador:
             return json_de_mensaje(404, "ERROR: No se logro insertar el nuevo evento en la base de datos.")
         
         return json_de_mensaje(200, "Evento creado e insertado en la base de datos correctamente.")
+    
+    def eliminar_alumno_curso(formulario_: dict) -> dict:
+        
+        if "rut_alumno" not in formulario_ or "curso_id" not in formulario_:
+            return json_de_mensaje(402)
+        
+        try:
+            resultado_quitar_curso = cursos.update_one({
+                    "_id": ObjectId(formulario_["curso_id"])},
+                    {"$pull": {"alumnos": formulario_["rut_alumno"]}
+            })
+        
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: No se logro eliminar al estudiante del curso: {err}")
+
+        if not resultado_quitar_curso.acknowledged:
+            return json_de_mensaje(404, "No se logro encontrar el curso especificado.")
+
+        try:
+            eliminar_materias_alumno = estudiantes.update_one(
+                {"rut": formulario_["rut_alumno"]},
+                {"$unset": {"materias": True}}
+            )
+
+        except Exception as err:
+            return json_de_mensaje(500, f"ERROR: No se logro eliminar las materias del estudiante: {err}")
+
+        if not eliminar_materias_alumno.acknowledged:
+            return json_de_mensaje(404, "No se logro encontrar el estudiante especificado.")
+
+        return json_de_mensaje(200)
 
 class Profesor:
     """
@@ -2041,7 +2071,7 @@ class Profesor:
         data_form.pop("accion")
 
         resultado_seguridad = Security.claves_existentes(
-            claves = ["payload_json"],
+            claves = ["payload_json", "curso_id"],
             formulario = data_form
         )
         if not resultado_seguridad:
@@ -2064,6 +2094,7 @@ class Profesor:
         if "notas_alumnos" not in materia_notas["notas"]:
             return json_de_mensaje(402, "El formato de tu formulario no cumple con lo esperado.")
         
+        nota_id = ObjectId()
         notas_alumnos: list = materia_notas["notas"]["notas_alumnos"]
 
         operacion_actualizar = []
@@ -2074,7 +2105,7 @@ class Profesor:
                 operacion_actualizar.append(
                     UpdateOne(
                         {"rut": rut},
-                        {"$push": {f"materias.{nombre_materia}.notas": {"nombre_evaluacion": nombre_evaluacion, "nota": Security.str_to_float(nota)}}}
+                        {"$push": {f"materias.{nombre_materia}.notas": {"_id": nota_id, "nombre_evaluacion": nombre_evaluacion, "nota": Security.str_to_float(nota)}}}
                     )
                 )
 
@@ -2086,6 +2117,20 @@ class Profesor:
         if not respuesta_.acknowledged:
             return json_de_mensaje(404, "No se logro modificar a los estudiantes del curso sus notas.")
         
+        try:
+            respuesta_ = cursos.update_one(
+                {"_id": ObjectId(data_form["curso_id"])},
+                {"$push": 
+                        {f"evaluaciones.{nombre_materia}": {"_id": nota_id, "nombre_evaluacion": nombre_evaluacion}}
+                }
+            )
+
+        except Exception as err:
+            return json_de_mensaje(500, "Notas insertadas correctamente sin embargo ocurrio un error al intentar asignar la evaluacion al curso.")
+
+        if not respuesta_.acknowledged:
+            return json_de_mensaje(404, "No se logro encontrar el curso para asignarle las evaluaciones correctamente.")
+
         return json_de_mensaje(200, "Notas asignadas a los alumnos correctamente.")
 
     def pasar_lista(data_form: dict) -> dict:
@@ -2174,6 +2219,10 @@ class Profesor:
             return json_de_mensaje(404, "No se le asigno la anotacion correctamente.")
 
         return json_de_mensaje(200, "Se le asigno la anotacion correctamente al estudiante.")
+
+    def modificar_notas(forumulario_nota: dict) -> dict:
+        
+        pass
 
 class Noticiero:
     """Funciones que corresponden al uso del Noticiero."""
