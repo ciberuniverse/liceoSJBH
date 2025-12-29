@@ -5,9 +5,12 @@ from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask import Flask, render_template, session, request, redirect, url_for, send_file, Response
+from werkzeug.middleware.proxy_fix import ProxyFix # Configurar la app para aceptar y confiar en proxies
 
 app = Flask(__name__)
 app.secret_key = server_settings.SECRET_KEY
+
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1) # Proxies
 
 app.config.update(
     SESSION_COOKIE_HTTPONLY = True, # Anti xss para evitar inject de js
